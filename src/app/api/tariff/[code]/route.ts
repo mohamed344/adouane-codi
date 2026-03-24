@@ -33,8 +33,8 @@ export async function GET(
     );
   }
 
-  // Also fetch section and chapitre info
-  const [sectionResult, chapitreResult] = await Promise.all([
+  // Also fetch section, chapitre, and rangée info
+  const [sectionResult, chapitreResult, rangeeResult] = await Promise.all([
     supabase
       .from("tariff_sections")
       .select("*")
@@ -46,6 +46,13 @@ export async function GET(
       .eq("section_code", data.section_code)
       .eq("code", data.chapitre_code)
       .single(),
+    supabase
+      .from("tariff_rangees")
+      .select("*")
+      .eq("section_code", data.section_code)
+      .eq("chapitre_code", data.chapitre_code)
+      .eq("code", data.range_code)
+      .single(),
   ]);
 
   return NextResponse.json({
@@ -53,6 +60,7 @@ export async function GET(
       ...data,
       section: sectionResult.data,
       chapitre: chapitreResult.data,
+      rangee: rangeeResult.data,
     },
   });
 }

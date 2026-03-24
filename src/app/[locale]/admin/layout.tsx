@@ -5,7 +5,6 @@ import { Link, usePathname, useRouter } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { CustomsLogo } from "@/components/customs-logo";
 import {
@@ -58,7 +57,6 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             </Link>
             <div className="flex items-center gap-2">
               <LanguageSwitcher />
-              <ThemeToggle />
               <Button variant="ghost" size="icon" onClick={handleLogout} title={t("common.logout")}>
                 <LogOut className="h-5 w-5" />
               </Button>

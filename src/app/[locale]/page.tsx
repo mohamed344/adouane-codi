@@ -6,7 +6,6 @@ import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 
 import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -15,8 +14,10 @@ import {
   ArrowRight,
   Search,
 } from "lucide-react";
-import { useEffect, useState, useRef, useCallback } from "react";
+import { useEffect, useState, useRef } from "react";
 import { createClient } from "@/lib/supabase/client";
+import { CURRENCY, formatPrice, PLANS } from "@/config/plans";
+import { useLocale } from "next-intl";
 
 interface Plan {
   id: string;
@@ -172,107 +173,124 @@ function useScrollReveal() {
   }, []);
 }
 
-/* ===== HERO GLOBE SVG ===== */
-function HeroGlobe() {
+/* ===== HERO VISUAL — Customs Shield with animated trade routes ===== */
+function HeroVisual() {
   return (
-    <div className="relative w-72 h-72 sm:w-96 sm:h-96 mx-auto">
-      {/* Outer glow */}
-      <div className="absolute inset-0 rounded-full bg-primary/5 animate-pulse-glow" />
+    <div className="relative w-full max-w-sm mx-auto aspect-square">
+      {/* Glow orbs behind */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full glow-orange animate-orb-pulse opacity-70" />
+      <div className="absolute top-[15%] right-[10%] w-32 h-32 rounded-full glow-purple animate-orb-pulse opacity-50" style={{ animationDelay: "2s" }} />
+      <div className="absolute bottom-[15%] left-[10%] w-28 h-28 rounded-full glow-amber animate-orb-pulse opacity-50" style={{ animationDelay: "3.5s" }} />
 
-      {/* Orbiting elements */}
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="animate-orbit">
-          <div className="h-8 w-8 rounded-lg bg-primary/20 backdrop-blur-sm border border-primary/30 flex items-center justify-center">
-            <svg className="h-4 w-4 text-primary" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M9 17H5a2 2 0 00-2 2v0a2 2 0 002 2h14a2 2 0 002-2v0a2 2 0 00-2-2h-4" />
-              <path d="M3 13V7a2 2 0 012-2h14a2 2 0 012 2v6" />
-              <path d="M8 17l4-8 4 8" />
-            </svg>
-          </div>
-        </div>
-      </div>
-      <div className="absolute inset-0 flex items-center justify-center">
-        <div className="animate-orbit-reverse">
-          <div className="h-7 w-7 rounded-lg bg-accent/20 backdrop-blur-sm border border-accent/30 flex items-center justify-center">
-            <svg className="h-3.5 w-3.5 text-accent" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z" />
-              <path d="M14 2v6h6" />
-            </svg>
-          </div>
-        </div>
-      </div>
+      {/* Main SVG */}
+      <svg className="w-full h-full relative z-10" viewBox="0 0 400 400" fill="none">
+        {/* Outer ring */}
+        <circle cx="200" cy="200" r="170" className="stroke-primary/10" strokeWidth="1" strokeDasharray="8 6" fill="none">
+          <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="60s" repeatCount="indefinite" />
+        </circle>
+        <circle cx="200" cy="200" r="145" className="stroke-primary/8" strokeWidth="0.5" fill="none" />
 
-      {/* Main globe */}
-      <svg className="w-full h-full" viewBox="0 0 400 400" fill="none">
-        {/* Globe circle */}
-        <circle cx="200" cy="200" r="140" className="stroke-primary/20" strokeWidth="1" fill="none" />
-        <circle cx="200" cy="200" r="140" className="fill-primary/[0.03]" />
-
-        {/* Latitude lines */}
-        <ellipse cx="200" cy="200" rx="140" ry="40" className="stroke-primary/10" strokeWidth="0.8" fill="none" />
-        <ellipse cx="200" cy="200" rx="140" ry="80" className="stroke-primary/10" strokeWidth="0.8" fill="none" />
-        <ellipse cx="200" cy="200" rx="140" ry="120" className="stroke-primary/10" strokeWidth="0.8" fill="none" />
-
-        {/* Longitude lines */}
-        <ellipse cx="200" cy="200" rx="40" ry="140" className="stroke-primary/10" strokeWidth="0.8" fill="none" />
-        <ellipse cx="200" cy="200" rx="80" ry="140" className="stroke-primary/10" strokeWidth="0.8" fill="none" />
-        <ellipse cx="200" cy="200" rx="120" ry="140" className="stroke-primary/10" strokeWidth="0.8" fill="none" />
-
-        {/* Algeria highlighted region */}
-        <path
-          d="M175 130 C180 125, 195 120, 210 125 C220 128, 225 140, 220 155 C215 165, 200 170, 190 168 C178 165, 170 150, 172 140 Z"
-          className="fill-primary/30 stroke-primary"
-          strokeWidth="1.5"
-        />
-
-        {/* Trade route lines */}
-        <path d="M190 150 Q250 100 300 120" className="stroke-primary/40" strokeWidth="1" strokeDasharray="4 4">
-          <animate attributeName="stroke-dashoffset" from="20" to="0" dur="3s" repeatCount="indefinite" />
+        {/* Trade route arcs */}
+        <path d="M100 200 Q150 100 200 80" className="stroke-primary/30" strokeWidth="1.5" strokeDasharray="5 5" fill="none">
+          <animate attributeName="stroke-dashoffset" from="20" to="0" dur="2s" repeatCount="indefinite" />
         </path>
-        <path d="M190 150 Q150 200 120 280" className="stroke-primary/40" strokeWidth="1" strokeDasharray="4 4">
-          <animate attributeName="stroke-dashoffset" from="20" to="0" dur="4s" repeatCount="indefinite" />
+        <path d="M300 200 Q250 100 200 80" className="stroke-accent/30" strokeWidth="1.5" strokeDasharray="5 5" fill="none">
+          <animate attributeName="stroke-dashoffset" from="20" to="0" dur="2.5s" repeatCount="indefinite" />
         </path>
-        <path d="M190 150 Q280 180 320 220" className="stroke-primary/40" strokeWidth="1" strokeDasharray="4 4">
-          <animate attributeName="stroke-dashoffset" from="20" to="0" dur="3.5s" repeatCount="indefinite" />
+        <path d="M200 320 Q120 280 100 200" className="stroke-primary/20" strokeWidth="1" strokeDasharray="4 4" fill="none">
+          <animate attributeName="stroke-dashoffset" from="16" to="0" dur="3s" repeatCount="indefinite" />
+        </path>
+        <path d="M200 320 Q280 280 300 200" className="stroke-accent/20" strokeWidth="1" strokeDasharray="4 4" fill="none">
+          <animate attributeName="stroke-dashoffset" from="16" to="0" dur="3.5s" repeatCount="indefinite" />
         </path>
 
-        {/* Trade nodes */}
-        <circle cx="300" cy="120" r="4" className="fill-primary/60">
-          <animate attributeName="r" values="3;5;3" dur="2s" repeatCount="indefinite" />
+        {/* Trade node dots */}
+        <circle cx="100" cy="200" r="5" className="fill-primary/50">
+          <animate attributeName="r" values="4;6;4" dur="3s" repeatCount="indefinite" />
         </circle>
-        <circle cx="120" cy="280" r="4" className="fill-primary/60">
-          <animate attributeName="r" values="3;5;3" dur="2.5s" repeatCount="indefinite" />
+        <circle cx="300" cy="200" r="5" className="fill-accent/50">
+          <animate attributeName="r" values="4;6;4" dur="2.5s" repeatCount="indefinite" />
         </circle>
-        <circle cx="320" cy="220" r="4" className="fill-primary/60">
-          <animate attributeName="r" values="3;5;3" dur="3s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="190" cy="150" r="6" className="fill-primary">
-          <animate attributeName="r" values="5;7;5" dur="2s" repeatCount="indefinite" />
+        <circle cx="200" cy="320" r="4" className="fill-primary/40">
+          <animate attributeName="r" values="3;5;3" dur="3.5s" repeatCount="indefinite" />
         </circle>
 
-        {/* Customs shield in center */}
-        <g transform="translate(170, 170)">
+        {/* Central shield — customs badge */}
+        <g transform="translate(140, 110)">
+          {/* Shield shape */}
           <path
-            d="M30 5L55 18V35C55 48 43 58 30 60C17 58 5 48 5 35V18L30 5Z"
-            className="fill-primary/20 stroke-primary"
+            d="M60 10L110 35V75C110 110 90 135 60 145C30 135 10 110 10 75V35L60 10Z"
+            className="fill-primary/15 stroke-primary/50"
             strokeWidth="2"
           />
           <path
-            d="M20 32L27 39L42 24"
+            d="M60 25L95 43V75C95 102 80 122 60 130C40 122 25 102 25 75V43L60 25Z"
+            className="fill-primary/8 stroke-primary/25"
+            strokeWidth="1"
+          />
+
+          {/* Checkmark inside shield */}
+          <path
+            d="M40 75L52 87L80 59"
             className="stroke-primary"
-            strokeWidth="3"
+            strokeWidth="4"
             strokeLinecap="round"
             strokeLinejoin="round"
             fill="none"
           />
         </g>
+
+        {/* Mini floating elements around shield */}
+        {/* Document icon top-right */}
+        <g className="animate-float" style={{ animationDelay: "0.5s" } as React.CSSProperties}>
+          <rect x="280" y="100" width="40" height="50" rx="6" className="fill-primary/10 stroke-primary/30" strokeWidth="1" />
+          <line x1="290" y1="115" x2="310" y2="115" className="stroke-primary/40" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="290" y1="125" x2="305" y2="125" className="stroke-primary/30" strokeWidth="1.5" strokeLinecap="round" />
+          <line x1="290" y1="135" x2="308" y2="135" className="stroke-primary/20" strokeWidth="1.5" strokeLinecap="round" />
+        </g>
+
+        {/* Barcode/HS code icon bottom-left */}
+        <g className="animate-float-reverse" style={{ animationDelay: "1s" } as React.CSSProperties}>
+          <rect x="70" y="270" width="50" height="40" rx="6" className="fill-accent/10 stroke-accent/30" strokeWidth="1" />
+          <line x1="82" y1="280" x2="82" y2="300" className="stroke-accent/50" strokeWidth="2" />
+          <line x1="88" y1="280" x2="88" y2="300" className="stroke-accent/40" strokeWidth="1.5" />
+          <line x1="93" y1="280" x2="93" y2="300" className="stroke-accent/50" strokeWidth="3" />
+          <line x1="100" y1="280" x2="100" y2="300" className="stroke-accent/40" strokeWidth="1" />
+          <line x1="105" y1="280" x2="105" y2="300" className="stroke-accent/50" strokeWidth="2" />
+          <line x1="110" y1="280" x2="110" y2="300" className="stroke-accent/30" strokeWidth="1.5" />
+        </g>
+
+        {/* Calculator icon top-left */}
+        <g className="animate-float-slow">
+          <rect x="60" y="90" width="36" height="45" rx="5" className="fill-primary/10 stroke-primary/25" strokeWidth="1" />
+          <rect x="66" y="96" width="24" height="10" rx="2" className="fill-primary/20" />
+          <circle cx="72" cy="116" r="2" className="fill-primary/30" />
+          <circle cx="78" cy="116" r="2" className="fill-primary/30" />
+          <circle cx="84" cy="116" r="2" className="fill-primary/30" />
+          <circle cx="72" cy="124" r="2" className="fill-primary/20" />
+          <circle cx="78" cy="124" r="2" className="fill-primary/20" />
+          <circle cx="84" cy="124" r="2" className="fill-primary/20" />
+        </g>
+
+        {/* Globe icon bottom-right */}
+        <g className="animate-float" style={{ animationDelay: "2s" } as React.CSSProperties}>
+          <circle cx="300" cy="290" r="22" className="stroke-accent/30" strokeWidth="1.5" fill="none" />
+          <ellipse cx="300" cy="290" rx="10" ry="22" className="stroke-accent/20" strokeWidth="1" fill="none" />
+          <line x1="278" y1="290" x2="322" y2="290" className="stroke-accent/15" strokeWidth="1" />
+          <line x1="282" y1="278" x2="318" y2="278" className="stroke-accent/10" strokeWidth="0.5" />
+          <line x1="282" y1="302" x2="318" y2="302" className="stroke-accent/10" strokeWidth="0.5" />
+        </g>
+
+        {/* Orbiting small dot */}
+        <circle r="3" className="fill-primary/60">
+          <animateMotion dur="12s" repeatCount="indefinite" path="M200,200 m-140,0 a140,140 0 1,1 280,0 a140,140 0 1,1 -280,0" />
+        </circle>
       </svg>
 
       {/* Floating particles */}
-      <div className="absolute top-10 left-10 h-2 w-2 rounded-full bg-primary/40 particle-1" />
-      <div className="absolute top-20 right-16 h-1.5 w-1.5 rounded-full bg-accent/50 particle-2" />
-      <div className="absolute bottom-16 left-20 h-2.5 w-2.5 rounded-full bg-primary/30 particle-3" />
-      <div className="absolute bottom-24 right-10 h-1.5 w-1.5 rounded-full bg-primary/50 particle-1" />
+      <div className="absolute top-6 left-12 h-2 w-2 rounded-full bg-primary/50 particle-1" />
+      <div className="absolute top-20 right-8 h-1.5 w-1.5 rounded-full bg-accent/60 particle-2" />
+      <div className="absolute bottom-16 left-8 h-2.5 w-2.5 rounded-full bg-primary/40 particle-3" />
     </div>
   );
 }
@@ -280,21 +298,48 @@ function HeroGlobe() {
 /* ===== MAIN COMPONENT ===== */
 export default function LandingPage() {
   const t = useTranslations();
+  const locale = useLocale() as "en" | "fr" | "ar";
   const [plans, setPlans] = useState<Plan[]>([]);
   const [plansLoading, setPlansLoading] = useState(true);
 
   useScrollReveal();
 
+  // Build fallback plans from config
+  const fallbackPlans: Plan[] = PLANS.map((p, i) => ({
+    id: p.slug,
+    name: t(`subscription.plan_${p.slug}`),
+    description: t(`subscription.plan_${p.slug}_desc`),
+    price: p.price,
+    billing_cycle: p.billing_cycle,
+    features: p.features[locale] || p.features.en,
+    is_active: true,
+    is_popular: p.slug === "monthly",
+  }));
+
   useEffect(() => {
     async function fetchPlans() {
-      const supabase = createClient();
-      const { data } = await supabase
-        .from("plans")
-        .select("*")
-        .eq("is_active", true)
-        .order("price", { ascending: true });
-      if (data) setPlans(data);
-      setPlansLoading(false);
+      try {
+        const supabase = createClient();
+        const { data, error } = await supabase
+          .from("plans")
+          .select("*")
+          .eq("is_active", true)
+          .order("price", { ascending: true });
+        if (error) {
+          console.error("Failed to fetch plans:", error.message);
+        }
+        if (data && data.length > 0) {
+          setPlans(data);
+        } else {
+          // Fallback to config plans
+          setPlans(fallbackPlans);
+        }
+      } catch (err) {
+        console.error("Plans fetch error:", err);
+        setPlans(fallbackPlans);
+      } finally {
+        setPlansLoading(false);
+      }
     }
     fetchPlans();
   }, []);
@@ -372,30 +417,32 @@ export default function LandingPage() {
       <Header />
 
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-[90vh] flex items-center hero-bg grid-pattern">
-        {/* Decorative blobs */}
-        <div className="absolute top-20 left-[10%] h-72 w-72 rounded-full bg-primary/5 blur-3xl animate-float-slow" />
-        <div className="absolute bottom-20 right-[10%] h-64 w-64 rounded-full bg-primary/8 blur-3xl animate-float-reverse" />
+      <section className="relative min-h-screen flex items-center hero-bg">
+        {/* Background glow orbs */}
+        <div className="absolute top-20 left-[10%] h-72 w-72 rounded-full glow-orange opacity-60 animate-float-slow pointer-events-none" />
+        <div className="absolute bottom-20 right-[15%] h-64 w-64 rounded-full glow-purple opacity-40 animate-float-reverse pointer-events-none" />
 
-        <div className="container relative mx-auto px-4 py-20">
-          <div className="grid lg:grid-cols-2 gap-12 items-center">
-            {/* Left content */}
-            <div className="text-center lg:text-start">
-              <h1 className="reveal text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl xl:text-7xl leading-[1.1]">
+        <div className="container relative mx-auto px-4 pt-28 pb-16">
+          {/* Two-column: text left, visual right */}
+          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center mb-16">
+            {/* Left — text content */}
+            <div className="text-center lg:text-start reveal">
+              <Badge variant="secondary" className="mb-6 border-primary/20 glass px-4 py-1.5 text-xs uppercase tracking-widest text-foreground">
+                {t("landing.heroBadge")}
+              </Badge>
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl xl:text-6xl leading-[1.1]">
                 <span className="bg-gradient-to-br from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent">
                   {t("landing.heroTitle")}
                 </span>
               </h1>
-
-              <p className="reveal mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed mx-auto lg:mx-0">
+              <p className="mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed mx-auto lg:mx-0">
                 {t("landing.heroSubtitle")}
               </p>
-
-              <div className="reveal mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
                 <Button
                   size="lg"
                   asChild
-                  className="text-base px-7 h-12 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 transition-all duration-300 hover:scale-[1.02]"
+                  className="text-base px-7 h-12 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 transition-all duration-300 hover:scale-[1.02] rounded-full"
                 >
                   <Link href="/signup">
                     {t("landing.heroCta")}
@@ -406,30 +453,32 @@ export default function LandingPage() {
                   size="lg"
                   variant="outline"
                   asChild
-                  className="text-base px-7 h-12 border-primary/20 hover:bg-primary/5 transition-all duration-300"
+                  className="text-base px-7 h-12 border-primary/20 hover:bg-primary/5 transition-all duration-300 rounded-full"
                 >
                   <a href="#services">
                     {t("landing.heroSecondaryCta")}
                   </a>
                 </Button>
               </div>
-
-              {/* Stats inline */}
-              <div className="reveal mt-12 grid grid-cols-2 sm:grid-cols-4 gap-6">
-                {stats.map((stat, i) => (
-                  <div key={i} className="text-center lg:text-start">
-                    <p className="text-2xl sm:text-3xl font-bold text-foreground">
-                      <AnimatedCounter target={stat.value} />
-                    </p>
-                    <p className="text-xs text-muted-foreground mt-1">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
             </div>
 
-            {/* Right - Globe illustration */}
+            {/* Right — Hero visual */}
             <div className="reveal-scale hidden lg:block">
-              <HeroGlobe />
+              <HeroVisual />
+            </div>
+          </div>
+
+          {/* Stats bento row — 4 cards in a row */}
+          <div className="max-w-4xl mx-auto reveal">
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+              {stats.map((stat, i) => (
+                <div key={i} className="glass-card p-5 sm:p-6 text-center">
+                  <p className="text-2xl sm:text-3xl font-bold text-foreground">
+                    <AnimatedCounter target={stat.value} />
+                  </p>
+                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-2">{stat.label}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -437,39 +486,37 @@ export default function LandingPage() {
 
       {/* ===== SERVICES SECTION ===== */}
       <section id="services" className="py-24 sm:py-32 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-muted/50 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-transparent" />
         <div className="container relative mx-auto px-4">
           <div className="text-center mb-16 reveal">
             <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.services")}</Badge>
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">{t("landing.servicesTitle")}</h2>
+            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.servicesTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               {t("landing.servicesSubtitle")}
             </p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto stagger-children">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto stagger-children">
             {services.map((service, i) => (
-              <Card key={i} className="reveal group border-0 shadow-md card-hover bg-card/80 backdrop-blur-sm">
-                <CardContent className="p-7">
-                  <div className="mb-5">
-                    <service.icon className="h-12 w-12" />
-                  </div>
-                  <h3 className="text-lg font-semibold mb-3 group-hover:text-primary transition-colors">{service.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{service.desc}</p>
-                </CardContent>
-              </Card>
+              <div key={i} className="reveal glass-card p-7 group">
+                <div className="mb-5">
+                  <service.icon className="h-12 w-12" />
+                </div>
+                <h3 className="text-lg font-semibold mb-3 text-foreground group-hover:text-primary transition-colors">{service.title}</h3>
+                <p className="text-sm text-muted-foreground leading-relaxed">{service.desc}</p>
+              </div>
             ))}
           </div>
         </div>
       </section>
 
       {/* ===== HOW IT WORKS SECTION ===== */}
-      <section id="how-it-works" className="py-24 sm:py-32 bg-secondary/50 relative overflow-hidden">
+      <section id="how-it-works" className="py-24 sm:py-32 relative overflow-hidden">
         <div className="absolute inset-0 grid-pattern opacity-50" />
         <div className="container relative mx-auto px-4">
           <div className="text-center mb-16 reveal">
             <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.howItWorks")}</Badge>
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">{t("landing.howItWorksTitle")}</h2>
+            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.howItWorksTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               {t("landing.howItWorksSubtitle")}
             </p>
@@ -479,19 +526,18 @@ export default function LandingPage() {
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {steps.map((step, i) => (
                 <div key={i} className="reveal relative text-center group">
-                  {/* Connector line */}
                   {i < steps.length - 1 && (
                     <div className="hidden lg:block absolute top-10 left-[60%] w-full h-[2px] bg-gradient-to-r from-primary/30 to-primary/5" />
                   )}
 
                   <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center">
                     <div className="absolute inset-0 rounded-2xl bg-primary/10 rotate-6 group-hover:rotate-12 transition-transform duration-500" />
-                    <div className="relative flex h-full w-full items-center justify-center rounded-2xl bg-card border border-primary/20 shadow-sm">
+                    <div className="relative flex h-full w-full items-center justify-center rounded-2xl glass-card border-primary/20 shadow-sm">
                       <span className="text-2xl font-bold text-primary">{step.num}</span>
                     </div>
                   </div>
 
-                  <h3 className="text-base font-semibold mb-2">{step.title}</h3>
+                  <h3 className="text-base font-semibold mb-2 text-foreground">{step.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
                 </div>
               ))}
@@ -504,57 +550,38 @@ export default function LandingPage() {
       <section id="features" className="py-24 sm:py-32">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-            {/* Left - Feature visual */}
             <div className="reveal-left relative">
               <div className="relative aspect-square max-w-md mx-auto">
-                {/* Background decoration */}
-                <div className="absolute inset-4 rounded-3xl bg-gradient-to-br from-primary/10 to-primary/5 animate-float-slow" />
+                <div className="absolute inset-4 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/5 animate-float-slow" />
                 <div className="absolute inset-0 rounded-3xl border border-primary/10" />
 
-                {/* Central shield */}
                 <div className="absolute inset-0 flex items-center justify-center">
                   <svg className="w-48 h-48" viewBox="0 0 200 200" fill="none">
-                    <path
-                      d="M100 20L170 55V105C170 145 140 175 100 185C60 175 30 145 30 105V55L100 20Z"
-                      className="fill-primary/10 stroke-primary/40"
-                      strokeWidth="2"
-                    />
-                    <path
-                      d="M100 40L150 65V105C150 135 130 158 100 165C70 158 50 135 50 105V65L100 40Z"
-                      className="fill-primary/5 stroke-primary/20"
-                      strokeWidth="1"
-                    />
-                    <path
-                      d="M75 100L90 115L125 80"
-                      className="stroke-primary"
-                      strokeWidth="5"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      fill="none"
-                    />
+                    <path d="M100 20L170 55V105C170 145 140 175 100 185C60 175 30 145 30 105V55L100 20Z" className="fill-primary/10 stroke-primary/40" strokeWidth="2" />
+                    <path d="M100 40L150 65V105C150 135 130 158 100 165C70 158 50 135 50 105V65L100 40Z" className="fill-primary/5 stroke-primary/20" strokeWidth="1" />
+                    <path d="M75 100L90 115L125 80" className="stroke-primary" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
                   </svg>
                 </div>
 
-                {/* Floating badges */}
-                <div className="absolute top-8 right-4 bg-card rounded-xl shadow-lg p-3 border animate-float">
+                <div className="absolute top-8 right-4 glass-card shadow-lg p-3 animate-float">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center">
                       <Check className="h-4 w-4 text-green-500" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold">Compliant</p>
+                      <p className="text-xs font-semibold text-foreground">Compliant</p>
                       <p className="text-[10px] text-muted-foreground">100% verified</p>
                     </div>
                   </div>
                 </div>
 
-                <div className="absolute bottom-8 left-4 bg-card rounded-xl shadow-lg p-3 border animate-float-reverse">
+                <div className="absolute bottom-8 left-4 glass-card shadow-lg p-3 animate-float-reverse">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Search className="h-4 w-4 text-primary" />
                     </div>
                     <div>
-                      <p className="text-xs font-semibold">15,000+</p>
+                      <p className="text-xs font-semibold text-foreground">15,000+</p>
                       <p className="text-[10px] text-muted-foreground">Tariff codes</p>
                     </div>
                   </div>
@@ -562,14 +589,11 @@ export default function LandingPage() {
               </div>
             </div>
 
-            {/* Right - Feature list */}
             <div>
               <div className="reveal-right">
                 <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.features")}</Badge>
-                <h2 className="text-3xl font-bold sm:text-4xl">{t("landing.featuresTitle")}</h2>
-                <p className="mt-4 text-lg text-muted-foreground">
-                  {t("landing.featuresSubtitle")}
-                </p>
+                <h2 className="text-3xl font-bold sm:text-4xl text-foreground">{t("landing.featuresTitle")}</h2>
+                <p className="mt-4 text-lg text-muted-foreground">{t("landing.featuresSubtitle")}</p>
               </div>
 
               <div className="mt-10 space-y-6">
@@ -579,7 +603,7 @@ export default function LandingPage() {
                       {feature.icon}
                     </div>
                     <div>
-                      <h3 className="font-semibold mb-1">{feature.title}</h3>
+                      <h3 className="font-semibold mb-1 text-foreground">{feature.title}</h3>
                       <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
                     </div>
                   </div>
@@ -591,85 +615,79 @@ export default function LandingPage() {
       </section>
 
       {/* ===== PRICING SECTION ===== */}
-      <section id="pricing" className="py-24 sm:py-32 bg-muted/30 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_0%,rgba(16,185,129,0.06),transparent)]" />
+      <section id="pricing" className="py-24 sm:py-32 relative">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_0%,rgba(245,158,11,0.06),transparent)]" />
         <div className="container relative mx-auto px-4">
           <div className="text-center mb-16 reveal">
             <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.pricing")}</Badge>
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">{t("landing.pricingTitle")}</h2>
+            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.pricingTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">{t("landing.pricingSubtitle")}</p>
           </div>
 
           {plansLoading ? (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
               {[1, 2, 3].map((i) => (
-                <Card key={i} className="flex flex-col">
-                  <CardContent className="flex flex-col flex-1 pt-8 space-y-4">
-                    <Skeleton className="h-6 w-24" />
+                <div key={i} className="glass-card flex flex-col p-8 space-y-4">
+                  <Skeleton className="h-6 w-24" />
+                  <Skeleton className="h-4 w-full" />
+                  <Skeleton className="h-10 w-32 mt-4" />
+                  <div className="space-y-3 mt-6">
                     <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-10 w-32 mt-4" />
-                    <div className="space-y-3 mt-6">
-                      <Skeleton className="h-4 w-full" />
-                      <Skeleton className="h-4 w-3/4" />
-                      <Skeleton className="h-4 w-5/6" />
-                    </div>
-                    <Skeleton className="h-10 w-full mt-auto" />
-                  </CardContent>
-                </Card>
+                    <Skeleton className="h-4 w-3/4" />
+                    <Skeleton className="h-4 w-5/6" />
+                  </div>
+                  <Skeleton className="h-10 w-full mt-auto" />
+                </div>
               ))}
             </div>
           ) : plans.length > 0 ? (
-            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto stagger-children">
+            <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
               {plans.map((plan) => (
-                <Card
+                <div
                   key={plan.id}
-                  className={`reveal relative flex flex-col card-hover ${
+                  className={`relative flex flex-col glass-card p-8 ${
                     plan.is_popular
-                      ? "border-primary shadow-xl scale-[1.02] ring-1 ring-primary/20"
-                      : "border-border/50"
+                      ? "ring-2 ring-primary/40 shadow-xl shadow-primary/10 scale-[1.02]"
+                      : ""
                   }`}
                 >
                   {plan.is_popular && (
-                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 shadow-md bg-primary">
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 shadow-md bg-primary text-primary-foreground">
                       {t("subscription.popular")}
                     </Badge>
                   )}
-                  <CardContent className="flex flex-col flex-1 pt-8">
-                    <h3 className="text-xl font-bold">{plan.name}</h3>
-                    <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
-                    <div className="mt-6 mb-6">
-                      <span className="text-4xl font-extrabold">${plan.price}</span>
-                      <span className="text-muted-foreground">
-                        {plan.billing_cycle === "monthly" ? t("common.perMonth") : t("common.perYear")}
-                      </span>
-                    </div>
-                    <ul className="mb-8 space-y-3 flex-1">
-                      {plan.features?.map((feature, i) => (
-                        <li key={i} className="flex items-center gap-2.5 text-sm">
-                          <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 shrink-0">
-                            <Check className="h-3 w-3 text-primary" />
-                          </div>
-                          {feature}
-                        </li>
-                      ))}
-                    </ul>
-                    <Button
-                      asChild
-                      className={`w-full transition-all duration-300 ${
-                        plan.is_popular
-                          ? "shadow-md shadow-primary/20 hover:shadow-lg"
-                          : ""
-                      }`}
-                      variant={plan.is_popular ? "default" : "outline"}
-                    >
-                      <Link href="/signup">{t("landing.heroCta")}</Link>
-                    </Button>
-                  </CardContent>
-                </Card>
+                  <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
+                  <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
+                  <div className="mt-6 mb-6">
+                    <span className="text-4xl font-extrabold text-foreground">{formatPrice(plan.price)}</span>
+                    <span className="text-sm text-muted-foreground ms-1">
+                      {CURRENCY} {plan.billing_cycle === "monthly" ? t("common.perMonth") : t("common.perYear")}
+                    </span>
+                  </div>
+                  <ul className="mb-8 space-y-3 flex-1">
+                    {plan.features?.map((feature, i) => (
+                      <li key={i} className="flex items-center gap-2.5 text-sm text-foreground">
+                        <div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 shrink-0">
+                          <Check className="h-3 w-3 text-primary" />
+                        </div>
+                        {feature}
+                      </li>
+                    ))}
+                  </ul>
+                  <Button
+                    asChild
+                    className={`w-full rounded-full transition-all duration-300 ${
+                      plan.is_popular ? "shadow-md shadow-primary/20 hover:shadow-lg" : ""
+                    }`}
+                    variant={plan.is_popular ? "default" : "outline"}
+                  >
+                    <Link href="/signup">{t("landing.heroCta")}</Link>
+                  </Button>
+                </div>
               ))}
             </div>
           ) : (
-            <div className="text-center text-muted-foreground reveal">
+            <div className="text-center text-muted-foreground">
               <p>{t("subscription.noPlans")}</p>
             </div>
           )}
@@ -681,40 +699,37 @@ export default function LandingPage() {
         <div className="container mx-auto px-4">
           <div className="text-center mb-16 reveal">
             <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.testimonials")}</Badge>
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl">{t("landing.testimonialsTitle")}</h2>
+            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.testimonialsTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">{t("landing.testimonialsSubtitle")}</p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto stagger-children">
             {testimonials.map((testimonial, i) => (
-              <Card key={i} className="reveal border-0 shadow-md card-hover bg-card/80 backdrop-blur-sm">
-                <CardContent className="p-7">
-                  {/* Quote icon */}
-                  <svg className="h-8 w-8 text-primary/20 mb-4" viewBox="0 0 24 24" fill="currentColor">
-                    <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
-                  </svg>
+              <div key={i} className="reveal glass-card p-7">
+                <svg className="h-8 w-8 text-primary/20 mb-4" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
+                </svg>
 
-                  <div className="flex gap-0.5 mb-4">
-                    {[...Array(5)].map((_, j) => (
-                      <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                    ))}
+                <div className="flex gap-0.5 mb-4">
+                  {[...Array(5)].map((_, j) => (
+                    <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
+                  ))}
+                </div>
+
+                <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
+                  {testimonial.text}
+                </p>
+
+                <div className="flex items-center gap-3 pt-5 border-t dark:border-white/10 border-black/5">
+                  <div className="h-11 w-11 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm shadow-md">
+                    {testimonial.name[0]}
                   </div>
-
-                  <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
-                    {testimonial.text}
-                  </p>
-
-                  <div className="flex items-center gap-3 pt-5 border-t border-border/50">
-                    <div className="h-11 w-11 rounded-full bg-gradient-to-br from-primary/80 to-primary flex items-center justify-center text-primary-foreground font-bold text-sm shadow-md">
-                      {testimonial.name[0]}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-sm">{testimonial.name}</p>
-                      <p className="text-xs text-muted-foreground">{testimonial.role}</p>
-                    </div>
+                  <div>
+                    <p className="font-semibold text-sm text-foreground">{testimonial.name}</p>
+                    <p className="text-xs text-muted-foreground">{testimonial.role}</p>
                   </div>
-                </CardContent>
-              </Card>
+                </div>
+              </div>
             ))}
           </div>
         </div>
@@ -723,24 +738,22 @@ export default function LandingPage() {
       {/* ===== CTA SECTION ===== */}
       <section className="py-24 sm:py-32">
         <div className="container mx-auto px-4">
-          <div className="reveal-scale mx-auto max-w-4xl relative overflow-hidden rounded-3xl bg-gradient-to-br from-secondary via-secondary to-secondary/90 p-12 sm:p-16 text-center text-secondary-foreground shadow-2xl">
-            {/* Background decorations */}
-            <div className="absolute top-0 left-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl -translate-x-1/2 -translate-y-1/2" />
-            <div className="absolute bottom-0 right-0 w-64 h-64 bg-primary/10 rounded-full blur-3xl translate-x-1/2 translate-y-1/2" />
-            <div className="absolute inset-0 grid-pattern opacity-30" />
+          <div className="reveal-scale mx-auto max-w-4xl relative overflow-hidden rounded-2xl glass-card p-12 sm:p-16 text-center shadow-2xl">
+            <div className="absolute top-0 left-0 w-64 h-64 glow-orange rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+            <div className="absolute bottom-0 right-0 w-64 h-64 glow-purple rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none" />
 
             <div className="relative">
-              <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl leading-tight">
+              <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl leading-tight text-foreground">
                 {t("landing.ctaTitle")}
               </h2>
-              <p className="mt-5 text-lg opacity-80 max-w-2xl mx-auto leading-relaxed">
+              <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
                 {t("landing.ctaSubtitle")}
               </p>
               <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
                 <Button
                   size="lg"
                   asChild
-                  className="text-base px-8 h-13 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-300 hover:scale-[1.02]"
+                  className="text-base px-8 h-13 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] rounded-full"
                 >
                   <Link href="/signup">
                     {t("landing.ctaButton")}
@@ -749,6 +762,17 @@ export default function LandingPage() {
                 </Button>
               </div>
             </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ===== BOTTOM BANNER ===== */}
+      <section className="pb-16">
+        <div className="container mx-auto px-4">
+          <div className="reveal mx-auto max-w-3xl glass-card rounded-full px-8 py-4 text-center">
+            <p className="text-sm text-muted-foreground font-medium">
+              {t("landing.bottomBanner")}
+            </p>
           </div>
         </div>
       </section>

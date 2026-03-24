@@ -47,6 +47,12 @@ interface TaxRate {
   observation: string;
 }
 
+interface TaxAdvantage {
+  taxe: string;        // "D.D", "T.V.A"
+  taux: number;        // reduced rate
+  document: string;    // e.g., "CERTIFICAT D'ORIGINE..."
+}
+
 interface TariffLine {
   section_code: string;
   chapitre_code: string;
@@ -61,6 +67,9 @@ interface TariffLine {
   tva: number | null;     // TVA
   dap: number | null;     // DAP
   other_taxes: TaxRate[];
+  usage_group: string | null;    // "Biens de consommation", etc.
+  unit: string | null;           // "U", "KG", etc.
+  tax_advantages: TaxAdvantage[];
 }
 
 // ---------- Helpers ----------
@@ -194,6 +203,9 @@ async function scrapePositions(
         tva: null,
         dap: null,
         other_taxes: [],
+        usage_group: null,
+        unit: null,
+        tax_advantages: [],
       });
     }
   });
@@ -216,8 +228,21 @@ async function scrapeTaxRates(line: TariffLine): Promise<TariffLine> {
   try {
     const $ = await fetchPage(url);
 
+    // Extract metadata: Groupe d'utilisation and Unité
+    const bodyText = $("body").text();
+    const groupeMatch = bodyText.match(/Groupe d'utilisation\s*:\s*([^\n]+)/i);
+    if (groupeMatch) {
+      line.usage_group = cleanText(groupeMatch[1]);
+    }
+    const uniteMatch = bodyText.match(/Unit[ée]\s*:\s*([^\n]+)/i);
+    if (uniteMatch) {
+      line.unit = cleanText(uniteMatch[1]);
+    }
+
+    const tables = $("table");
+
     // First table: Taxes Ad-Valorem
-    $("table")
+    tables
       .first()
       .find("tbody tr")
       .each((_, el) => {
@@ -246,6 +271,24 @@ async function scrapeTaxRates(line: TariffLine): Promise<TariffLine> {
             line.other_taxes.push({ taxe, taux, observation: obs });
         }
       });
+
+    // Second table: Avantages fiscaux (tax advantages)
+    if (tables.length > 1) {
+      tables
+        .eq(1)
+        .find("tbody tr")
+        .each((_, el) => {
+          const tds = $(el).find("td");
+          if (tds.length >= 3) {
+            const taxe = $(tds[0]).text().trim();
+            const taux = parseFloat($(tds[1]).text().trim()) || 0;
+            const document = cleanText($(tds[2]).text());
+            if (taxe) {
+              line.tax_advantages.push({ taxe, taux, document });
+            }
+          }
+        });
+    }
   } catch (err: any) {
     console.warn(
       `  Warning: could not fetch taxes for ${line.full_code}: ${err.message}`

@@ -8,7 +8,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { ThemeToggle } from "@/components/theme-toggle";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { toast } from "@/components/ui/use-toast";
 import { Check, Loader2, Sparkles } from "lucide-react";
@@ -113,22 +112,23 @@ export default function SubscriptionPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/[0.04] rounded-full blur-3xl" />
       </div>
 
-      <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl">
-        <div className="container mx-auto flex h-14 items-center justify-between px-4">
-          <Link href="/" className="flex items-center gap-2.5 group">
-            <CustomsLogo className="h-8 w-8 transition-transform duration-300 group-hover:scale-105" />
-            <span className="text-base font-bold tracking-tight">
-              {t("common.appName")}
-            </span>
-          </Link>
-          <div className="flex items-center gap-1.5">
-            <LanguageSwitcher />
-            <ThemeToggle />
+      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-3xl">
+        <div className="glass-nav rounded-full shadow-lg shadow-black/5">
+          <div className="flex h-12 items-center justify-between px-5">
+            <Link href="/" className="flex items-center gap-2 group">
+              <CustomsLogo className="h-7 w-7 transition-transform duration-300 group-hover:scale-105" />
+              <span className="text-sm font-bold tracking-tight text-foreground">
+                {t("common.appName")}
+              </span>
+            </Link>
+            <div className="flex items-center gap-1.5">
+              <LanguageSwitcher />
+            </div>
           </div>
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center p-4 py-12">
+      <main className="flex flex-1 flex-col items-center justify-center p-4 py-12 pt-24">
         <div className="mb-12 text-center">
           <h1 className="text-3xl font-bold sm:text-4xl">
             {t("subscription.title")}

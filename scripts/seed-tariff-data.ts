@@ -38,6 +38,19 @@ interface Chapitre {
   description: string;
 }
 
+interface Rangee {
+  section_code: string;
+  chapitre_code: string;
+  code: string;
+  description: string;
+}
+
+interface TaxAdvantage {
+  taxe: string;
+  taux: number;
+  document: string;
+}
+
 interface TariffLine {
   full_code: string;
   section_code: string;
@@ -51,6 +64,9 @@ interface TariffLine {
   tva: number | null;
   dap: number | null;
   other_taxes: any[];
+  usage_group: string | null;
+  unit: string | null;
+  tax_advantages: TaxAdvantage[];
 }
 
 function loadJSON<T>(filename: string): T {
@@ -92,6 +108,23 @@ async function seedChapitres(chapitres: Chapitre[]) {
   console.log("  Chapitres done.");
 }
 
+async function seedRangees(rangees: Rangee[]) {
+  console.log(`Seeding ${rangees.length} rangées...`);
+  for (let i = 0; i < rangees.length; i += 200) {
+    const batch = rangees.slice(i, i + 200).map((r) => ({
+      section_code: r.section_code,
+      chapitre_code: r.chapitre_code,
+      code: r.code,
+      description: r.description,
+    }));
+    const { error } = await supabase
+      .from("tariff_rangees")
+      .upsert(batch, { onConflict: "section_code,chapitre_code,code" });
+    if (error) throw error;
+  }
+  console.log("  Rangées done.");
+}
+
 async function seedTariffCodes(lines: TariffLine[]) {
   console.log(`Seeding ${lines.length} tariff codes...`);
   // Batch in groups of 500
@@ -109,6 +142,9 @@ async function seedTariffCodes(lines: TariffLine[]) {
       tva: l.tva,
       dap: l.dap,
       other_taxes: l.other_taxes || [],
+      usage_group: l.usage_group || null,
+      unit: l.unit || null,
+      tax_advantages: l.tax_advantages || [],
     }));
     const { error } = await supabase
       .from("tariff_codes")
@@ -124,6 +160,7 @@ async function main() {
 
   const sections = loadJSON<Section[]>("sections.json");
   const chapitres = loadJSON<Chapitre[]>("chapitres.json");
+  const rangees = loadJSON<Rangee[]>("rangees.json");
 
   // Use final file if available, otherwise use progress file
   const tariffFile = fs.existsSync(path.join(DATA_DIR, "tariff_lines.json"))
@@ -131,10 +168,11 @@ async function main() {
     : "tariff_lines_progress.json";
   const tariffLines = loadJSON<TariffLine[]>(tariffFile);
 
-  console.log(`Loaded: ${sections.length} sections, ${chapitres.length} chapitres, ${tariffLines.length} tariff codes\n`);
+  console.log(`Loaded: ${sections.length} sections, ${chapitres.length} chapitres, ${rangees.length} rangées, ${tariffLines.length} tariff codes\n`);
 
   await seedSections(sections);
   await seedChapitres(chapitres);
+  await seedRangees(rangees);
   await seedTariffCodes(tariffLines);
 
   console.log("\n=== Done! All tariff data seeded. ===");

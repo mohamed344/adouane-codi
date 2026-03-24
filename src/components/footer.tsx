@@ -9,8 +9,8 @@ export function Footer() {
   const t = useTranslations();
 
   return (
-    <footer className="relative border-t bg-secondary text-secondary-foreground">
-      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_100%,rgba(16,185,129,0.06),transparent)]" />
+    <footer className="relative border-t border-white/5 dark:bg-[#0a0a12] bg-secondary text-secondary-foreground">
+      <div className="absolute inset-0 bg-[radial-gradient(ellipse_80%_80%_at_50%_100%,rgba(245,158,11,0.06),transparent)]" />
       <div className="container relative mx-auto px-4 py-16">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
@@ -93,7 +93,7 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-secondary-foreground/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="mt-12 pt-8 border-t border-white/5 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-secondary-foreground/50">
             &copy; {new Date().getFullYear()} {t("common.appName")}. {t("landing.footerRights")}
           </p>
