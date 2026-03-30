@@ -37,8 +37,13 @@ CREATE POLICY "Admins can manage tariff rangees" ON public.tariff_rangees
     EXISTS (SELECT 1 FROM public.users WHERE id = auth.uid() AND role = 'admin')
   );
 
--- C) Create search_tariff_codes() RPC function
+-- C) Trigram index on full_code for fast ILIKE searches
+CREATE INDEX IF NOT EXISTS idx_tariff_codes_full_code_trgm
+ON public.tariff_codes USING gin (full_code gin_trgm_ops);
+
+-- D) Create search_tariff_codes() RPC function
 --    Used by /api/tariff/search route
+--    Optimized: single pass with count(*) OVER(), pre-computed tsqueries
 CREATE OR REPLACE FUNCTION public.search_tariff_codes(
   search_query TEXT,
   translated_query TEXT DEFAULT NULL,
@@ -73,19 +78,14 @@ LANGUAGE plpgsql
 STABLE
 AS $$
 DECLARE
-  total BIGINT;
+  q_tsquery TSQUERY;
+  tq_tsquery TSQUERY;
 BEGIN
-  -- Count total matching results
-  -- Searches both the original query and the translated (French) query via FTS
-  SELECT COUNT(*) INTO total
-  FROM public.tariff_codes tc
-  WHERE
-    (section_filter IS NULL OR tc.section_code = section_filter)
-    AND (
-      tc.full_code ILIKE '%' || search_query || '%'
-      OR to_tsvector('french', tc.description) @@ plainto_tsquery('french', search_query)
-      OR (translated_query IS NOT NULL AND to_tsvector('french', tc.description) @@ plainto_tsquery('french', translated_query))
-    );
+  -- Pre-compute tsqueries once
+  q_tsquery := plainto_tsquery('french', search_query);
+  IF translated_query IS NOT NULL THEN
+    tq_tsquery := plainto_tsquery('french', translated_query);
+  END IF;
 
   RETURN QUERY
   SELECT
@@ -108,24 +108,23 @@ BEGIN
     tc.designation,
     tc.created_at,
     tc.updated_at,
-    -- Ranking: exact code prefix > partial code > translated FTS > original FTS
     CASE
-      WHEN tc.full_code ILIKE search_query || '%' THEN 1.0
+      WHEN tc.full_code LIKE search_query || '%' THEN 1.0
       WHEN tc.full_code ILIKE '%' || search_query || '%' THEN 0.8
-      WHEN translated_query IS NOT NULL AND to_tsvector('french', tc.description) @@ plainto_tsquery('french', translated_query)
-        THEN ts_rank(to_tsvector('french', tc.description), plainto_tsquery('french', translated_query))
-      WHEN to_tsvector('french', tc.description) @@ plainto_tsquery('french', search_query)
-        THEN ts_rank(to_tsvector('french', tc.description), plainto_tsquery('french', search_query))
+      WHEN tq_tsquery IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_tsquery
+        THEN ts_rank(to_tsvector('french', tc.description), tq_tsquery)
+      WHEN to_tsvector('french', tc.description) @@ q_tsquery
+        THEN ts_rank(to_tsvector('french', tc.description), q_tsquery)
       ELSE 0.0
     END::REAL AS rank,
-    total AS total_count
+    count(*) OVER()::BIGINT AS total_count
   FROM public.tariff_codes tc
   WHERE
     (section_filter IS NULL OR tc.section_code = section_filter)
     AND (
       tc.full_code ILIKE '%' || search_query || '%'
-      OR to_tsvector('french', tc.description) @@ plainto_tsquery('french', search_query)
-      OR (translated_query IS NOT NULL AND to_tsvector('french', tc.description) @@ plainto_tsquery('french', translated_query))
+      OR to_tsvector('french', tc.description) @@ q_tsquery
+      OR (tq_tsquery IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_tsquery)
     )
   ORDER BY rank DESC, tc.full_code ASC
   LIMIT result_limit
