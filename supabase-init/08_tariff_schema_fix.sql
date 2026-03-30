@@ -131,3 +131,69 @@ BEGIN
   OFFSET result_offset;
 END;
 $$;
+
+-- E) Single tariff detail lookup with JOINs (replaces 4 separate queries)
+CREATE OR REPLACE FUNCTION public.get_tariff_detail(tariff_code TEXT)
+RETURNS TABLE (
+  id INT,
+  full_code TEXT,
+  section_code TEXT,
+  chapitre_code TEXT,
+  range_code TEXT,
+  position_code TEXT,
+  description TEXT,
+  dd NUMERIC(6,2),
+  prct NUMERIC(6,2),
+  tcs NUMERIC(6,2),
+  tva NUMERIC(6,2),
+  dap NUMERIC(6,2),
+  other_taxes JSONB,
+  usage_group TEXT,
+  unit TEXT,
+  tax_advantages JSONB,
+  designation TEXT,
+  created_at TIMESTAMPTZ,
+  updated_at TIMESTAMPTZ,
+  section_code_val TEXT,
+  section_desc TEXT,
+  chapitre_code_val TEXT,
+  chapitre_desc TEXT,
+  rangee_code_val TEXT,
+  rangee_desc TEXT
+)
+LANGUAGE sql
+STABLE
+AS $$
+  SELECT
+    tc.id,
+    tc.full_code,
+    tc.section_code,
+    tc.chapitre_code,
+    tc.range_code,
+    tc.position_code,
+    tc.description,
+    tc.dd,
+    tc.prct,
+    tc.tcs,
+    tc.tva,
+    tc.dap,
+    tc.other_taxes,
+    tc.usage_group,
+    tc.unit,
+    tc.tax_advantages,
+    tc.designation,
+    tc.created_at,
+    tc.updated_at,
+    ts.code AS section_code_val,
+    ts.description AS section_desc,
+    tch.code AS chapitre_code_val,
+    tch.description AS chapitre_desc,
+    tr.code AS rangee_code_val,
+    tr.description AS rangee_desc
+  FROM public.tariff_codes tc
+  LEFT JOIN public.tariff_sections ts ON ts.code = tc.section_code
+  LEFT JOIN public.tariff_chapitres tch ON tch.section_code = tc.section_code AND tch.code = tc.chapitre_code
+  LEFT JOIN public.tariff_rangees tr ON tr.section_code = tc.section_code AND tr.chapitre_code = tc.chapitre_code AND tr.code = tc.range_code
+  WHERE tc.full_code = tariff_code
+  LIMIT 1;
+$$;

@@ -20,47 +20,43 @@ export async function GET(
 
   const supabase = await createClient();
 
-  const { data, error } = await supabase
-    .from("tariff_codes")
-    .select("*")
-    .eq("full_code", code)
-    .single();
+  // Single query with all related data via JOINs
+  const { data, error } = await supabase.rpc("get_tariff_detail", {
+    tariff_code: code,
+  });
 
-  if (error || !data) {
+  if (error || !data || data.length === 0) {
     return NextResponse.json(
       { error: "Tariff code not found" },
       { status: 404 }
     );
   }
 
-  // Also fetch section, chapitre, and rangée info
-  const [sectionResult, chapitreResult, rangeeResult] = await Promise.all([
-    supabase
-      .from("tariff_sections")
-      .select("*")
-      .eq("code", data.section_code)
-      .single(),
-    supabase
-      .from("tariff_chapitres")
-      .select("*")
-      .eq("section_code", data.section_code)
-      .eq("code", data.chapitre_code)
-      .single(),
-    supabase
-      .from("tariff_rangees")
-      .select("*")
-      .eq("section_code", data.section_code)
-      .eq("chapitre_code", data.chapitre_code)
-      .eq("code", data.range_code)
-      .single(),
-  ]);
-
+  const row = data[0];
   return NextResponse.json({
     data: {
-      ...data,
-      section: sectionResult.data,
-      chapitre: chapitreResult.data,
-      rangee: rangeeResult.data,
+      id: row.id,
+      full_code: row.full_code,
+      section_code: row.section_code,
+      chapitre_code: row.chapitre_code,
+      range_code: row.range_code,
+      position_code: row.position_code,
+      description: row.description,
+      dd: row.dd,
+      prct: row.prct,
+      tcs: row.tcs,
+      tva: row.tva,
+      dap: row.dap,
+      other_taxes: row.other_taxes,
+      usage_group: row.usage_group,
+      unit: row.unit,
+      tax_advantages: row.tax_advantages,
+      designation: row.designation,
+      created_at: row.created_at,
+      updated_at: row.updated_at,
+      section: row.section_code_val ? { code: row.section_code_val, description: row.section_desc } : null,
+      chapitre: row.chapitre_code_val ? { code: row.chapitre_code_val, description: row.chapitre_desc } : null,
+      rangee: row.rangee_code_val ? { code: row.rangee_code_val, description: row.rangee_desc } : null,
     },
   });
 }

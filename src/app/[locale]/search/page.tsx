@@ -109,7 +109,6 @@ export default function SearchPage() {
 
   async function fetchDetail(code: string) {
     setDetailLoading(true);
-    setDetailData(null);
     try {
       const res = await fetch(`/api/tariff/${code}`);
       if (res.ok) {
