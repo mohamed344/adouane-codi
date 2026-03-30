@@ -28,7 +28,7 @@ export function Header() {
 
   return (
     <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="max-w-5xl mx-auto flex h-14 items-center justify-between px-4 sm:px-6">
+      <div className="container flex h-14 items-center justify-between">
         <Link href="/" className="flex items-center gap-2">
           <CustomsLogo className="h-7 w-7" />
           <span className="text-sm font-bold tracking-tight text-foreground">

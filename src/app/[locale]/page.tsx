@@ -314,7 +314,7 @@ export default function LandingPage() {
 
       {/* ===== HERO SECTION ===== */}
       <section className="relative min-h-screen flex items-center">
-        <div className="container relative mx-auto px-4 pt-28 pb-16">
+        <div className="container relative pt-28 pb-16">
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center mb-16">
             {/* Left — text content */}
             <div className="text-center lg:text-start">
@@ -371,7 +371,7 @@ export default function LandingPage() {
 
       {/* ===== SERVICES SECTION ===== */}
       <section id="services" className="py-24 sm:py-32">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">{t("common.services")}</Badge>
             <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.servicesTitle")}</h2>
@@ -396,7 +396,7 @@ export default function LandingPage() {
 
       {/* ===== HOW IT WORKS SECTION ===== */}
       <section id="how-it-works" className="py-24 sm:py-32">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">{t("common.howItWorks")}</Badge>
             <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.howItWorksTitle")}</h2>
@@ -428,7 +428,7 @@ export default function LandingPage() {
 
       {/* ===== FEATURES SECTION ===== */}
       <section id="features" className="py-24 sm:py-32">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
             <div className="relative">
               <div className="relative aspect-square max-w-md mx-auto">
@@ -496,7 +496,7 @@ export default function LandingPage() {
 
       {/* ===== PRICING SECTION ===== */}
       <section id="pricing" className="py-24 sm:py-32">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">{t("common.pricing")}</Badge>
             <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.pricingTitle")}</h2>
@@ -573,7 +573,7 @@ export default function LandingPage() {
 
       {/* ===== TESTIMONIALS SECTION ===== */}
       <section id="testimonials" className="py-24 sm:py-32">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="text-center mb-16">
             <Badge variant="secondary" className="mb-4">{t("common.testimonials")}</Badge>
             <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.testimonialsTitle")}</h2>
@@ -614,7 +614,7 @@ export default function LandingPage() {
 
       {/* ===== CTA SECTION ===== */}
       <section className="py-24 sm:py-32">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="mx-auto max-w-4xl bg-card border border-border rounded-2xl p-12 sm:p-16 text-center">
             <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl leading-tight text-foreground">
               {t("landing.ctaTitle")}
@@ -636,7 +636,7 @@ export default function LandingPage() {
 
       {/* ===== BOTTOM BANNER ===== */}
       <section className="pb-16">
-        <div className="container mx-auto px-4">
+        <div className="container">
           <div className="mx-auto max-w-3xl bg-muted/50 border border-border rounded-lg px-8 py-4 text-center">
             <p className="text-sm text-muted-foreground font-medium">
               {t("landing.bottomBanner")}
