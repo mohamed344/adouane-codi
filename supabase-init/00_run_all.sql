@@ -22,3 +22,6 @@
 
 -- 4. Seed Data
 \i 04_seed.sql
+
+-- 5. Tariff Schema Fix (add missing columns, rangees table, search RPC)
+\i 08_tariff_schema_fix.sql

@@ -67,6 +67,7 @@ interface TariffLine {
   usage_group: string | null;
   unit: string | null;
   tax_advantages: TaxAdvantage[];
+  designation: string | null;
 }
 
 function loadJSON<T>(filename: string): T {
@@ -145,6 +146,7 @@ async function seedTariffCodes(lines: TariffLine[]) {
       usage_group: l.usage_group || null,
       unit: l.unit || null,
       tax_advantages: l.tax_advantages || [],
+      designation: l.designation || null,
     }));
     const { error } = await supabase
       .from("tariff_codes")

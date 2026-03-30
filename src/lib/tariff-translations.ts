@@ -212,6 +212,152 @@ const words: Record<string, { en: string; ar: string }> = {
   "serpent": { en: "snake", ar: "ثعبان" },
   "laitieres": { en: "dairy", ar: "حلوب" },
   "laitances": { en: "milt", ar: "حليب السمك" },
+  // Common tariff terms
+  "appareils": { en: "apparatus", ar: "أجهزة" },
+  "appareil": { en: "apparatus", ar: "جهاز" },
+  "machines": { en: "machines", ar: "آلات" },
+  "machine": { en: "machine", ar: "آلة" },
+  "parties": { en: "parts", ar: "أجزاء" },
+  "partie": { en: "part", ar: "جزء" },
+  "pieces": { en: "parts", ar: "قطع" },
+  "types": { en: "types", ar: "أنواع" },
+  "type": { en: "type", ar: "نوع" },
+  "similaires": { en: "similar", ar: "مماثلة" },
+  "similaire": { en: "similar", ar: "مماثل" },
+  "acide": { en: "acid", ar: "حمض" },
+  "acides": { en: "acids", ar: "أحماض" },
+  "epaisseur": { en: "thickness", ar: "سُمك" },
+  "largeur": { en: "width", ar: "عرض" },
+  "longueur": { en: "length", ar: "طول" },
+  "hauteur": { en: "height", ar: "ارتفاع" },
+  "diametre": { en: "diameter", ar: "قطر" },
+  "superficie": { en: "area", ar: "مساحة" },
+  "contenu": { en: "content", ar: "محتوى" },
+  "net": { en: "net", ar: "صافي" },
+  "brut": { en: "gross", ar: "إجمالي" },
+  "utilises": { en: "used", ar: "مستخدمة" },
+  "utilise": { en: "used", ar: "مستخدم" },
+  "fabriques": { en: "manufactured", ar: "مصنوعة" },
+  "fabrique": { en: "manufactured", ar: "مصنوع" },
+  "articles": { en: "articles", ar: "مواد" },
+  "article": { en: "article", ar: "مادة" },
+  "vehicules": { en: "vehicles", ar: "مركبات" },
+  "vehicule": { en: "vehicle", ar: "مركبة" },
+  "moteur": { en: "engine", ar: "محرك" },
+  "moteurs": { en: "engines", ar: "محركات" },
+  "camions": { en: "trucks", ar: "شاحنات" },
+  "camion": { en: "truck", ar: "شاحنة" },
+  "tissus": { en: "fabrics", ar: "أقمشة" },
+  "tissu": { en: "fabric", ar: "قماش" },
+  "fils": { en: "threads", ar: "خيوط" },
+  "fil": { en: "thread", ar: "خيط" },
+  "metal": { en: "metal", ar: "معدن" },
+  "metaux": { en: "metals", ar: "معادن" },
+  "metallique": { en: "metallic", ar: "معدني" },
+  "metalliques": { en: "metallic", ar: "معدنية" },
+  "fer": { en: "iron", ar: "حديد" },
+  "acier": { en: "steel", ar: "فولاذ" },
+  "cuivre": { en: "copper", ar: "نحاس" },
+  "aluminium": { en: "aluminum", ar: "ألمنيوم" },
+  "zinc": { en: "zinc", ar: "زنك" },
+  "plomb": { en: "lead", ar: "رصاص" },
+  "bois": { en: "wood", ar: "خشب" },
+  "papier": { en: "paper", ar: "ورق" },
+  "carton": { en: "cardboard", ar: "كرتون" },
+  "plastique": { en: "plastic", ar: "بلاستيك" },
+  "plastiques": { en: "plastics", ar: "بلاستيك" },
+  "caoutchouc": { en: "rubber", ar: "مطاط" },
+  "verre": { en: "glass", ar: "زجاج" },
+  "ceramique": { en: "ceramic", ar: "سيراميك" },
+  "electrique": { en: "electric", ar: "كهربائي" },
+  "electriques": { en: "electric", ar: "كهربائية" },
+  "electronique": { en: "electronic", ar: "إلكتروني" },
+  "electroniques": { en: "electronic", ar: "إلكترونية" },
+  "chimique": { en: "chemical", ar: "كيميائي" },
+  "chimiques": { en: "chemical", ar: "كيميائية" },
+  "organique": { en: "organic", ar: "عضوي" },
+  "organiques": { en: "organic", ar: "عضوية" },
+  "minerale": { en: "mineral", ar: "معدني" },
+  "minerales": { en: "mineral", ar: "معدنية" },
+  "mineraux": { en: "minerals", ar: "معادن" },
+  "huile": { en: "oil", ar: "زيت" },
+  "huiles": { en: "oils", ar: "زيوت" },
+  "graisses": { en: "fats", ar: "دهون" },
+  "graisse": { en: "fat", ar: "دهن" },
+  "eau": { en: "water", ar: "ماء" },
+  "eaux": { en: "waters", ar: "مياه" },
+  "sel": { en: "salt", ar: "ملح" },
+  "sels": { en: "salts", ar: "أملاح" },
+  "farine": { en: "flour", ar: "دقيق" },
+  "farines": { en: "flours", ar: "دقيق" },
+  "cereales": { en: "cereals", ar: "حبوب" },
+  "ble": { en: "wheat", ar: "قمح" },
+  "orge": { en: "barley", ar: "شعير" },
+  "mais": { en: "corn", ar: "ذرة" },
+  "riz": { en: "rice", ar: "أرز" },
+  "legumes": { en: "vegetables", ar: "خضروات" },
+  "fruits": { en: "fruits", ar: "فواكه" },
+  "noix": { en: "nuts", ar: "مكسرات" },
+  "cafe": { en: "coffee", ar: "قهوة" },
+  "the": { en: "tea", ar: "شاي" },
+  "tabac": { en: "tobacco", ar: "تبغ" },
+  "vin": { en: "wine", ar: "نبيذ" },
+  "vins": { en: "wines", ar: "نبيذ" },
+  "bieres": { en: "beers", ar: "بيرة" },
+  "biere": { en: "beer", ar: "بيرة" },
+  "alcool": { en: "alcohol", ar: "كحول" },
+  "boissons": { en: "beverages", ar: "مشروبات" },
+  "conserves": { en: "preserved", ar: "محفوظة" },
+  "concentre": { en: "concentrated", ar: "مركز" },
+  "concentres": { en: "concentrated", ar: "مركزة" },
+  "naturel": { en: "natural", ar: "طبيعي" },
+  "naturels": { en: "natural", ar: "طبيعية" },
+  "naturelle": { en: "natural", ar: "طبيعية" },
+  "artificiel": { en: "artificial", ar: "اصطناعي" },
+  "artificiels": { en: "artificial", ar: "اصطناعية" },
+  "synthetique": { en: "synthetic", ar: "صناعي" },
+  "synthetiques": { en: "synthetic", ar: "صناعية" },
+  "superieur": { en: "greater", ar: "أكبر" },
+  "superieure": { en: "greater", ar: "أكبر" },
+  "inferieur": { en: "less", ar: "أقل" },
+  "inferieure": { en: "less", ar: "أقل" },
+  "egal": { en: "equal", ar: "يساوي" },
+  "egale": { en: "equal", ar: "يساوي" },
+  "maximum": { en: "maximum", ar: "أقصى" },
+  "minimum": { en: "minimum", ar: "أدنى" },
+  "teneur": { en: "content", ar: "محتوى" },
+  "addition": { en: "addition", ar: "إضافة" },
+  "traitement": { en: "treatment", ar: "معالجة" },
+  "transformation": { en: "processing", ar: "تحويل" },
+  "medicaments": { en: "medicines", ar: "أدوية" },
+  "medicament": { en: "medicine", ar: "دواء" },
+  "savon": { en: "soap", ar: "صابون" },
+  "savons": { en: "soaps", ar: "صابون" },
+  "parfum": { en: "perfume", ar: "عطر" },
+  "parfums": { en: "perfumes", ar: "عطور" },
+  "cosmetiques": { en: "cosmetics", ar: "مستحضرات تجميل" },
+  "ciment": { en: "cement", ar: "إسمنت" },
+  "engrais": { en: "fertilizers", ar: "أسمدة" },
+  "peintures": { en: "paints", ar: "دهانات" },
+  "peinture": { en: "paint", ar: "دهان" },
+  "couleur": { en: "color", ar: "لون" },
+  "couleurs": { en: "colors", ar: "ألوان" },
+  "blanc": { en: "white", ar: "أبيض" },
+  "blancs": { en: "white", ar: "بيضاء" },
+  "noir": { en: "black", ar: "أسود" },
+  "rouge": { en: "red", ar: "أحمر" },
+  "contenant": { en: "containing", ar: "يحتوي على" },
+  "composants": { en: "components", ar: "مكونات" },
+  "dont": { en: "of which", ar: "منها" },
+  "plus": { en: "more", ar: "أكثر" },
+  "moins": { en: "less", ar: "أقل" },
+  "entre": { en: "between", ar: "بين" },
+  "jusqu": { en: "up to", ar: "حتى" },
+  "leurs": { en: "their", ar: "لها" },
+  "sous": { en: "sub", ar: "تحت" },
+  "sur": { en: "on", ar: "على" },
+  "par": { en: "by", ar: "بواسطة" },
+  "dans": { en: "in", ar: "في" },
   // Connectors
   "Sans": { en: "Without", ar: "بدون" },
   "sans": { en: "without", ar: "بدون" },
@@ -240,9 +386,102 @@ const words: Record<string, { en: string; ar: string }> = {
   "et": { en: "and", ar: "و" },
 };
 
+// Build reverse lookup maps (English→French, Arabic→French) for search
+function buildReverseMaps() {
+  const enToFr: Record<string, string> = {};
+  const arToFr: Record<string, string> = {};
+
+  // Add phrases (multi-word)
+  for (const [fr, translations] of Object.entries(dictionary)) {
+    if (translations.en) enToFr[translations.en.toLowerCase()] = fr;
+    if (translations.ar) arToFr[translations.ar] = fr;
+  }
+
+  // Add single words
+  for (const [fr, translations] of Object.entries(words)) {
+    if (translations.en) enToFr[translations.en.toLowerCase()] = fr;
+    if (translations.ar) arToFr[translations.ar] = fr;
+  }
+
+  return { enToFr, arToFr };
+}
+
+const { enToFr, arToFr } = buildReverseMaps();
+
+/** Detect if text contains Arabic script */
+function hasArabicScript(text: string): boolean {
+  return /[\u0600-\u06FF\u0750-\u077F\u08A0-\u08FF\uFB50-\uFDFF\uFE70-\uFEFF]/.test(text);
+}
+
+/** Detect if text is Latin script (English/French) */
+function hasLatinScript(text: string): boolean {
+  return /[a-zA-Z\u00C0-\u024F]/.test(text);
+}
+
+/** Try to reverse-translate using a specific map */
+function tryReverseTranslate(query: string, map: Record<string, string>, isArabic: boolean): string | null {
+  const trimmed = query.trim();
+  const key = isArabic ? trimmed : trimmed.toLowerCase();
+
+  // Try full phrase match first
+  if (map[key]) return map[key];
+
+  // Try word-by-word translation
+  const queryWords = trimmed.split(/\s+/);
+  const translated = queryWords.map((word) => {
+    const wordKey = isArabic ? word : word.toLowerCase();
+    return map[wordKey] || null;
+  });
+
+  const frenchWords = translated.filter(Boolean);
+  if (frenchWords.length > 0) return frenchWords.join(" ");
+
+  return null;
+}
+
+/**
+ * Reverse-translate an English or Arabic search query to French
+ * so it can match against French descriptions in the database.
+ * Auto-detects the script of the query (Arabic vs Latin) regardless of locale.
+ */
+export function reverseTranslateQuery(query: string, fromLang: string): string | null {
+  const trimmed = query.trim();
+
+  // Auto-detect: if query contains Arabic script, try Arabic→French first
+  if (hasArabicScript(trimmed)) {
+    const result = tryReverseTranslate(trimmed, arToFr, true);
+    if (result) return result;
+  }
+
+  // If query contains Latin script (and not French locale), try English→French
+  if (hasLatinScript(trimmed) && fromLang !== "fr") {
+    const result = tryReverseTranslate(trimmed, enToFr, false);
+    if (result) return result;
+  }
+
+  // Fallback: try both maps if nothing matched yet
+  if (!hasArabicScript(trimmed) && fromLang === "ar") {
+    return tryReverseTranslate(trimmed, arToFr, true);
+  }
+
+  return null;
+}
+
+// French contractions: d', l', n', s', qu', j', c' → split before translation
+const contractionMap: Record<string, { en: string; ar: string }> = {
+  "d'": { en: "of ", ar: "من " },
+  "l'": { en: "the ", ar: "" },
+  "n'": { en: "not ", ar: "لا " },
+  "s'": { en: "", ar: "" },
+  "qu'": { en: "that ", ar: "أن " },
+  "j'": { en: "", ar: "" },
+  "c'": { en: "it ", ar: "" },
+};
+
 /**
  * Translate a French tariff description to the target language
  * Uses phrase-first then word-by-word replacement
+ * Handles French contractions (d', l', n', etc.)
  */
 export function translateDescription(frenchText: string, lang: "en" | "ar"): string {
   if (!frenchText) return frenchText;
@@ -270,7 +509,21 @@ export function translateDescription(frenchText: string, lang: "en" | "ar"): str
       return part.replace(trimmed, words[trimmed][lang]);
     }
 
-    // Check without accents for common variations
+    // Handle French contractions: d'autres → "of" + "others"
+    for (const [contraction, translations] of Object.entries(contractionMap)) {
+      if (trimmed.toLowerCase().startsWith(contraction)) {
+        const remainder = trimmed.slice(contraction.length);
+        const remainderTranslation = words[remainder]?.[lang] || words[remainder.toLowerCase()]?.[lang];
+        if (remainderTranslation) {
+          return part.replace(trimmed, translations[lang] + remainderTranslation);
+        }
+        // Even if remainder isn't in dictionary, translate the contraction part
+        if (translations[lang]) {
+          return part.replace(trimmed, translations[lang] + remainder);
+        }
+      }
+    }
+
     return part;
   });
 

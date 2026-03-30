@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@/lib/supabase/server";
-import { getLocalizedDescription } from "@/lib/tariff-translations";
+import { reverseTranslateQuery } from "@/lib/tariff-translations";
 
 /** Strip leading dash/space prefixes like "- - - Des types..." → "Des types..." */
 function cleanDescription(text: string | null): string | null {
@@ -38,9 +38,13 @@ export async function GET(request: NextRequest) {
 
   const supabase = await createClient();
 
+  // Reverse-translate non-French queries to French for database search
+  const translatedQuery = reverseTranslateQuery(query, lang);
+
   // Use the search function for ranked results
   const { data, error } = await supabase.rpc("search_tariff_codes", {
     search_query: query,
+    translated_query: translatedQuery || null,
     section_filter: sectionCode || null,
     result_limit: limit,
     result_offset: offset,
@@ -54,24 +58,16 @@ export async function GET(request: NextRequest) {
   const total = data?.[0]?.total_count ?? 0;
   const totalPages = Math.ceil(Number(total) / limit);
 
-  // Map results with localized descriptions (translated on-the-fly)
+  // Map results — descriptions always in French (source language)
   const results = (data || []).map((item: Record<string, unknown>) => {
-    const localized = getLocalizedDescription(
-      item.description as string,
-      item.description_en as string | null,
-      item.description_ar as string | null,
-      lang
-    );
-
+    const desc = cleanDescription(item.description as string);
     return {
       full_code: item.full_code,
       section_code: item.section_code,
       chapitre_code: item.chapitre_code,
-      description: cleanDescription(item.description as string),
-      description_en: cleanDescription(item.description_en as string | null),
-      description_ar: cleanDescription(item.description_ar as string | null),
-      display_description: cleanDescription(localized.text) || localized.text,
-      display_lang: localized.lang,
+      description: desc,
+      display_description: desc,
+      display_lang: "fr",
       dd: item.dd,
       prct: item.prct,
       tcs: item.tcs,

@@ -139,11 +139,11 @@ export default function SubscriptionSuccessPage() {
         <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-green-500/[0.04] rounded-full blur-3xl" />
       </div>
 
-      <header className="fixed top-4 left-1/2 -translate-x-1/2 z-50 w-[calc(100%-2rem)] max-w-3xl">
-        <div className="glass-nav rounded-full shadow-lg shadow-black/5">
-          <div className="flex h-12 items-center justify-between px-5">
+      <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
+        <div className="max-w-5xl mx-auto">
+          <div className="flex h-14 items-center justify-between px-4 sm:px-6">
             <Link href="/" className="flex items-center gap-2 group">
-              <CustomsLogo className="h-7 w-7 transition-transform duration-300 group-hover:scale-105" />
+              <CustomsLogo className="h-7 w-7 transition-transform duration-300" />
               <span className="text-sm font-bold tracking-tight text-foreground">
                 {t("common.appName")}
               </span>
@@ -155,7 +155,7 @@ export default function SubscriptionSuccessPage() {
         </div>
       </header>
 
-      <main className="flex flex-1 flex-col items-center justify-center p-4 py-12 pt-24">
+      <main className="flex flex-1 flex-col items-center justify-center p-4 py-12 pt-4">
         {loading ? (
           <Card className="w-full max-w-lg">
             <CardContent className="pt-8 space-y-6">

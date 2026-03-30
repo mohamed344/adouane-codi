@@ -14,7 +14,7 @@ import {
   ArrowRight,
   Search,
 } from "lucide-react";
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CURRENCY, formatPrice, PLANS } from "@/config/plans";
 import { useLocale } from "next-intl";
@@ -103,121 +103,24 @@ function IconIntegration({ className }: { className?: string }) {
   );
 }
 
-/* ===== ANIMATED COUNTER ===== */
-function AnimatedCounter({ target, suffix = "" }: { target: string; suffix?: string }) {
-  const [count, setCount] = useState("0");
-  const ref = useRef<HTMLSpanElement>(null);
-  const hasAnimated = useRef(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting && !hasAnimated.current) {
-          hasAnimated.current = true;
-          const numericPart = target.replace(/[^0-9.]/g, "");
-          const num = parseFloat(numericPart);
-          const prefix = target.match(/^[^0-9]*/)?.[0] || "";
-          const hasDot = target.includes(".");
-          const duration = 2000;
-          const steps = 60;
-          const stepTime = duration / steps;
-          let step = 0;
-
-          const timer = setInterval(() => {
-            step++;
-            const progress = step / steps;
-            const eased = 1 - Math.pow(1 - progress, 3);
-            const current = num * eased;
-            const formatted = hasDot ? current.toFixed(1) : Math.floor(current).toLocaleString();
-            setCount(prefix + formatted + suffix);
-            if (step >= steps) {
-              clearInterval(timer);
-              setCount(target + suffix);
-            }
-          }, stepTime);
-        }
-      },
-      { threshold: 0.5 }
-    );
-
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [target, suffix]);
-
-  return <span ref={ref}>{count}</span>;
-}
-
-/* ===== SCROLL REVEAL HOOK ===== */
-function useScrollReveal() {
-  const observerRef = useRef<IntersectionObserver | null>(null);
-
-  useEffect(() => {
-    observerRef.current = new IntersectionObserver(
-      (entries) => {
-        entries.forEach((entry) => {
-          if (entry.isIntersecting) {
-            entry.target.classList.add("visible");
-          }
-        });
-      },
-      { threshold: 0.1, rootMargin: "0px 0px -50px 0px" }
-    );
-
-    const elements = document.querySelectorAll(".reveal, .reveal-left, .reveal-right, .reveal-scale");
-    elements.forEach((el) => observerRef.current?.observe(el));
-
-    return () => observerRef.current?.disconnect();
-  }, []);
-}
-
-/* ===== HERO VISUAL — Customs Shield with animated trade routes ===== */
+/* ===== HERO VISUAL — Customs Shield (kept as-is per user request) ===== */
 function HeroVisual() {
   return (
     <div className="relative w-full max-w-sm mx-auto aspect-square">
-      {/* Glow orbs behind */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-72 h-72 rounded-full glow-orange animate-orb-pulse opacity-70" />
-      <div className="absolute top-[15%] right-[10%] w-32 h-32 rounded-full glow-purple animate-orb-pulse opacity-50" style={{ animationDelay: "2s" }} />
-      <div className="absolute bottom-[15%] left-[10%] w-28 h-28 rounded-full glow-amber animate-orb-pulse opacity-50" style={{ animationDelay: "3.5s" }} />
-
-      {/* Main SVG */}
       <svg className="w-full h-full relative z-10" viewBox="0 0 400 400" fill="none">
-        {/* Outer ring */}
-        <circle cx="200" cy="200" r="170" className="stroke-primary/10" strokeWidth="1" strokeDasharray="8 6" fill="none">
-          <animateTransform attributeName="transform" type="rotate" from="0 200 200" to="360 200 200" dur="60s" repeatCount="indefinite" />
-        </circle>
+        <circle cx="200" cy="200" r="170" className="stroke-primary/10" strokeWidth="1" strokeDasharray="8 6" fill="none" />
         <circle cx="200" cy="200" r="145" className="stroke-primary/8" strokeWidth="0.5" fill="none" />
 
-        {/* Trade route arcs */}
-        <path d="M100 200 Q150 100 200 80" className="stroke-primary/30" strokeWidth="1.5" strokeDasharray="5 5" fill="none">
-          <animate attributeName="stroke-dashoffset" from="20" to="0" dur="2s" repeatCount="indefinite" />
-        </path>
-        <path d="M300 200 Q250 100 200 80" className="stroke-accent/30" strokeWidth="1.5" strokeDasharray="5 5" fill="none">
-          <animate attributeName="stroke-dashoffset" from="20" to="0" dur="2.5s" repeatCount="indefinite" />
-        </path>
-        <path d="M200 320 Q120 280 100 200" className="stroke-primary/20" strokeWidth="1" strokeDasharray="4 4" fill="none">
-          <animate attributeName="stroke-dashoffset" from="16" to="0" dur="3s" repeatCount="indefinite" />
-        </path>
-        <path d="M200 320 Q280 280 300 200" className="stroke-accent/20" strokeWidth="1" strokeDasharray="4 4" fill="none">
-          <animate attributeName="stroke-dashoffset" from="16" to="0" dur="3.5s" repeatCount="indefinite" />
-        </path>
+        <path d="M100 200 Q150 100 200 80" className="stroke-primary/30" strokeWidth="1.5" strokeDasharray="5 5" fill="none" />
+        <path d="M300 200 Q250 100 200 80" className="stroke-accent/30" strokeWidth="1.5" strokeDasharray="5 5" fill="none" />
+        <path d="M200 320 Q120 280 100 200" className="stroke-primary/20" strokeWidth="1" strokeDasharray="4 4" fill="none" />
+        <path d="M200 320 Q280 280 300 200" className="stroke-accent/20" strokeWidth="1" strokeDasharray="4 4" fill="none" />
 
-        {/* Trade node dots */}
-        <circle cx="100" cy="200" r="5" className="fill-primary/50">
-          <animate attributeName="r" values="4;6;4" dur="3s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="300" cy="200" r="5" className="fill-accent/50">
-          <animate attributeName="r" values="4;6;4" dur="2.5s" repeatCount="indefinite" />
-        </circle>
-        <circle cx="200" cy="320" r="4" className="fill-primary/40">
-          <animate attributeName="r" values="3;5;3" dur="3.5s" repeatCount="indefinite" />
-        </circle>
+        <circle cx="100" cy="200" r="5" className="fill-primary/50" />
+        <circle cx="300" cy="200" r="5" className="fill-accent/50" />
+        <circle cx="200" cy="320" r="4" className="fill-primary/40" />
 
-        {/* Central shield — customs badge */}
         <g transform="translate(140, 110)">
-          {/* Shield shape */}
           <path
             d="M60 10L110 35V75C110 110 90 135 60 145C30 135 10 110 10 75V35L60 10Z"
             className="fill-primary/15 stroke-primary/50"
@@ -228,8 +131,6 @@ function HeroVisual() {
             className="fill-primary/8 stroke-primary/25"
             strokeWidth="1"
           />
-
-          {/* Checkmark inside shield */}
           <path
             d="M40 75L52 87L80 59"
             className="stroke-primary"
@@ -240,17 +141,15 @@ function HeroVisual() {
           />
         </g>
 
-        {/* Mini floating elements around shield */}
-        {/* Document icon top-right */}
-        <g className="animate-float" style={{ animationDelay: "0.5s" } as React.CSSProperties}>
+        {/* Static floating elements (no animation) */}
+        <g>
           <rect x="280" y="100" width="40" height="50" rx="6" className="fill-primary/10 stroke-primary/30" strokeWidth="1" />
           <line x1="290" y1="115" x2="310" y2="115" className="stroke-primary/40" strokeWidth="1.5" strokeLinecap="round" />
           <line x1="290" y1="125" x2="305" y2="125" className="stroke-primary/30" strokeWidth="1.5" strokeLinecap="round" />
           <line x1="290" y1="135" x2="308" y2="135" className="stroke-primary/20" strokeWidth="1.5" strokeLinecap="round" />
         </g>
 
-        {/* Barcode/HS code icon bottom-left */}
-        <g className="animate-float-reverse" style={{ animationDelay: "1s" } as React.CSSProperties}>
+        <g>
           <rect x="70" y="270" width="50" height="40" rx="6" className="fill-accent/10 stroke-accent/30" strokeWidth="1" />
           <line x1="82" y1="280" x2="82" y2="300" className="stroke-accent/50" strokeWidth="2" />
           <line x1="88" y1="280" x2="88" y2="300" className="stroke-accent/40" strokeWidth="1.5" />
@@ -260,8 +159,7 @@ function HeroVisual() {
           <line x1="110" y1="280" x2="110" y2="300" className="stroke-accent/30" strokeWidth="1.5" />
         </g>
 
-        {/* Calculator icon top-left */}
-        <g className="animate-float-slow">
+        <g>
           <rect x="60" y="90" width="36" height="45" rx="5" className="fill-primary/10 stroke-primary/25" strokeWidth="1" />
           <rect x="66" y="96" width="24" height="10" rx="2" className="fill-primary/20" />
           <circle cx="72" cy="116" r="2" className="fill-primary/30" />
@@ -272,25 +170,14 @@ function HeroVisual() {
           <circle cx="84" cy="124" r="2" className="fill-primary/20" />
         </g>
 
-        {/* Globe icon bottom-right */}
-        <g className="animate-float" style={{ animationDelay: "2s" } as React.CSSProperties}>
+        <g>
           <circle cx="300" cy="290" r="22" className="stroke-accent/30" strokeWidth="1.5" fill="none" />
           <ellipse cx="300" cy="290" rx="10" ry="22" className="stroke-accent/20" strokeWidth="1" fill="none" />
           <line x1="278" y1="290" x2="322" y2="290" className="stroke-accent/15" strokeWidth="1" />
           <line x1="282" y1="278" x2="318" y2="278" className="stroke-accent/10" strokeWidth="0.5" />
           <line x1="282" y1="302" x2="318" y2="302" className="stroke-accent/10" strokeWidth="0.5" />
         </g>
-
-        {/* Orbiting small dot */}
-        <circle r="3" className="fill-primary/60">
-          <animateMotion dur="12s" repeatCount="indefinite" path="M200,200 m-140,0 a140,140 0 1,1 280,0 a140,140 0 1,1 -280,0" />
-        </circle>
       </svg>
-
-      {/* Floating particles */}
-      <div className="absolute top-6 left-12 h-2 w-2 rounded-full bg-primary/50 particle-1" />
-      <div className="absolute top-20 right-8 h-1.5 w-1.5 rounded-full bg-accent/60 particle-2" />
-      <div className="absolute bottom-16 left-8 h-2.5 w-2.5 rounded-full bg-primary/40 particle-3" />
     </div>
   );
 }
@@ -301,11 +188,21 @@ export default function LandingPage() {
   const locale = useLocale() as "en" | "fr" | "ar";
   const [plans, setPlans] = useState<Plan[]>([]);
   const [plansLoading, setPlansLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
 
-  useScrollReveal();
+  useEffect(() => {
+    const supabase = createClient();
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setIsAuthenticated(!!session);
+    });
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setIsAuthenticated(!!session);
+    });
+    return () => subscription.unsubscribe();
+  }, []);
 
   // Build fallback plans from config
-  const fallbackPlans: Plan[] = PLANS.map((p, i) => ({
+  const fallbackPlans: Plan[] = PLANS.map((p) => ({
     id: p.slug,
     name: t(`subscription.plan_${p.slug}`),
     description: t(`subscription.plan_${p.slug}_desc`),
@@ -331,7 +228,6 @@ export default function LandingPage() {
         if (data && data.length > 0) {
           setPlans(data);
         } else {
-          // Fallback to config plans
           setPlans(fallbackPlans);
         }
       } catch (err) {
@@ -417,35 +313,24 @@ export default function LandingPage() {
       <Header />
 
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-screen flex items-center hero-bg">
-        {/* Background glow orbs */}
-        <div className="absolute top-20 left-[10%] h-72 w-72 rounded-full glow-orange opacity-60 animate-float-slow pointer-events-none" />
-        <div className="absolute bottom-20 right-[15%] h-64 w-64 rounded-full glow-purple opacity-40 animate-float-reverse pointer-events-none" />
-
+      <section className="relative min-h-screen flex items-center">
         <div className="container relative mx-auto px-4 pt-28 pb-16">
-          {/* Two-column: text left, visual right */}
           <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center mb-16">
             {/* Left — text content */}
-            <div className="text-center lg:text-start reveal">
-              <Badge variant="secondary" className="mb-6 border-primary/20 glass px-4 py-1.5 text-xs uppercase tracking-widest text-foreground">
+            <div className="text-center lg:text-start">
+              <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-xs uppercase tracking-widest">
                 {t("landing.heroBadge")}
               </Badge>
-              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl xl:text-6xl leading-[1.1]">
-                <span className="bg-gradient-to-br from-foreground via-foreground to-foreground/60 bg-clip-text text-transparent">
-                  {t("landing.heroTitle")}
-                </span>
+              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl xl:text-6xl leading-[1.1] text-foreground">
+                {t("landing.heroTitle")}
               </h1>
               <p className="mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed mx-auto lg:mx-0">
                 {t("landing.heroSubtitle")}
               </p>
               <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button
-                  size="lg"
-                  asChild
-                  className="text-base px-7 h-12 shadow-lg shadow-primary/25 hover:shadow-xl hover:shadow-primary/35 transition-all duration-300 hover:scale-[1.02] rounded-full"
-                >
-                  <Link href="/signup">
-                    {t("landing.heroCta")}
+                <Button size="lg" asChild className="text-base px-7 h-12">
+                  <Link href={isAuthenticated ? "/search" : "/signup"}>
+                    {isAuthenticated ? t("common.dashboard") : t("landing.heroCta")}
                     <ArrowRight className="ms-2 h-4 w-4" />
                   </Link>
                 </Button>
@@ -453,7 +338,7 @@ export default function LandingPage() {
                   size="lg"
                   variant="outline"
                   asChild
-                  className="text-base px-7 h-12 border-primary/20 hover:bg-primary/5 transition-all duration-300 rounded-full"
+                  className="text-base px-7 h-12"
                 >
                   <a href="#services">
                     {t("landing.heroSecondaryCta")}
@@ -463,18 +348,18 @@ export default function LandingPage() {
             </div>
 
             {/* Right — Hero visual */}
-            <div className="reveal-scale hidden lg:block">
+            <div className="hidden lg:block">
               <HeroVisual />
             </div>
           </div>
 
-          {/* Stats bento row — 4 cards in a row */}
-          <div className="max-w-4xl mx-auto reveal">
+          {/* Stats row */}
+          <div className="max-w-4xl mx-auto">
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
               {stats.map((stat, i) => (
-                <div key={i} className="glass-card p-5 sm:p-6 text-center">
+                <div key={i} className="bg-card border border-border rounded-lg p-5 sm:p-6 text-center">
                   <p className="text-2xl sm:text-3xl font-bold text-foreground">
-                    <AnimatedCounter target={stat.value} />
+                    {stat.value}
                   </p>
                   <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-2">{stat.label}</p>
                 </div>
@@ -485,20 +370,19 @@ export default function LandingPage() {
       </section>
 
       {/* ===== SERVICES SECTION ===== */}
-      <section id="services" className="py-24 sm:py-32 relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-background via-transparent to-transparent" />
-        <div className="container relative mx-auto px-4">
-          <div className="text-center mb-16 reveal">
-            <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.services")}</Badge>
+      <section id="services" className="py-24 sm:py-32">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <Badge variant="secondary" className="mb-4">{t("common.services")}</Badge>
             <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.servicesTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               {t("landing.servicesSubtitle")}
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto stagger-children">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
             {services.map((service, i) => (
-              <div key={i} className="reveal glass-card p-7 group">
+              <div key={i} className="bg-card border border-border rounded-lg p-7 hover:border-primary/40 transition-colors group">
                 <div className="mb-5">
                   <service.icon className="h-12 w-12" />
                 </div>
@@ -511,11 +395,10 @@ export default function LandingPage() {
       </section>
 
       {/* ===== HOW IT WORKS SECTION ===== */}
-      <section id="how-it-works" className="py-24 sm:py-32 relative overflow-hidden">
-        <div className="absolute inset-0 grid-pattern opacity-50" />
-        <div className="container relative mx-auto px-4">
-          <div className="text-center mb-16 reveal">
-            <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.howItWorks")}</Badge>
+      <section id="how-it-works" className="py-24 sm:py-32">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <Badge variant="secondary" className="mb-4">{t("common.howItWorks")}</Badge>
             <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.howItWorksTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               {t("landing.howItWorksSubtitle")}
@@ -525,16 +408,13 @@ export default function LandingPage() {
           <div className="max-w-5xl mx-auto">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {steps.map((step, i) => (
-                <div key={i} className="reveal relative text-center group">
+                <div key={i} className="relative text-center">
                   {i < steps.length - 1 && (
                     <div className="hidden lg:block absolute top-10 left-[60%] w-full h-[2px] bg-gradient-to-r from-primary/30 to-primary/5" />
                   )}
 
-                  <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center">
-                    <div className="absolute inset-0 rounded-2xl bg-primary/10 rotate-6 group-hover:rotate-12 transition-transform duration-500" />
-                    <div className="relative flex h-full w-full items-center justify-center rounded-2xl glass-card border-primary/20 shadow-sm">
-                      <span className="text-2xl font-bold text-primary">{step.num}</span>
-                    </div>
+                  <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-card border border-border shadow-sm">
+                    <span className="text-2xl font-bold text-primary">{step.num}</span>
                   </div>
 
                   <h3 className="text-base font-semibold mb-2 text-foreground">{step.title}</h3>
@@ -550,9 +430,9 @@ export default function LandingPage() {
       <section id="features" className="py-24 sm:py-32">
         <div className="container mx-auto px-4">
           <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-            <div className="reveal-left relative">
+            <div className="relative">
               <div className="relative aspect-square max-w-md mx-auto">
-                <div className="absolute inset-4 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/5 animate-float-slow" />
+                <div className="absolute inset-4 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/5" />
                 <div className="absolute inset-0 rounded-3xl border border-primary/10" />
 
                 <div className="absolute inset-0 flex items-center justify-center">
@@ -563,7 +443,7 @@ export default function LandingPage() {
                   </svg>
                 </div>
 
-                <div className="absolute top-8 right-4 glass-card shadow-lg p-3 animate-float">
+                <div className="absolute top-8 right-4 bg-card border border-border rounded-lg shadow-sm p-3">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center">
                       <Check className="h-4 w-4 text-green-500" />
@@ -575,7 +455,7 @@ export default function LandingPage() {
                   </div>
                 </div>
 
-                <div className="absolute bottom-8 left-4 glass-card shadow-lg p-3 animate-float-reverse">
+                <div className="absolute bottom-8 left-4 bg-card border border-border rounded-lg shadow-sm p-3">
                   <div className="flex items-center gap-2">
                     <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
                       <Search className="h-4 w-4 text-primary" />
@@ -590,16 +470,16 @@ export default function LandingPage() {
             </div>
 
             <div>
-              <div className="reveal-right">
-                <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.features")}</Badge>
+              <div>
+                <Badge variant="secondary" className="mb-4">{t("common.features")}</Badge>
                 <h2 className="text-3xl font-bold sm:text-4xl text-foreground">{t("landing.featuresTitle")}</h2>
                 <p className="mt-4 text-lg text-muted-foreground">{t("landing.featuresSubtitle")}</p>
               </div>
 
               <div className="mt-10 space-y-6">
                 {features.map((feature, i) => (
-                  <div key={i} className="reveal-right flex gap-4 group">
-                    <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-all duration-300">
+                  <div key={i} className="flex gap-4 group">
+                    <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-150">
                       {feature.icon}
                     </div>
                     <div>
@@ -615,11 +495,10 @@ export default function LandingPage() {
       </section>
 
       {/* ===== PRICING SECTION ===== */}
-      <section id="pricing" className="py-24 sm:py-32 relative">
-        <div className="absolute inset-0 bg-[radial-gradient(ellipse_50%_50%_at_50%_0%,rgba(245,158,11,0.06),transparent)]" />
-        <div className="container relative mx-auto px-4">
-          <div className="text-center mb-16 reveal">
-            <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.pricing")}</Badge>
+      <section id="pricing" className="py-24 sm:py-32">
+        <div className="container mx-auto px-4">
+          <div className="text-center mb-16">
+            <Badge variant="secondary" className="mb-4">{t("common.pricing")}</Badge>
             <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.pricingTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">{t("landing.pricingSubtitle")}</p>
           </div>
@@ -627,7 +506,7 @@ export default function LandingPage() {
           {plansLoading ? (
             <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="glass-card flex flex-col p-8 space-y-4">
+                <div key={i} className="bg-card border border-border rounded-lg flex flex-col p-8 space-y-4">
                   <Skeleton className="h-6 w-24" />
                   <Skeleton className="h-4 w-full" />
                   <Skeleton className="h-10 w-32 mt-4" />
@@ -645,14 +524,14 @@ export default function LandingPage() {
               {plans.map((plan) => (
                 <div
                   key={plan.id}
-                  className={`relative flex flex-col glass-card p-8 ${
+                  className={`relative flex flex-col bg-card border border-border rounded-lg p-8 ${
                     plan.is_popular
-                      ? "ring-2 ring-primary/40 shadow-xl shadow-primary/10 scale-[1.02]"
+                      ? "ring-2 ring-primary/40 shadow-lg"
                       : ""
                   }`}
                 >
                   {plan.is_popular && (
-                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 shadow-md bg-primary text-primary-foreground">
+                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 shadow-sm bg-primary text-primary-foreground">
                       {t("subscription.popular")}
                     </Badge>
                   )}
@@ -676,12 +555,10 @@ export default function LandingPage() {
                   </ul>
                   <Button
                     asChild
-                    className={`w-full rounded-full transition-all duration-300 ${
-                      plan.is_popular ? "shadow-md shadow-primary/20 hover:shadow-lg" : ""
-                    }`}
+                    className="w-full"
                     variant={plan.is_popular ? "default" : "outline"}
                   >
-                    <Link href="/signup">{t("landing.heroCta")}</Link>
+                    <Link href={isAuthenticated ? "/search" : "/signup"}>{isAuthenticated ? t("common.dashboard") : t("landing.heroCta")}</Link>
                   </Button>
                 </div>
               ))}
@@ -697,15 +574,15 @@ export default function LandingPage() {
       {/* ===== TESTIMONIALS SECTION ===== */}
       <section id="testimonials" className="py-24 sm:py-32">
         <div className="container mx-auto px-4">
-          <div className="text-center mb-16 reveal">
-            <Badge variant="secondary" className="mb-4 border-primary/20">{t("common.testimonials")}</Badge>
+          <div className="text-center mb-16">
+            <Badge variant="secondary" className="mb-4">{t("common.testimonials")}</Badge>
             <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.testimonialsTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">{t("landing.testimonialsSubtitle")}</p>
           </div>
 
-          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto stagger-children">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
             {testimonials.map((testimonial, i) => (
-              <div key={i} className="reveal glass-card p-7">
+              <div key={i} className="bg-card border border-border rounded-lg p-7">
                 <svg className="h-8 w-8 text-primary/20 mb-4" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                 </svg>
@@ -720,8 +597,8 @@ export default function LandingPage() {
                   {testimonial.text}
                 </p>
 
-                <div className="flex items-center gap-3 pt-5 border-t dark:border-white/10 border-black/5">
-                  <div className="h-11 w-11 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-sm shadow-md">
+                <div className="flex items-center gap-3 pt-5 border-t border-border">
+                  <div className="h-11 w-11 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
                     {testimonial.name[0]}
                   </div>
                   <div>
@@ -738,29 +615,20 @@ export default function LandingPage() {
       {/* ===== CTA SECTION ===== */}
       <section className="py-24 sm:py-32">
         <div className="container mx-auto px-4">
-          <div className="reveal-scale mx-auto max-w-4xl relative overflow-hidden rounded-2xl glass-card p-12 sm:p-16 text-center shadow-2xl">
-            <div className="absolute top-0 left-0 w-64 h-64 glow-orange rounded-full -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-            <div className="absolute bottom-0 right-0 w-64 h-64 glow-purple rounded-full translate-x-1/2 translate-y-1/2 pointer-events-none" />
-
-            <div className="relative">
-              <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl leading-tight text-foreground">
-                {t("landing.ctaTitle")}
-              </h2>
-              <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
-                {t("landing.ctaSubtitle")}
-              </p>
-              <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-                <Button
-                  size="lg"
-                  asChild
-                  className="text-base px-8 h-13 bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/30 hover:shadow-xl transition-all duration-300 hover:scale-[1.02] rounded-full"
-                >
-                  <Link href="/signup">
-                    {t("landing.ctaButton")}
-                    <ArrowRight className="ms-2 h-5 w-5" />
-                  </Link>
-                </Button>
-              </div>
+          <div className="mx-auto max-w-4xl bg-card border border-border rounded-2xl p-12 sm:p-16 text-center">
+            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl leading-tight text-foreground">
+              {t("landing.ctaTitle")}
+            </h2>
+            <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+              {t("landing.ctaSubtitle")}
+            </p>
+            <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
+              <Button size="lg" asChild className="text-base px-8 h-13">
+                <Link href={isAuthenticated ? "/search" : "/signup"}>
+                  {isAuthenticated ? t("common.dashboard") : t("landing.ctaButton")}
+                  <ArrowRight className="ms-2 h-5 w-5" />
+                </Link>
+              </Button>
             </div>
           </div>
         </div>
@@ -769,7 +637,7 @@ export default function LandingPage() {
       {/* ===== BOTTOM BANNER ===== */}
       <section className="pb-16">
         <div className="container mx-auto px-4">
-          <div className="reveal mx-auto max-w-3xl glass-card rounded-full px-8 py-4 text-center">
+          <div className="mx-auto max-w-3xl bg-muted/50 border border-border rounded-lg px-8 py-4 text-center">
             <p className="text-sm text-muted-foreground font-medium">
               {t("landing.bottomBanner")}
             </p>
