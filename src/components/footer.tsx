@@ -2,7 +2,6 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
-
 import { CustomsLogo } from "@/components/customs-logo";
 
 export function Footer() {
@@ -10,7 +9,7 @@ export function Footer() {
 
   return (
     <footer className="border-t border-border bg-secondary text-secondary-foreground">
-      <div className="container py-16">
+      <div className="container py-12">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
             <div className="flex items-center gap-2.5 mb-5">
@@ -92,14 +91,21 @@ export function Footer() {
           </div>
         </div>
 
-        <div className="mt-12 pt-8 border-t border-border flex flex-col sm:flex-row justify-between items-center gap-4">
+        {/* Disclaimer */}
+        <div className="mt-10 pt-6 border-t border-secondary-foreground/10">
+          <p className="text-xs text-secondary-foreground/40 leading-relaxed max-w-3xl">
+            {t("disclaimer.footerText")}
+          </p>
+        </div>
+
+        <div className="mt-6 pt-6 border-t border-secondary-foreground/10 flex flex-col sm:flex-row justify-between items-center gap-4">
           <p className="text-xs text-secondary-foreground/50">
             &copy; {new Date().getFullYear()} {t("common.appName")}. {t("landing.footerRights")}
           </p>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span className="text-xs text-secondary-foreground/50">System Operational</span>
+              <span className="text-xs text-secondary-foreground/50">{t("common.systemOperational")}</span>
             </div>
           </div>
         </div>

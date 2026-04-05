@@ -4,16 +4,9 @@ import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
-
 import { Button } from "@/components/ui/button";
-import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import {
-  Check,
-  Star,
-  ArrowRight,
-  Search,
-} from "lucide-react";
+import { Check, ArrowRight } from "lucide-react";
 import { useEffect, useState } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CURRENCY, formatPrice, PLANS } from "@/config/plans";
@@ -103,85 +96,6 @@ function IconIntegration({ className }: { className?: string }) {
   );
 }
 
-/* ===== HERO VISUAL — Customs Shield (kept as-is per user request) ===== */
-function HeroVisual() {
-  return (
-    <div className="relative w-full max-w-sm mx-auto aspect-square">
-      <svg className="w-full h-full relative z-10" viewBox="0 0 400 400" fill="none">
-        <circle cx="200" cy="200" r="170" className="stroke-primary/10" strokeWidth="1" strokeDasharray="8 6" fill="none" />
-        <circle cx="200" cy="200" r="145" className="stroke-primary/8" strokeWidth="0.5" fill="none" />
-
-        <path d="M100 200 Q150 100 200 80" className="stroke-primary/30" strokeWidth="1.5" strokeDasharray="5 5" fill="none" />
-        <path d="M300 200 Q250 100 200 80" className="stroke-accent/30" strokeWidth="1.5" strokeDasharray="5 5" fill="none" />
-        <path d="M200 320 Q120 280 100 200" className="stroke-primary/20" strokeWidth="1" strokeDasharray="4 4" fill="none" />
-        <path d="M200 320 Q280 280 300 200" className="stroke-accent/20" strokeWidth="1" strokeDasharray="4 4" fill="none" />
-
-        <circle cx="100" cy="200" r="5" className="fill-primary/50" />
-        <circle cx="300" cy="200" r="5" className="fill-accent/50" />
-        <circle cx="200" cy="320" r="4" className="fill-primary/40" />
-
-        <g transform="translate(140, 110)">
-          <path
-            d="M60 10L110 35V75C110 110 90 135 60 145C30 135 10 110 10 75V35L60 10Z"
-            className="fill-primary/15 stroke-primary/50"
-            strokeWidth="2"
-          />
-          <path
-            d="M60 25L95 43V75C95 102 80 122 60 130C40 122 25 102 25 75V43L60 25Z"
-            className="fill-primary/8 stroke-primary/25"
-            strokeWidth="1"
-          />
-          <path
-            d="M40 75L52 87L80 59"
-            className="stroke-primary"
-            strokeWidth="4"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-            fill="none"
-          />
-        </g>
-
-        {/* Static floating elements (no animation) */}
-        <g>
-          <rect x="280" y="100" width="40" height="50" rx="6" className="fill-primary/10 stroke-primary/30" strokeWidth="1" />
-          <line x1="290" y1="115" x2="310" y2="115" className="stroke-primary/40" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="290" y1="125" x2="305" y2="125" className="stroke-primary/30" strokeWidth="1.5" strokeLinecap="round" />
-          <line x1="290" y1="135" x2="308" y2="135" className="stroke-primary/20" strokeWidth="1.5" strokeLinecap="round" />
-        </g>
-
-        <g>
-          <rect x="70" y="270" width="50" height="40" rx="6" className="fill-accent/10 stroke-accent/30" strokeWidth="1" />
-          <line x1="82" y1="280" x2="82" y2="300" className="stroke-accent/50" strokeWidth="2" />
-          <line x1="88" y1="280" x2="88" y2="300" className="stroke-accent/40" strokeWidth="1.5" />
-          <line x1="93" y1="280" x2="93" y2="300" className="stroke-accent/50" strokeWidth="3" />
-          <line x1="100" y1="280" x2="100" y2="300" className="stroke-accent/40" strokeWidth="1" />
-          <line x1="105" y1="280" x2="105" y2="300" className="stroke-accent/50" strokeWidth="2" />
-          <line x1="110" y1="280" x2="110" y2="300" className="stroke-accent/30" strokeWidth="1.5" />
-        </g>
-
-        <g>
-          <rect x="60" y="90" width="36" height="45" rx="5" className="fill-primary/10 stroke-primary/25" strokeWidth="1" />
-          <rect x="66" y="96" width="24" height="10" rx="2" className="fill-primary/20" />
-          <circle cx="72" cy="116" r="2" className="fill-primary/30" />
-          <circle cx="78" cy="116" r="2" className="fill-primary/30" />
-          <circle cx="84" cy="116" r="2" className="fill-primary/30" />
-          <circle cx="72" cy="124" r="2" className="fill-primary/20" />
-          <circle cx="78" cy="124" r="2" className="fill-primary/20" />
-          <circle cx="84" cy="124" r="2" className="fill-primary/20" />
-        </g>
-
-        <g>
-          <circle cx="300" cy="290" r="22" className="stroke-accent/30" strokeWidth="1.5" fill="none" />
-          <ellipse cx="300" cy="290" rx="10" ry="22" className="stroke-accent/20" strokeWidth="1" fill="none" />
-          <line x1="278" y1="290" x2="322" y2="290" className="stroke-accent/15" strokeWidth="1" />
-          <line x1="282" y1="278" x2="318" y2="278" className="stroke-accent/10" strokeWidth="0.5" />
-          <line x1="282" y1="302" x2="318" y2="302" className="stroke-accent/10" strokeWidth="0.5" />
-        </g>
-      </svg>
-    </div>
-  );
-}
-
 /* ===== MAIN COMPONENT ===== */
 export default function LandingPage() {
   const t = useTranslations();
@@ -201,7 +115,6 @@ export default function LandingPage() {
     return () => subscription.unsubscribe();
   }, []);
 
-  // Build fallback plans from config
   const fallbackPlans: Plan[] = PLANS.map((p) => ({
     id: p.slug,
     name: t(`subscription.plan_${p.slug}`),
@@ -222,16 +135,10 @@ export default function LandingPage() {
           .select("*")
           .eq("is_active", true)
           .order("price", { ascending: true });
-        if (error) {
-          console.error("Failed to fetch plans:", error.message);
-        }
-        if (data && data.length > 0) {
-          setPlans(data);
-        } else {
-          setPlans(fallbackPlans);
-        }
-      } catch (err) {
-        console.error("Plans fetch error:", err);
+        if (error) console.error("Failed to fetch plans:", error.message);
+        if (data && data.length > 0) setPlans(data);
+        else setPlans(fallbackPlans);
+      } catch {
         setPlans(fallbackPlans);
       } finally {
         setPlansLoading(false);
@@ -301,67 +208,41 @@ export default function LandingPage() {
     { name: t("landing.testimonial3Name"), role: t("landing.testimonial3Role"), text: t("landing.testimonial3Text") },
   ];
 
-  const stats = [
-    { value: t("landing.stat1Value"), label: t("landing.stat1Label") },
-    { value: t("landing.stat2Value"), label: t("landing.stat2Label") },
-    { value: t("landing.stat3Value"), label: t("landing.stat3Label") },
-    { value: t("landing.stat4Value"), label: t("landing.stat4Label") },
-  ];
-
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden">
       <Header />
 
       {/* ===== HERO SECTION ===== */}
-      <section className="relative min-h-screen flex items-center">
-        <div className="container relative pt-28 pb-16">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-8 items-center mb-16">
-            {/* Left — text content */}
-            <div className="text-center lg:text-start">
-              <Badge variant="secondary" className="mb-6 px-4 py-1.5 text-xs uppercase tracking-widest">
-                {t("landing.heroBadge")}
-              </Badge>
-              <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-5xl xl:text-6xl leading-[1.1] text-foreground">
-                {t("landing.heroTitle")}
-              </h1>
-              <p className="mt-6 max-w-xl text-lg text-muted-foreground leading-relaxed mx-auto lg:mx-0">
-                {t("landing.heroSubtitle")}
-              </p>
-              <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
-                <Button size="lg" asChild className="text-base px-7 h-12">
-                  <Link href={isAuthenticated ? "/search" : "/signup"}>
-                    {isAuthenticated ? t("common.dashboard") : t("landing.heroCta")}
-                    <ArrowRight className="ms-2 h-4 w-4" />
-                  </Link>
-                </Button>
-                <Button
-                  size="lg"
-                  variant="outline"
-                  asChild
-                  className="text-base px-7 h-12"
-                >
-                  <a href="#services">
-                    {t("landing.heroSecondaryCta")}
-                  </a>
-                </Button>
-              </div>
-            </div>
-
-            {/* Right — Hero visual */}
-            <div className="hidden lg:block">
-              <HeroVisual />
+      <section className="pt-20 pb-16 sm:pt-28 sm:pb-20">
+        <div className="container">
+          <div className="max-w-3xl mx-auto text-center">
+            <h1 className="text-4xl font-extrabold tracking-tight sm:text-5xl xl:text-6xl leading-[1.1] text-foreground">
+              {t("landing.heroTitle")}
+            </h1>
+            <p className="mt-6 max-w-2xl mx-auto text-lg text-muted-foreground leading-relaxed">
+              {t("landing.heroSubtitle")}
+            </p>
+            <div className="mt-10">
+              <Button size="lg" asChild className="text-base px-8 h-12 rounded-lg">
+                <Link href={isAuthenticated ? "/search" : "/signup"}>
+                  {isAuthenticated ? t("common.dashboard") : t("landing.heroCta")}
+                  <ArrowRight className="ms-2 h-4 w-4" />
+                </Link>
+              </Button>
             </div>
           </div>
 
-          {/* Stats row */}
-          <div className="max-w-4xl mx-auto">
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-              {stats.map((stat, i) => (
-                <div key={i} className="bg-card border border-border rounded-lg p-5 sm:p-6 text-center">
-                  <p className="text-2xl sm:text-3xl font-bold text-foreground">
-                    {stat.value}
-                  </p>
-                  <p className="text-[10px] uppercase tracking-widest text-muted-foreground mt-2">{stat.label}</p>
+          {/* Stats */}
+          <div className="mt-16 max-w-2xl mx-auto">
+            <div className="grid grid-cols-3 gap-4">
+              {[
+                { value: t("landing.stat1Value"), label: t("landing.stat1Label") },
+                { value: t("landing.stat2Value"), label: t("landing.stat2Label") },
+                { value: t("landing.stat3Value"), label: t("landing.stat3Label") },
+              ].map((stat, i) => (
+                <div key={i} className="text-center py-4">
+                  <p className="text-2xl sm:text-3xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-xs uppercase tracking-wider text-muted-foreground mt-1">{stat.label}</p>
                 </div>
               ))}
             </div>
@@ -370,23 +251,22 @@ export default function LandingPage() {
       </section>
 
       {/* ===== SERVICES SECTION ===== */}
-      <section id="services" className="py-24 sm:py-32">
+      <section id="services" className="py-20 sm:py-24">
         <div className="container">
-          <div className="text-center mb-16">
-            <Badge variant="secondary" className="mb-4">{t("common.services")}</Badge>
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.servicesTitle")}</h2>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl font-bold sm:text-4xl text-foreground">{t("landing.servicesTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               {t("landing.servicesSubtitle")}
             </p>
           </div>
 
-          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-6xl mx-auto">
+          <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
             {services.map((service, i) => (
-              <div key={i} className="bg-card border border-border rounded-lg p-7 hover:border-primary/40 transition-colors group">
-                <div className="mb-5">
-                  <service.icon className="h-12 w-12" />
+              <div key={i} className="bg-card border border-border rounded-lg p-6 hover:border-primary/40 transition-colors group">
+                <div className="mb-4">
+                  <service.icon className="h-11 w-11" />
                 </div>
-                <h3 className="text-lg font-semibold mb-3 text-foreground group-hover:text-primary transition-colors">{service.title}</h3>
+                <h3 className="text-base font-semibold mb-2 text-foreground group-hover:text-primary transition-colors">{service.title}</h3>
                 <p className="text-sm text-muted-foreground leading-relaxed">{service.desc}</p>
               </div>
             ))}
@@ -395,28 +275,22 @@ export default function LandingPage() {
       </section>
 
       {/* ===== HOW IT WORKS SECTION ===== */}
-      <section id="how-it-works" className="py-24 sm:py-32">
+      <section id="how-it-works" className="py-20 sm:py-24">
         <div className="container">
-          <div className="text-center mb-16">
-            <Badge variant="secondary" className="mb-4">{t("common.howItWorks")}</Badge>
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.howItWorksTitle")}</h2>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl font-bold sm:text-4xl text-foreground">{t("landing.howItWorksTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">
               {t("landing.howItWorksSubtitle")}
             </p>
           </div>
 
-          <div className="max-w-5xl mx-auto">
+          <div className="max-w-4xl mx-auto">
             <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-8">
               {steps.map((step, i) => (
-                <div key={i} className="relative text-center">
-                  {i < steps.length - 1 && (
-                    <div className="hidden lg:block absolute top-10 left-[60%] w-full h-[2px] bg-gradient-to-r from-primary/30 to-primary/5" />
-                  )}
-
-                  <div className="relative mx-auto mb-5 flex h-20 w-20 items-center justify-center rounded-2xl bg-card border border-border shadow-sm">
-                    <span className="text-2xl font-bold text-primary">{step.num}</span>
+                <div key={i} className="text-center">
+                  <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-primary/10 text-primary">
+                    <span className="text-lg font-bold">{step.num}</span>
                   </div>
-
                   <h3 className="text-base font-semibold mb-2 text-foreground">{step.title}</h3>
                   <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
                 </div>
@@ -427,59 +301,30 @@ export default function LandingPage() {
       </section>
 
       {/* ===== FEATURES SECTION ===== */}
-      <section id="features" className="py-24 sm:py-32">
+      <section id="features" className="py-20 sm:py-24">
         <div className="container">
-          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-6xl mx-auto">
-            <div className="relative">
-              <div className="relative aspect-square max-w-md mx-auto">
-                <div className="absolute inset-4 rounded-3xl bg-gradient-to-br from-primary/10 to-accent/5" />
+          <div className="grid lg:grid-cols-2 gap-16 items-center max-w-5xl mx-auto">
+            {/* Shield visual */}
+            <div className="hidden lg:flex items-center justify-center">
+              <div className="relative w-full max-w-sm aspect-square flex items-center justify-center">
+                <div className="absolute inset-4 rounded-3xl bg-gradient-to-br from-primary/8 to-primary/3" />
                 <div className="absolute inset-0 rounded-3xl border border-primary/10" />
-
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <svg className="w-48 h-48" viewBox="0 0 200 200" fill="none">
-                    <path d="M100 20L170 55V105C170 145 140 175 100 185C60 175 30 145 30 105V55L100 20Z" className="fill-primary/10 stroke-primary/40" strokeWidth="2" />
-                    <path d="M100 40L150 65V105C150 135 130 158 100 165C70 158 50 135 50 105V65L100 40Z" className="fill-primary/5 stroke-primary/20" strokeWidth="1" />
-                    <path d="M75 100L90 115L125 80" className="stroke-primary" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-                  </svg>
-                </div>
-
-                <div className="absolute top-8 right-4 bg-card border border-border rounded-lg shadow-sm p-3">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-lg bg-green-500/10 flex items-center justify-center">
-                      <Check className="h-4 w-4 text-green-500" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">Compliant</p>
-                      <p className="text-[10px] text-muted-foreground">100% verified</p>
-                    </div>
-                  </div>
-                </div>
-
-                <div className="absolute bottom-8 left-4 bg-card border border-border rounded-lg shadow-sm p-3">
-                  <div className="flex items-center gap-2">
-                    <div className="h-8 w-8 rounded-lg bg-primary/10 flex items-center justify-center">
-                      <Search className="h-4 w-4 text-primary" />
-                    </div>
-                    <div>
-                      <p className="text-xs font-semibold text-foreground">15,000+</p>
-                      <p className="text-[10px] text-muted-foreground">Tariff codes</p>
-                    </div>
-                  </div>
-                </div>
+                <svg className="w-40 h-40 relative z-10" viewBox="0 0 200 200" fill="none">
+                  <path d="M100 20L170 55V105C170 145 140 175 100 185C60 175 30 145 30 105V55L100 20Z" className="fill-primary/10 stroke-primary/40" strokeWidth="2" />
+                  <path d="M100 40L150 65V105C150 135 130 158 100 165C70 158 50 135 50 105V65L100 40Z" className="fill-primary/5 stroke-primary/20" strokeWidth="1" />
+                  <path d="M75 100L90 115L125 80" className="stroke-primary" strokeWidth="5" strokeLinecap="round" strokeLinejoin="round" fill="none" />
+                </svg>
               </div>
             </div>
 
             <div>
-              <div>
-                <Badge variant="secondary" className="mb-4">{t("common.features")}</Badge>
-                <h2 className="text-3xl font-bold sm:text-4xl text-foreground">{t("landing.featuresTitle")}</h2>
-                <p className="mt-4 text-lg text-muted-foreground">{t("landing.featuresSubtitle")}</p>
-              </div>
+              <h2 className="text-3xl font-bold sm:text-4xl text-foreground">{t("landing.featuresTitle")}</h2>
+              <p className="mt-4 text-lg text-muted-foreground">{t("landing.featuresSubtitle")}</p>
 
               <div className="mt-10 space-y-6">
                 {features.map((feature, i) => (
                   <div key={i} className="flex gap-4 group">
-                    <div className="shrink-0 flex h-12 w-12 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-150">
+                    <div className="shrink-0 flex h-11 w-11 items-center justify-center rounded-xl bg-primary/10 text-primary group-hover:bg-primary group-hover:text-primary-foreground transition-colors duration-150">
                       {feature.icon}
                     </div>
                     <div>
@@ -495,11 +340,10 @@ export default function LandingPage() {
       </section>
 
       {/* ===== PRICING SECTION ===== */}
-      <section id="pricing" className="py-24 sm:py-32">
+      <section id="pricing" className="py-20 sm:py-24">
         <div className="container">
-          <div className="text-center mb-16">
-            <Badge variant="secondary" className="mb-4">{t("common.pricing")}</Badge>
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.pricingTitle")}</h2>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl font-bold sm:text-4xl text-foreground">{t("landing.pricingTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">{t("landing.pricingSubtitle")}</p>
           </div>
 
@@ -524,16 +368,16 @@ export default function LandingPage() {
               {plans.map((plan) => (
                 <div
                   key={plan.id}
-                  className={`relative flex flex-col bg-card border border-border rounded-lg p-8 ${
+                  className={`relative flex flex-col bg-card border rounded-lg p-8 ${
                     plan.is_popular
-                      ? "ring-2 ring-primary/40 shadow-lg"
-                      : ""
+                      ? "border-primary/40 ring-1 ring-primary/20 shadow-md"
+                      : "border-border"
                   }`}
                 >
                   {plan.is_popular && (
-                    <Badge className="absolute -top-3 left-1/2 -translate-x-1/2 shadow-sm bg-primary text-primary-foreground">
+                    <span className="absolute -top-3 left-1/2 -translate-x-1/2 bg-primary text-primary-foreground text-xs font-semibold px-3 py-1 rounded-full shadow-sm">
                       {t("subscription.popular")}
-                    </Badge>
+                    </span>
                   )}
                   <h3 className="text-xl font-bold text-foreground">{plan.name}</h3>
                   <p className="mt-2 text-sm text-muted-foreground">{plan.description}</p>
@@ -555,10 +399,12 @@ export default function LandingPage() {
                   </ul>
                   <Button
                     asChild
-                    className="w-full"
+                    className="w-full rounded-lg"
                     variant={plan.is_popular ? "default" : "outline"}
                   >
-                    <Link href={isAuthenticated ? "/search" : "/signup"}>{isAuthenticated ? t("common.dashboard") : t("landing.heroCta")}</Link>
+                    <Link href={isAuthenticated ? "/search" : "/signup"}>
+                      {isAuthenticated ? t("common.dashboard") : t("landing.heroCta")}
+                    </Link>
                   </Button>
                 </div>
               ))}
@@ -572,33 +418,26 @@ export default function LandingPage() {
       </section>
 
       {/* ===== TESTIMONIALS SECTION ===== */}
-      <section id="testimonials" className="py-24 sm:py-32">
+      <section id="testimonials" className="py-20 sm:py-24">
         <div className="container">
-          <div className="text-center mb-16">
-            <Badge variant="secondary" className="mb-4">{t("common.testimonials")}</Badge>
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl text-foreground">{t("landing.testimonialsTitle")}</h2>
+          <div className="text-center mb-14">
+            <h2 className="text-3xl font-bold sm:text-4xl text-foreground">{t("landing.testimonialsTitle")}</h2>
             <p className="mt-4 text-lg text-muted-foreground max-w-2xl mx-auto">{t("landing.testimonialsSubtitle")}</p>
           </div>
 
           <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3 max-w-5xl mx-auto">
             {testimonials.map((testimonial, i) => (
-              <div key={i} className="bg-card border border-border rounded-lg p-7">
-                <svg className="h-8 w-8 text-primary/20 mb-4" viewBox="0 0 24 24" fill="currentColor">
+              <div key={i} className="bg-card border border-border rounded-lg p-6">
+                <svg className="h-7 w-7 text-primary/20 mb-4" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z" />
                 </svg>
-
-                <div className="flex gap-0.5 mb-4">
-                  {[...Array(5)].map((_, j) => (
-                    <Star key={j} className="h-4 w-4 fill-amber-400 text-amber-400" />
-                  ))}
-                </div>
 
                 <p className="text-sm text-muted-foreground mb-6 leading-relaxed">
                   {testimonial.text}
                 </p>
 
-                <div className="flex items-center gap-3 pt-5 border-t border-border">
-                  <div className="h-11 w-11 rounded-full bg-primary flex items-center justify-center text-primary-foreground font-bold text-sm">
+                <div className="flex items-center gap-3 pt-4 border-t border-border">
+                  <div className="h-10 w-10 rounded-full bg-secondary flex items-center justify-center text-secondary-foreground font-semibold text-sm">
                     {testimonial.name[0]}
                   </div>
                   <div>
@@ -613,34 +452,23 @@ export default function LandingPage() {
       </section>
 
       {/* ===== CTA SECTION ===== */}
-      <section className="py-24 sm:py-32">
+      <section className="py-20 sm:py-24">
         <div className="container">
-          <div className="mx-auto max-w-4xl bg-card border border-border rounded-2xl p-12 sm:p-16 text-center">
-            <h2 className="text-3xl font-bold sm:text-4xl lg:text-5xl leading-tight text-foreground">
+          <div className="max-w-2xl mx-auto text-center">
+            <h2 className="text-3xl font-bold sm:text-4xl leading-tight text-foreground">
               {t("landing.ctaTitle")}
             </h2>
-            <p className="mt-5 text-lg text-muted-foreground max-w-2xl mx-auto leading-relaxed">
+            <p className="mt-5 text-lg text-muted-foreground leading-relaxed">
               {t("landing.ctaSubtitle")}
             </p>
-            <div className="mt-10 flex flex-col sm:flex-row justify-center gap-4">
-              <Button size="lg" asChild className="text-base px-8 h-13">
+            <div className="mt-8">
+              <Button size="lg" asChild className="text-base px-8 h-12 rounded-lg">
                 <Link href={isAuthenticated ? "/search" : "/signup"}>
                   {isAuthenticated ? t("common.dashboard") : t("landing.ctaButton")}
                   <ArrowRight className="ms-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
-          </div>
-        </div>
-      </section>
-
-      {/* ===== BOTTOM BANNER ===== */}
-      <section className="pb-16">
-        <div className="container">
-          <div className="mx-auto max-w-3xl bg-muted/50 border border-border rounded-lg px-8 py-4 text-center">
-            <p className="text-sm text-muted-foreground font-medium">
-              {t("landing.bottomBanner")}
-            </p>
           </div>
         </div>
       </section>

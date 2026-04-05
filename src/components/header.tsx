@@ -7,13 +7,13 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
-
 import { CustomsLogo } from "@/components/customs-logo";
 
 export function Header() {
   const t = useTranslations("common");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -26,12 +26,24 @@ export function Header() {
     return () => subscription.unsubscribe();
   }, []);
 
+  useEffect(() => {
+    function onScroll() {
+      setScrolled(window.scrollY > 10);
+    }
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm">
-      <div className="container flex h-14 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2">
-          <CustomsLogo className="h-7 w-7" />
-          <span className="text-sm font-bold tracking-tight text-foreground">
+    <header
+      className={`sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm transition-shadow duration-200 ${
+        scrolled ? "shadow-sm" : ""
+      }`}
+    >
+      <div className="container flex h-16 items-center justify-between">
+        <Link href="/" className="flex items-center gap-2.5">
+          <CustomsLogo className="h-8 w-8" />
+          <span className="text-base font-bold tracking-tight text-foreground">
             {t("appName")}
           </span>
         </Link>
@@ -53,10 +65,10 @@ export function Header() {
           ))}
         </nav>
 
-        <div className="hidden items-center gap-2 lg:flex">
+        <div className="hidden items-center gap-3 lg:flex">
           <LanguageSwitcher />
           {isAuthenticated ? (
-            <Button asChild size="sm">
+            <Button asChild size="sm" className="rounded-lg">
               <Link href="/search">{t("dashboard")}</Link>
             </Button>
           ) : (
@@ -64,7 +76,7 @@ export function Header() {
               <Button variant="ghost" asChild size="sm">
                 <Link href="/login">{t("login")}</Link>
               </Button>
-              <Button asChild size="sm">
+              <Button asChild size="sm" className="rounded-lg">
                 <Link href="/signup">{t("signup")}</Link>
               </Button>
             </>
@@ -90,7 +102,7 @@ export function Header() {
           mobileMenuOpen ? "max-h-80" : "max-h-0"
         }`}
       >
-        <div className="max-w-5xl mx-auto px-4 pb-4">
+        <div className="container pb-4">
           <nav className="flex flex-col gap-1">
             {[
               { href: "#services", label: t("services") },
@@ -109,7 +121,7 @@ export function Header() {
             ))}
             <div className="flex gap-2 pt-3 mt-2 border-t border-border">
               {isAuthenticated ? (
-                <Button asChild className="flex-1">
+                <Button asChild className="flex-1 rounded-lg">
                   <Link href="/search">{t("dashboard")}</Link>
                 </Button>
               ) : (
@@ -117,7 +129,7 @@ export function Header() {
                   <Button variant="ghost" asChild className="flex-1">
                     <Link href="/login">{t("login")}</Link>
                   </Button>
-                  <Button asChild className="flex-1">
+                  <Button asChild className="flex-1 rounded-lg">
                     <Link href="/signup">{t("signup")}</Link>
                   </Button>
                 </>

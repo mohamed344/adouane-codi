@@ -8,6 +8,24 @@ function cleanDescription(text: string | null): string | null {
   return text.replace(/^[-\s]+/, "").trim();
 }
 
+/** Convert designation hierarchy into a breadcrumb path
+ *  "- Tubes et tuyaux :\n- - En acier :\n- - - Autres"
+ *  → "Tubes et tuyaux > En acier > Autres"
+ */
+function extractProductPath(designation: string | null): string | null {
+  if (!designation) return null;
+  const lines = designation.split("\n").filter((l) => l.trim());
+  const parts = lines
+    .map((line) =>
+      line
+        .replace(/^[-\s]+/, "")
+        .replace(/:?\s*$/, "")
+        .trim()
+    )
+    .filter(Boolean);
+  return parts.length > 0 ? parts.join(" > ") : null;
+}
+
 /**
  * GET /api/tariff/search?q=lait&lang=fr
  * Search tariff codes by keyword or code number across all languages
@@ -58,21 +76,28 @@ export async function GET(request: NextRequest) {
   const total = data?.[0]?.total_count ?? 0;
   const totalPages = Math.ceil(Number(total) / limit);
 
-  // Map results — descriptions always in French (source language)
+  // Map results — use product path from designation for meaningful display
   const results = (data || []).map((item: Record<string, unknown>) => {
     const desc = cleanDescription(item.description as string);
+    const designation = item.designation as string | null;
+    const productPath = extractProductPath(designation);
     return {
       full_code: item.full_code,
       section_code: item.section_code,
       chapitre_code: item.chapitre_code,
       description: desc,
-      display_description: desc,
+      display_description: productPath || desc,
+      designation,
+      rangee_description: item.rangee_description as string | null,
+      chapitre_description: item.chapitre_description as string | null,
       display_lang: "fr",
       dd: item.dd,
       prct: item.prct,
       tcs: item.tcs,
       tva: item.tva,
       dap: item.dap,
+      usage_group: item.usage_group,
+      unit: item.unit,
       rank: item.rank,
     };
   });

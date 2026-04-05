@@ -10,6 +10,7 @@ ALTER TABLE public.tariff_codes ADD COLUMN IF NOT EXISTS usage_group TEXT;
 ALTER TABLE public.tariff_codes ADD COLUMN IF NOT EXISTS unit TEXT;
 ALTER TABLE public.tariff_codes ADD COLUMN IF NOT EXISTS tax_advantages JSONB DEFAULT '[]'::jsonb;
 ALTER TABLE public.tariff_codes ADD COLUMN IF NOT EXISTS designation TEXT;
+ALTER TABLE public.tariff_codes ADD COLUMN IF NOT EXISTS cle TEXT;
 
 -- Index on usage_group for filtering
 CREATE INDEX IF NOT EXISTS idx_tariff_codes_usage_group ON public.tariff_codes(usage_group);
@@ -41,9 +42,21 @@ CREATE POLICY "Admins can manage tariff rangees" ON public.tariff_rangees
 CREATE INDEX IF NOT EXISTS idx_tariff_codes_full_code_trgm
 ON public.tariff_codes USING gin (full_code gin_trgm_ops);
 
+-- C2) GIN indexes for searching designation and parent tables
+CREATE INDEX IF NOT EXISTS idx_tariff_codes_designation_fts
+  ON public.tariff_codes USING gin(to_tsvector('french', COALESCE(designation, '')));
+CREATE INDEX IF NOT EXISTS idx_tariff_chapitres_description_fts
+  ON public.tariff_chapitres USING gin(to_tsvector('french', description));
+CREATE INDEX IF NOT EXISTS idx_tariff_rangees_description_fts
+  ON public.tariff_rangees USING gin(to_tsvector('french', description));
+CREATE INDEX IF NOT EXISTS idx_tariff_codes_designation_trgm
+  ON public.tariff_codes USING gin (COALESCE(designation, '') gin_trgm_ops);
+
 -- D) Create search_tariff_codes() RPC function
 --    Used by /api/tariff/search route
---    Optimized: single pass with count(*) OVER(), pre-computed tsqueries
+--    Searches description + designation via GIN indexes (no CTE, no combined tsvector)
+--    OR-based fallback for multi-word queries (any word matches)
+--    JOINs rangee/chapitre for display only, not for filtering
 CREATE OR REPLACE FUNCTION public.search_tariff_codes(
   search_query TEXT,
   translated_query TEXT DEFAULT NULL,
@@ -72,7 +85,9 @@ RETURNS TABLE (
   created_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ,
   rank REAL,
-  total_count BIGINT
+  total_count BIGINT,
+  rangee_description TEXT,
+  chapitre_description TEXT
 )
 LANGUAGE plpgsql
 STABLE
@@ -80,11 +95,55 @@ AS $$
 DECLARE
   q_tsquery TSQUERY;
   tq_tsquery TSQUERY;
+  q_plain TSQUERY;
+  tq_plain TSQUERY;
+  q_or TSQUERY;
+  tq_or TSQUERY;
+  or_parts TEXT[];
+  part_text TEXT;
+  w TEXT;
 BEGIN
-  -- Pre-compute tsqueries once
-  q_tsquery := plainto_tsquery('french', search_query);
+  q_tsquery := websearch_to_tsquery('french', search_query);
+  q_plain := plainto_tsquery('french', search_query);
+
+  -- Build OR-based tsquery: filter out stop words that produce empty tsqueries
+  or_parts := ARRAY[]::TEXT[];
+  FOR w IN SELECT unnest(string_to_array(trim(search_query), ' '))
+  LOOP
+    IF length(trim(w)) >= 2 THEN
+      part_text := plainto_tsquery('french', w)::text;
+      IF part_text IS NOT NULL AND part_text != '' THEN
+        or_parts := or_parts || part_text;
+      END IF;
+    END IF;
+  END LOOP;
+
+  IF array_length(or_parts, 1) > 0 THEN
+    q_or := array_to_string(or_parts, ' | ')::tsquery;
+  ELSE
+    q_or := q_plain;
+  END IF;
+
   IF translated_query IS NOT NULL THEN
-    tq_tsquery := plainto_tsquery('french', translated_query);
+    tq_tsquery := websearch_to_tsquery('french', translated_query);
+    tq_plain := plainto_tsquery('french', translated_query);
+
+    or_parts := ARRAY[]::TEXT[];
+    FOR w IN SELECT unnest(string_to_array(trim(translated_query), ' '))
+    LOOP
+      IF length(trim(w)) >= 2 THEN
+        part_text := plainto_tsquery('french', w)::text;
+        IF part_text IS NOT NULL AND part_text != '' THEN
+          or_parts := or_parts || part_text;
+        END IF;
+      END IF;
+    END LOOP;
+
+    IF array_length(or_parts, 1) > 0 THEN
+      tq_or := array_to_string(or_parts, ' | ')::tsquery;
+    ELSE
+      tq_or := tq_plain;
+    END IF;
   END IF;
 
   RETURN QUERY
@@ -110,21 +169,61 @@ BEGIN
     tc.updated_at,
     CASE
       WHEN tc.full_code LIKE search_query || '%' THEN 1.0
-      WHEN tc.full_code ILIKE '%' || search_query || '%' THEN 0.8
-      WHEN tq_tsquery IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_tsquery
-        THEN ts_rank(to_tsvector('french', tc.description), tq_tsquery)
+      WHEN tc.full_code ILIKE '%' || search_query || '%' THEN 0.9
+      -- All words match description (highest text rank)
       WHEN to_tsvector('french', tc.description) @@ q_tsquery
-        THEN ts_rank(to_tsvector('french', tc.description), q_tsquery)
-      ELSE 0.0
+        THEN 0.7 + ts_rank(to_tsvector('french', tc.description), q_tsquery) * 0.3
+      WHEN tq_tsquery IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_tsquery
+        THEN 0.7 + ts_rank(to_tsvector('french', tc.description), tq_tsquery) * 0.3
+      -- All words match designation
+      WHEN to_tsvector('french', COALESCE(tc.designation, '')) @@ q_tsquery
+        THEN 0.5 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), q_tsquery) * 0.3
+      WHEN tq_tsquery IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_tsquery
+        THEN 0.5 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), tq_tsquery) * 0.3
+      -- Any word matches description or designation (OR)
+      WHEN to_tsvector('french', tc.description) @@ q_or
+        THEN 0.3 + ts_rank(to_tsvector('french', tc.description), q_or) * 0.2
+      WHEN to_tsvector('french', COALESCE(tc.designation, '')) @@ q_or
+        THEN 0.2 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), q_or) * 0.2
+      WHEN tq_or IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_or
+        THEN 0.3 + ts_rank(to_tsvector('french', tc.description), tq_or) * 0.2
+      WHEN tq_or IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_or
+        THEN 0.2 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), tq_or) * 0.2
+      -- ILIKE fallbacks
+      WHEN lower(COALESCE(tc.designation, '')) LIKE '%' || lower(search_query) || '%' THEN 0.15
+      WHEN lower(tc.description) LIKE '%' || lower(search_query) || '%' THEN 0.1
+      ELSE 0.05
     END::REAL AS rank,
-    count(*) OVER()::BIGINT AS total_count
+    count(*) OVER()::BIGINT AS total_count,
+    tr.description,
+    tch.description
   FROM public.tariff_codes tc
+  LEFT JOIN public.tariff_rangees tr
+    ON tr.section_code = tc.section_code
+    AND tr.chapitre_code = tc.chapitre_code
+    AND tr.code = tc.range_code
+  LEFT JOIN public.tariff_chapitres tch
+    ON tch.section_code = tc.section_code
+    AND tch.code = tc.chapitre_code
   WHERE
     (section_filter IS NULL OR tc.section_code = section_filter)
     AND (
       tc.full_code ILIKE '%' || search_query || '%'
+      -- description FTS (uses GIN index)
       OR to_tsvector('french', tc.description) @@ q_tsquery
+      OR to_tsvector('french', tc.description) @@ q_plain
+      OR to_tsvector('french', tc.description) @@ q_or
+      -- designation FTS (uses GIN index)
+      OR to_tsvector('french', COALESCE(tc.designation, '')) @@ q_tsquery
+      OR to_tsvector('french', COALESCE(tc.designation, '')) @@ q_plain
+      OR to_tsvector('french', COALESCE(tc.designation, '')) @@ q_or
+      -- translated query FTS
       OR (tq_tsquery IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_tsquery)
+      OR (tq_tsquery IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_tsquery)
+      OR (tq_plain IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_plain)
+      OR (tq_plain IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_plain)
+      OR (tq_or IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_or)
+      OR (tq_or IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_or)
     )
   ORDER BY rank DESC, tc.full_code ASC
   LIMIT result_limit
@@ -152,6 +251,7 @@ RETURNS TABLE (
   unit TEXT,
   tax_advantages JSONB,
   designation TEXT,
+  cle TEXT,
   created_at TIMESTAMPTZ,
   updated_at TIMESTAMPTZ,
   section_code_val TEXT,
@@ -182,6 +282,7 @@ AS $$
     tc.unit,
     tc.tax_advantages,
     tc.designation,
+    tc.cle,
     tc.created_at,
     tc.updated_at,
     ts.code AS section_code_val,

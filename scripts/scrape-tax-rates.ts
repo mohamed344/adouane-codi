@@ -99,6 +99,10 @@ async function scrapeDetailPage(line: TariffLine): Promise<void> {
 
   // Extract metadata
   const bodyText = $("body").text();
+  const cleMatch = bodyText.match(/Cl[ée]\s+(\w)/i);
+  if (cleMatch) {
+    (line as any).cle = cleMatch[1];
+  }
   const groupeMatch = bodyText.match(/Groupe d'utilisation\s*:\s*([^\n]+)/i);
   if (groupeMatch) {
     line.usage_group = cleanText(groupeMatch[1]);

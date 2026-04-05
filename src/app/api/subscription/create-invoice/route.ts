@@ -83,18 +83,24 @@ export async function POST(request: NextRequest) {
     });
 
     if (!invoice.success) {
+      console.error("[SlickPay] Invoice creation failed:", JSON.stringify(invoice));
       return NextResponse.json(
         { error: invoice.message || "Failed to create invoice" },
         { status: 500 }
       );
     }
 
-    // In dev mode, use SlickPay's hosted invoice page (more reliable than sandbox SATIM)
-    // In production, use the direct SATIM payment URL
-    const paymentUrl =
-      process.env.NODE_ENV === "production"
-        ? invoice.url
-        : invoice.invoice?.url || invoice.url;
+    const paymentUrl = invoice.url;
+
+    console.log("[SlickPay] Invoice created:", { id: invoice.id, paymentUrl });
+
+    if (!paymentUrl) {
+      console.error("[SlickPay] No payment URL in response:", JSON.stringify(invoice));
+      return NextResponse.json(
+        { error: "Payment URL not available" },
+        { status: 500 }
+      );
+    }
 
     return NextResponse.json({
       paymentUrl,

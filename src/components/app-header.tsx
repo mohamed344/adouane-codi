@@ -1,0 +1,157 @@
+"use client";
+
+import { useState, useEffect } from "react";
+import { useTranslations, useLocale } from "next-intl";
+import { Link } from "@/i18n/routing";
+import { Button } from "@/components/ui/button";
+import { LanguageSwitcher } from "@/components/language-switcher";
+import { UserNav } from "@/components/user-nav";
+import { CustomsLogo } from "@/components/customs-logo";
+import { createClient } from "@/lib/supabase/client";
+import { Search, CreditCard, Home, Menu, X } from "lucide-react";
+
+type NavItem = "search" | "subscription" | "billing" | "profile" | "settings";
+
+interface AppHeaderProps {
+  activeItem?: NavItem;
+}
+
+const NAV_ITEMS: { key: NavItem; href: string; icon: typeof Search; labelKey: string }[] = [
+  { key: "search", href: "/search", icon: Search, labelKey: "common.search" },
+  { key: "subscription", href: "/subscription", icon: CreditCard, labelKey: "common.pricing" },
+];
+
+export function AppHeader({ activeItem }: AppHeaderProps) {
+  const t = useTranslations();
+  const locale = useLocale();
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [userName, setUserName] = useState("");
+  const [userEmail, setUserEmail] = useState("");
+
+  useEffect(() => {
+    async function loadUser() {
+      const supabase = createClient();
+      const { data: { user } } = await supabase.auth.getUser();
+      if (user) {
+        const firstName = user.user_metadata?.first_name || "";
+        const lastName = user.user_metadata?.last_name || "";
+        setUserName([firstName, lastName].filter(Boolean).join(" "));
+        setUserEmail(user.email || "");
+      }
+    }
+    loadUser();
+  }, []);
+
+  return (
+    <header className="sticky top-0 z-50 w-full border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="container flex h-14 items-center justify-between">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-2">
+            <CustomsLogo className="h-7 w-7" />
+            <span className="text-sm font-bold tracking-tight text-foreground hidden sm:inline">
+              {t("common.appName")}
+            </span>
+          </Link>
+
+          <nav className="hidden items-center gap-1 md:flex">
+            <Link
+              href="/"
+              className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/60 hover:text-primary transition-colors"
+            >
+              <Home className="h-3.5 w-3.5" />
+              {t("common.back")}
+            </Link>
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeItem === item.key;
+              const Icon = item.icon;
+              return isActive ? (
+                <span
+                  key={item.key}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-primary"
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {t(item.labelKey)}
+                </span>
+              ) : (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className="flex items-center gap-1.5 px-3 py-1.5 text-sm font-medium text-foreground/60 hover:text-primary transition-colors"
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  {t(item.labelKey)}
+                </Link>
+              );
+            })}
+          </nav>
+        </div>
+
+        <div className="hidden items-center gap-3 md:flex">
+          <LanguageSwitcher />
+          <UserNav userName={userName} userEmail={userEmail} />
+        </div>
+
+        {/* Mobile */}
+        <div className="flex items-center gap-1.5 md:hidden">
+          <LanguageSwitcher />
+          <Button
+            variant="ghost"
+            size="icon"
+            className="h-8 w-8"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+          >
+            {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
+          </Button>
+        </div>
+      </div>
+
+      {/* Mobile menu */}
+      <div
+        className={`md:hidden overflow-hidden transition-all duration-200 ${
+          mobileMenuOpen ? "max-h-80" : "max-h-0"
+        }`}
+      >
+        <div className="container pb-4">
+          <nav className="flex flex-col gap-1">
+            <Link
+              href="/"
+              className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
+              onClick={() => setMobileMenuOpen(false)}
+            >
+              <Home className="h-4 w-4" />
+              {t("common.back")}
+            </Link>
+            {NAV_ITEMS.map((item) => {
+              const isActive = activeItem === item.key;
+              const Icon = item.icon;
+              return isActive ? (
+                <span
+                  key={item.key}
+                  className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-primary"
+                >
+                  <Icon className="h-4 w-4" />
+                  {t(item.labelKey)}
+                </span>
+              ) : (
+                <Link
+                  key={item.key}
+                  href={item.href}
+                  className="flex items-center gap-2 px-3 py-2.5 text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon className="h-4 w-4" />
+                  {t(item.labelKey)}
+                </Link>
+              );
+            })}
+            <div className="pt-3 mt-2 border-t border-border">
+              <div className="px-3 py-2">
+                <UserNav userName={userName} userEmail={userEmail} />
+              </div>
+            </div>
+          </nav>
+        </div>
+      </div>
+    </header>
+  );
+}

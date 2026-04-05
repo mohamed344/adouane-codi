@@ -8,10 +8,9 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
-import { LanguageSwitcher } from "@/components/language-switcher";
 import { toast } from "@/components/ui/use-toast";
 import { Check, Loader2, Sparkles } from "lucide-react";
-import { CustomsLogo } from "@/components/customs-logo";
+import { AppHeader } from "@/components/app-header";
 import { CURRENCY, formatPrice } from "@/config/plans";
 
 interface Plan {
@@ -95,9 +94,11 @@ export default function SubscriptionPage() {
       window.location.href = data.paymentUrl;
     } catch (error) {
       console.error("Subscribe error:", error);
+      const errorMessage = error instanceof Error ? error.message : "";
       toast({
         variant: "destructive",
         title: t("subscription.paymentError"),
+        description: errorMessage || undefined,
       });
     } finally {
       setProcessingPlan(null);
@@ -105,28 +106,8 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col">
-      {/* Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.03] via-transparent to-primary/[0.06]" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-primary/[0.04] rounded-full blur-3xl" />
-      </div>
-
-      <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex h-14 items-center justify-between px-4 sm:px-6">
-            <Link href="/" className="flex items-center gap-2 group">
-              <CustomsLogo className="h-7 w-7 transition-transform duration-300" />
-              <span className="text-sm font-bold tracking-tight text-foreground">
-                {t("common.appName")}
-              </span>
-            </Link>
-            <div className="flex items-center gap-1.5">
-              <LanguageSwitcher />
-            </div>
-          </div>
-        </div>
-      </header>
+    <div className="flex min-h-screen flex-col bg-background">
+      <AppHeader activeItem="subscription" />
 
       <main className="flex flex-1 flex-col items-center justify-center p-4 py-12 pt-4">
         <div className="mb-12 text-center">

@@ -52,6 +52,7 @@ export async function GET(
       unit: row.unit,
       tax_advantages: row.tax_advantages,
       designation: row.designation,
+      cle: row.cle || null,
       created_at: row.created_at,
       updated_at: row.updated_at,
       section: row.section_code_val ? { code: row.section_code_val, description: row.section_desc } : null,

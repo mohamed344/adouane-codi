@@ -70,6 +70,7 @@ interface TariffLine {
   usage_group: string | null;    // "Biens de consommation", etc.
   unit: string | null;           // "U", "KG", etc.
   tax_advantages: TaxAdvantage[];
+  cle: string | null;            // Verification key, e.g. "P"
 }
 
 // ---------- Helpers ----------
@@ -206,6 +207,7 @@ async function scrapePositions(
         usage_group: null,
         unit: null,
         tax_advantages: [],
+        cle: null,
       });
     }
   });
@@ -228,8 +230,12 @@ async function scrapeTaxRates(line: TariffLine): Promise<TariffLine> {
   try {
     const $ = await fetchPage(url);
 
-    // Extract metadata: Groupe d'utilisation and Unité
+    // Extract metadata: Clé, Groupe d'utilisation and Unité
     const bodyText = $("body").text();
+    const cleMatch = bodyText.match(/Cl[ée]\s+(\w)/i);
+    if (cleMatch) {
+      line.cle = cleMatch[1];
+    }
     const groupeMatch = bodyText.match(/Groupe d'utilisation\s*:\s*([^\n]+)/i);
     if (groupeMatch) {
       line.usage_group = cleanText(groupeMatch[1]);

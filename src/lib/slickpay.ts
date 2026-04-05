@@ -1,7 +1,12 @@
-const SLICKPAY_BASE_URL =
-  process.env.NODE_ENV === "production"
-    ? "https://prodapi.slick-pay.com/api/v2"
-    : "https://devapi.slick-pay.com/api/v2";
+// Use production API when SLICKPAY_USE_PRODUCTION=true or in production env
+// The dev SATIM sandbox is unreliable (returns 500 errors)
+const useProduction =
+  process.env.SLICKPAY_USE_PRODUCTION === "true" ||
+  process.env.NODE_ENV === "production";
+
+const SLICKPAY_BASE_URL = useProduction
+  ? "https://prodapi.slick-pay.com/api/v2"
+  : "https://devapi.slick-pay.com/api/v2";
 
 interface SlickPayInvoiceParams {
   amount: number;
@@ -23,12 +28,6 @@ interface SlickPayInvoiceResponse {
   message: string;
   id: number;
   url: string;
-  invoice?: {
-    url: string;
-    deeplink: string;
-    serial: string;
-    [key: string]: unknown;
-  };
 }
 
 interface SlickPayInvoiceStatus {
@@ -43,9 +42,12 @@ interface SlickPayErrorResponse {
 }
 
 function getApiKey(): string {
-  const key = process.env.SLICKPAY_PUBLIC_KEY;
+  const key = useProduction
+    ? process.env.SLICKPAY_PRODUCTION_KEY
+    : process.env.SLICKPAY_PUBLIC_KEY;
+  const keyName = useProduction ? "SLICKPAY_PRODUCTION_KEY" : "SLICKPAY_PUBLIC_KEY";
   if (!key) {
-    throw new Error("SLICKPAY_PUBLIC_KEY is not configured");
+    throw new Error(`${keyName} is not configured`);
   }
   return key;
 }
@@ -54,7 +56,10 @@ async function slickPayRequest<T>(
   endpoint: string,
   options: RequestInit = {}
 ): Promise<T> {
-  const response = await fetch(`${SLICKPAY_BASE_URL}${endpoint}`, {
+  const url = `${SLICKPAY_BASE_URL}${endpoint}`;
+  console.log(`[SlickPay] ${options.method || "GET"} ${url}`);
+
+  const response = await fetch(url, {
     ...options,
     headers: {
       Authorization: `Bearer ${getApiKey()}`,
@@ -65,6 +70,7 @@ async function slickPayRequest<T>(
   });
 
   const data = await response.json();
+  console.log(`[SlickPay] Response ${response.status}:`, JSON.stringify(data));
 
   if (!response.ok) {
     const errorData = data as SlickPayErrorResponse;

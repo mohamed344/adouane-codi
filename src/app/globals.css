@@ -4,46 +4,46 @@
 
 :root {
   --background: 40 20% 97%;
-  --foreground: 240 20% 15%;
+  --foreground: 220 15% 15%;
   --card: 0 0% 100%;
-  --card-foreground: 240 20% 15%;
+  --card-foreground: 220 15% 15%;
   --popover: 0 0% 100%;
-  --popover-foreground: 240 20% 15%;
+  --popover-foreground: 220 15% 15%;
   --primary: 38 92% 50%;
   --primary-foreground: 0 0% 100%;
-  --secondary: 240 10% 14%;
+  --secondary: 220 14% 26%;
   --secondary-foreground: 210 40% 96%;
   --muted: 40 15% 93%;
-  --muted-foreground: 240 10% 40%;
-  --accent: 280 60% 55%;
+  --muted-foreground: 220 9% 40%;
+  --accent: 220 9% 46%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 84% 60%;
   --destructive-foreground: 210 40% 98%;
-  --border: 40 15% 88%;
-  --input: 40 15% 88%;
+  --border: 40 12% 88%;
+  --input: 40 12% 88%;
   --ring: 38 92% 50%;
   --radius: 0.625rem;
 }
 
 .dark {
-  --background: 240 15% 5%;
+  --background: 220 26% 7%;
   --foreground: 220 15% 90%;
-  --card: 240 10% 10%;
+  --card: 220 15% 10%;
   --card-foreground: 220 15% 90%;
-  --popover: 240 10% 10%;
+  --popover: 220 15% 10%;
   --popover-foreground: 220 15% 90%;
   --primary: 38 92% 50%;
-  --primary-foreground: 240 15% 5%;
-  --secondary: 240 10% 14%;
+  --primary-foreground: 220 26% 7%;
+  --secondary: 220 14% 26%;
   --secondary-foreground: 220 15% 90%;
-  --muted: 240 10% 15%;
+  --muted: 220 15% 13%;
   --muted-foreground: 220 10% 55%;
-  --accent: 280 60% 55%;
+  --accent: 220 9% 46%;
   --accent-foreground: 0 0% 100%;
   --destructive: 0 62% 30%;
   --destructive-foreground: 210 40% 98%;
-  --border: 240 10% 18%;
-  --input: 240 10% 18%;
+  --border: 220 12% 18%;
+  --input: 220 12% 18%;
   --ring: 38 92% 50%;
 }
 
@@ -99,6 +99,10 @@
   }
   body {
     @apply bg-background text-foreground;
+    font-family: var(--font-inter), system-ui, -apple-system, sans-serif;
+  }
+  [lang="ar"] body {
+    font-family: var(--font-noto-arabic), var(--font-inter), system-ui, sans-serif;
   }
   a,
   button,

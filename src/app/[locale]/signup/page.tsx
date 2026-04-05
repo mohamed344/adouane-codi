@@ -88,13 +88,7 @@ export default function SignUpPage() {
   }
 
   return (
-    <div className="relative flex min-h-screen flex-col items-center justify-center px-4 py-12">
-      {/* Background */}
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-b from-primary/[0.04] via-transparent to-primary/[0.02]" />
-        <div className="absolute top-[-20%] left-1/2 -translate-x-1/2 w-[600px] h-[600px] rounded-full bg-primary/[0.05] blur-3xl" />
-      </div>
-
+    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4 py-12">
       {/* Language switcher — top right */}
       <div className="fixed top-4 right-4 z-50">
         <LanguageSwitcher />
@@ -191,7 +185,7 @@ export default function SignUpPage() {
               </div>
             </CardContent>
             <CardFooter className="flex flex-col gap-4 pb-6">
-              <Button type="submit" className="w-full h-11 font-medium rounded-full shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30 transition-all" disabled={loading}>
+              <Button type="submit" className="w-full h-11 font-medium rounded-lg" disabled={loading}>
                 {loading && <Loader2 className="animate-spin" />}
                 {t("auth.signUpButton")}
               </Button>

@@ -147,6 +147,7 @@ async function seedTariffCodes(lines: TariffLine[]) {
       unit: l.unit || null,
       tax_advantages: l.tax_advantages || [],
       designation: l.designation || null,
+      cle: (l as any).cle || null,
     }));
     const { error } = await supabase
       .from("tariff_codes")

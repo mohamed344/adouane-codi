@@ -13,25 +13,16 @@ export default function SubscriptionCancelPage() {
   const router = useRouter();
 
   return (
-    <div className="relative flex min-h-screen flex-col">
-      <div className="fixed inset-0 -z-10">
-        <div className="absolute inset-0 bg-gradient-to-br from-destructive/[0.03] via-transparent to-primary/[0.06]" />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-destructive/[0.04] rounded-full blur-3xl" />
-      </div>
-
+    <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-50 w-full border-b border-border bg-background">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex h-14 items-center justify-between px-4 sm:px-6">
-            <Link href="/" className="flex items-center gap-2 group">
-              <CustomsLogo className="h-7 w-7 transition-transform duration-300" />
-              <span className="text-sm font-bold tracking-tight text-foreground">
-                {t("common.appName")}
-              </span>
-            </Link>
-            <div className="flex items-center gap-1.5">
-              <LanguageSwitcher />
-            </div>
-          </div>
+        <div className="container flex h-14 items-center justify-between">
+          <Link href="/" className="flex items-center gap-2">
+            <CustomsLogo className="h-7 w-7" />
+            <span className="text-sm font-bold tracking-tight text-foreground">
+              {t("common.appName")}
+            </span>
+          </Link>
+          <LanguageSwitcher />
         </div>
       </header>
 
