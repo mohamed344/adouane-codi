@@ -87,6 +87,8 @@
     "updatePassword": "Mettre a jour le mot de passe",
     "passwordUpdated": "Mot de passe mis a jour avec succes",
     "passwordError": "Echec de la mise a jour du mot de passe",
+    "currentPasswordRequired": "Veuillez entrer votre mot de passe actuel",
+    "currentPasswordWrong": "Le mot de passe actuel est incorrect",
     "languagePreference": "Preference de langue",
     "languageDescription": "Choisissez votre langue preferee pour l'interface",
     "notifications": "Notifications",

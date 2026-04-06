@@ -87,6 +87,8 @@
     "updatePassword": "تحديث كلمة المرور",
     "passwordUpdated": "تم تحديث كلمة المرور بنجاح",
     "passwordError": "فشل في تحديث كلمة المرور",
+    "currentPasswordRequired": "يرجى إدخال كلمة المرور الحالية",
+    "currentPasswordWrong": "كلمة المرور الحالية غير صحيحة",
     "languagePreference": "تفضيل اللغة",
     "languageDescription": "اختر لغتك المفضلة للواجهة",
     "notifications": "الإشعارات",

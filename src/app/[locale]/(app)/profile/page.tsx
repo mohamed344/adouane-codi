@@ -79,8 +79,8 @@ export default function ProfilePage() {
   }
 
   return (
-    <div>
-        <div className="py-8 max-w-2xl">
+    <div className="flex justify-center">
+        <div className="py-8 w-full max-w-2xl">
           <PageHeader
             title={t("profile.title")}
             subtitle={t("profile.subtitle")}

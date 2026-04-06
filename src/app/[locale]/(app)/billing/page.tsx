@@ -80,8 +80,8 @@ export default function BillingPage() {
   }
 
   return (
-    <div>
-        <div className="py-8">
+    <div className="flex justify-center">
+        <div className="py-8 w-full max-w-3xl">
           <PageHeader
             title={t("billing.title")}
             subtitle={t("billing.subtitle")}

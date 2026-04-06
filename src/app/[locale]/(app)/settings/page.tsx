@@ -37,6 +37,10 @@ export default function SettingsPage() {
     e.preventDefault();
     setPasswordError("");
 
+    if (!passwords.current) {
+      setPasswordError(t("settingsPage.currentPasswordRequired"));
+      return;
+    }
     if (passwords.new.length < 6) {
       setPasswordError(t("auth.passwordMin"));
       return;
@@ -48,6 +52,27 @@ export default function SettingsPage() {
 
     setPasswordLoading(true);
     const supabase = createClient();
+
+    // Verify current password by re-authenticating
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user?.email) {
+      setPasswordError(t("settingsPage.passwordError"));
+      setPasswordLoading(false);
+      return;
+    }
+
+    const { error: signInError } = await supabase.auth.signInWithPassword({
+      email: user.email,
+      password: passwords.current,
+    });
+
+    if (signInError) {
+      setPasswordError(t("settingsPage.currentPasswordWrong"));
+      setPasswordLoading(false);
+      return;
+    }
+
+    // Update to new password
     const { error } = await supabase.auth.updateUser({
       password: passwords.new,
     });
@@ -67,8 +92,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div>
-        <div className="py-8 max-w-2xl">
+    <div className="flex justify-center">
+        <div className="py-8 w-full max-w-2xl">
           <PageHeader
             title={t("settingsPage.title")}
             subtitle={t("settingsPage.subtitle")}
