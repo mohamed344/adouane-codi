@@ -8,7 +8,7 @@ export function Footer() {
   const t = useTranslations();
 
   return (
-    <footer className="bg-secondary text-secondary-foreground">
+    <footer className="bg-foreground text-white">
       <div className="container py-16">
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
           <div className="lg:col-span-1">
@@ -16,19 +16,19 @@ export function Footer() {
               <CustomsLogo className="h-9 w-9" />
               <span className="text-xl font-bold">{t("common.appName")}</span>
             </div>
-            <p className="text-sm text-secondary-foreground/70 leading-relaxed mb-6">
+            <p className="text-sm text-white/70 leading-relaxed mb-6">
               {t("landing.footerDesc")}
             </p>
-            <p className="text-xs text-secondary-foreground/50 italic">
+            <p className="text-xs text-white/50 italic">
               {t("landing.footerMinistry")}
             </p>
           </div>
 
           <div>
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-secondary-foreground/90">
+            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-white/90">
               {t("landing.footerQuickLinks")}
             </h4>
-            <ul className="space-y-3 text-sm text-secondary-foreground/70">
+            <ul className="space-y-3 text-sm text-white/70">
               {[
                 { href: "#services", label: t("common.services") },
                 { href: "#how-it-works", label: t("common.howItWorks") },
@@ -45,10 +45,10 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-secondary-foreground/90">
+            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-white/90">
               {t("landing.footerLegal")}
             </h4>
-            <ul className="space-y-3 text-sm text-secondary-foreground/70">
+            <ul className="space-y-3 text-sm text-white/70">
               {[
                 { label: t("common.about") },
                 { label: t("common.terms") },
@@ -64,10 +64,10 @@ export function Footer() {
           </div>
 
           <div>
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-secondary-foreground/90">
+            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-white/90">
               {t("landing.footerContact")}
             </h4>
-            <ul className="space-y-3 text-sm text-secondary-foreground/70">
+            <ul className="space-y-3 text-sm text-white/70">
               <li className="flex items-start gap-2">
                 <svg className="h-4 w-4 mt-0.5 shrink-0 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
@@ -92,20 +92,20 @@ export function Footer() {
         </div>
 
         {/* Disclaimer */}
-        <div className="mt-10 pt-6 border-t border-secondary-foreground/10">
-          <p className="text-xs text-secondary-foreground/40 leading-relaxed max-w-3xl">
+        <div className="mt-10 pt-6 border-t border-white/10">
+          <p className="text-xs text-white/40 leading-relaxed max-w-3xl">
             {t("disclaimer.footerText")}
           </p>
         </div>
 
-        <div className="mt-6 pt-6 border-t border-secondary-foreground/10 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-secondary-foreground/50">
+        <div className="mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
+          <p className="text-xs text-white/50">
             &copy; {new Date().getFullYear()} {t("common.appName")}. {t("landing.footerRights")}
           </p>
           <div className="flex items-center gap-4">
             <div className="flex items-center gap-1.5">
               <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span className="text-xs text-secondary-foreground/50">{t("common.systemOperational")}</span>
+              <span className="text-xs text-white/50">{t("common.systemOperational")}</span>
             </div>
           </div>
         </div>

@@ -1,18 +1,26 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
+import { Link, useRouter } from "@/i18n/routing";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LogOut } from "lucide-react";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { CustomsLogo } from "@/components/customs-logo";
 
 export function Header() {
   const t = useTranslations("common");
+  const router = useRouter();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  async function handleLogout() {
+    const supabase = createClient();
+    await supabase.auth.signOut();
+    setIsAuthenticated(false);
+    router.push("/login");
+  }
 
   useEffect(() => {
     const supabase = createClient();
@@ -59,9 +67,18 @@ export function Header() {
         <div className="hidden items-center gap-2 lg:flex">
           <LanguageSwitcher variant="dark" />
           {isAuthenticated ? (
-            <Button asChild size="sm" className="rounded-full h-9 px-5">
-              <Link href="/search">{t("dashboard")}</Link>
-            </Button>
+            <>
+              <Button asChild size="sm" className="rounded-full h-9 px-5">
+                <Link href="/search">{t("search")}</Link>
+              </Button>
+              <button
+                onClick={handleLogout}
+                className="flex h-9 w-9 items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
+                title={t("logout")}
+              >
+                <LogOut className="h-4 w-4" />
+              </button>
+            </>
           ) : (
             <>
               <Button variant="ghost" asChild size="sm" className="text-white/70 hover:text-white hover:bg-white/10 rounded-full">
@@ -111,9 +128,15 @@ export function Header() {
             ))}
             <div className="flex gap-2 pt-3 mt-2 border-t border-white/8">
               {isAuthenticated ? (
-                <Button asChild className="flex-1 rounded-full">
-                  <Link href="/search">{t("dashboard")}</Link>
-                </Button>
+                <>
+                  <Button asChild className="flex-1 rounded-full">
+                    <Link href="/search">{t("search")}</Link>
+                  </Button>
+                  <Button variant="ghost" className="text-white/70 hover:text-white hover:bg-white/10 rounded-full" onClick={handleLogout}>
+                    <LogOut className="h-4 w-4 me-1" />
+                    {t("logout")}
+                  </Button>
+                </>
               ) : (
                 <>
                   <Button variant="ghost" asChild className="flex-1 text-white/70 hover:text-white hover:bg-white/10 rounded-full">

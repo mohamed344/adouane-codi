@@ -110,7 +110,7 @@ export default function LandingPage() {
   ];
 
   const ctaHref = isAuthenticated ? "/search" : "/signup";
-  const ctaLabel = isAuthenticated ? t("common.dashboard") : t("landing.heroCta");
+  const ctaLabel = isAuthenticated ? t("common.search") : t("landing.heroCta");
 
   return (
     <div className="flex min-h-screen flex-col overflow-x-hidden">
@@ -432,7 +432,7 @@ export default function LandingPage() {
             </div>
             <Button size="lg" asChild className="h-12 px-8 rounded-xl text-base bg-white text-secondary hover:bg-white/90 shrink-0">
               <Link href={ctaHref}>
-                {isAuthenticated ? t("common.dashboard") : t("landing.ctaButton")}
+                {isAuthenticated ? t("common.search") : t("landing.ctaButton")}
                 <ArrowRight className="ms-2 h-4 w-4 rtl:rotate-180" />
               </Link>
             </Button>
