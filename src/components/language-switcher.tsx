@@ -55,7 +55,7 @@ export function LanguageSwitcher({ variant = "light" }: LanguageSwitcherProps) {
       {open && (
         <div className={`absolute end-0 top-full mt-2 w-36 rounded-xl p-1.5 z-50 ${
           isDark
-            ? "bg-secondary border border-white/10"
+            ? "bg-foreground border border-white/10"
             : "bg-popover border border-border"
         }`}>
           {languages.map((lang) => (

@@ -63,7 +63,7 @@ export function UserNav({ userName, userEmail, variant = "light" }: UserNavProps
       {open && (
         <div className={`absolute end-0 top-full mt-2 w-56 rounded-xl z-50 ${
           isDark
-            ? "bg-secondary border border-white/10"
+            ? "bg-foreground border border-white/10"
             : "border border-border bg-card"
         }`}>
           {(userName || userEmail) && (

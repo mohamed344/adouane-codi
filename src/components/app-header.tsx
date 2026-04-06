@@ -2,15 +2,23 @@
 
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
-import { Link } from "@/i18n/routing";
+import { Link, usePathname } from "@/i18n/routing";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { UserNav } from "@/components/user-nav";
 import { CustomsLogo } from "@/components/customs-logo";
 import { createClient } from "@/lib/supabase/client";
-import { Menu, X } from "lucide-react";
+import { Search, CreditCard, User, Settings, Menu, X } from "lucide-react";
+
+const NAV_ITEMS = [
+  { href: "/search", icon: Search, labelKey: "common.search" },
+  { href: "/subscription", icon: CreditCard, labelKey: "common.pricing" },
+  { href: "/profile", icon: User, labelKey: "common.profile" },
+  { href: "/settings", icon: Settings, labelKey: "common.settings" },
+] as const;
 
 export function AppHeader() {
   const t = useTranslations();
+  const pathname = usePathname();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [userName, setUserName] = useState("");
   const [userEmail, setUserEmail] = useState("");
@@ -29,20 +37,46 @@ export function AppHeader() {
     loadUser();
   }, []);
 
+  function isActive(href: string) {
+    if (href === "/search") return pathname === "/search";
+    return pathname.startsWith(href);
+  }
+
   return (
     <header className="sticky top-0 z-50 w-full py-3 px-4">
-      {/* Floating dark pill navbar */}
-      <div className="mx-auto max-w-5xl rounded-full bg-secondary/95 backdrop-blur-sm px-6 py-2.5 flex items-center justify-between">
+      <div className="mx-auto max-w-5xl rounded-full bg-foreground px-5 py-2 flex items-center justify-between">
         {/* Logo */}
-        <Link href="/" className="flex items-center gap-2">
+        <Link href="/" className="flex items-center gap-2 shrink-0">
           <CustomsLogo className="h-7 w-7" />
-          <span className="text-sm font-bold tracking-tight text-white">
+          <span className="text-sm font-bold tracking-tight text-white hidden sm:inline">
             {t("common.appName")}
           </span>
         </Link>
 
-        {/* Desktop actions */}
-        <div className="hidden items-center gap-3 md:flex">
+        {/* Center nav */}
+        <nav className="hidden md:flex items-center gap-0.5 mx-4">
+          {NAV_ITEMS.map((item) => {
+            const active = isActive(item.href);
+            const Icon = item.icon;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-sm font-medium transition-colors ${
+                  active
+                    ? "bg-white/15 text-white"
+                    : "text-white/55 hover:text-white hover:bg-white/8"
+                }`}
+              >
+                <Icon className="h-3.5 w-3.5" />
+                {t(item.labelKey)}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Right side */}
+        <div className="hidden md:flex items-center gap-2 shrink-0">
           <LanguageSwitcher variant="dark" />
           <UserNav userName={userName} userEmail={userEmail} variant="dark" />
         </div>
@@ -50,8 +84,9 @@ export function AppHeader() {
         {/* Mobile */}
         <div className="flex items-center gap-1.5 md:hidden">
           <LanguageSwitcher variant="dark" />
+          <UserNav userName={userName} userEmail={userEmail} variant="dark" />
           <button
-            className="flex h-9 w-9 items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
+            className="flex h-8 w-8 items-center justify-center rounded-full text-white/60 hover:text-white hover:bg-white/10 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
@@ -65,10 +100,28 @@ export function AppHeader() {
           mobileMenuOpen ? "max-h-80 mt-2" : "max-h-0"
         }`}
       >
-        <div className="mx-auto max-w-5xl rounded-2xl bg-secondary/95 backdrop-blur-sm px-6 pb-4 pt-2">
-          <div className="border-t border-white/10 pt-3">
-            <UserNav userName={userName} userEmail={userEmail} variant="dark" />
-          </div>
+        <div className="mx-auto max-w-5xl rounded-2xl bg-foreground px-4 pb-3 pt-1">
+          <nav className="flex flex-col gap-0.5">
+            {NAV_ITEMS.map((item) => {
+              const active = isActive(item.href);
+              const Icon = item.icon;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`flex items-center gap-2.5 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
+                    active
+                      ? "bg-white/15 text-white"
+                      : "text-white/60 hover:text-white hover:bg-white/8"
+                  }`}
+                  onClick={() => setMobileMenuOpen(false)}
+                >
+                  <Icon className="h-4 w-4" />
+                  {t(item.labelKey)}
+                </Link>
+              );
+            })}
+          </nav>
         </div>
       </div>
     </header>

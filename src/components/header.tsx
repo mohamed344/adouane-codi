@@ -28,7 +28,7 @@ export function Header() {
   return (
     <header className="sticky top-0 z-50 w-full py-3 px-4">
       {/* Floating dark pill navbar */}
-      <div className="mx-auto max-w-5xl rounded-full bg-secondary/95 backdrop-blur-sm px-6 py-2.5 flex items-center justify-between">
+      <div className="mx-auto max-w-5xl rounded-full bg-foreground backdrop-blur-sm px-6 py-2.5 flex items-center justify-between">
         {/* Logo */}
         <Link href="/" className="flex items-center gap-2">
           <CustomsLogo className="h-7 w-7" />
@@ -92,7 +92,7 @@ export function Header() {
           mobileMenuOpen ? "max-h-80 mt-2" : "max-h-0"
         }`}
       >
-        <div className="mx-auto max-w-5xl rounded-2xl bg-secondary/95 backdrop-blur-sm px-6 pb-4 pt-2">
+        <div className="mx-auto max-w-5xl rounded-2xl bg-foreground backdrop-blur-sm px-6 pb-4 pt-2">
           <nav className="flex flex-col gap-1">
             {[
               { href: "#services", label: t("services") },
@@ -109,7 +109,7 @@ export function Header() {
                 {item.label}
               </a>
             ))}
-            <div className="flex gap-2 pt-3 mt-2 border-t border-white/10">
+            <div className="flex gap-2 pt-3 mt-2 border-t border-white/8">
               {isAuthenticated ? (
                 <Button asChild className="flex-1 rounded-full">
                   <Link href="/search">{t("dashboard")}</Link>
