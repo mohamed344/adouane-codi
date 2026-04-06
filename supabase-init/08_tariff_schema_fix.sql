@@ -52,7 +52,10 @@ CREATE INDEX IF NOT EXISTS idx_tariff_rangees_description_fts
 CREATE INDEX IF NOT EXISTS idx_tariff_codes_designation_trgm
   ON public.tariff_codes USING gin (COALESCE(designation, '') gin_trgm_ops);
 
--- D) Create search_tariff_codes() RPC function
+-- D) Drop old overloaded version (4-param) to avoid Postgres ambiguity
+DROP FUNCTION IF EXISTS public.search_tariff_codes(text, text, int, int);
+
+-- Create search_tariff_codes() RPC function
 --    Used by /api/tariff/search route
 --    Searches description + designation via GIN indexes
 --    AND-based matching: all words must match when possible
