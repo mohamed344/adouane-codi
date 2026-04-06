@@ -188,7 +188,19 @@
     "lastNameRequired": "Last name is required",
     "signUpSuccess": "Account created successfully! Please check your email to verify.",
     "signInError": "Invalid email or password",
-    "signUpError": "Failed to create account. Please try again."
+    "signUpError": "Failed to create account. Please try again.",
+    "forgotPasswordTitle": "Reset Your Password",
+    "forgotPasswordSubtitle": "Enter your email and we'll send you a reset link",
+    "sendResetLink": "Send Reset Link",
+    "resetEmailSent": "Check your email for a password reset link",
+    "resetPasswordTitle": "Set New Password",
+    "resetPasswordSubtitle": "Enter your new password below",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "resetPasswordButton": "Reset Password",
+    "resetSuccess": "Password updated successfully",
+    "resetError": "Failed to reset password",
+    "backToLogin": "Back to login"
   },
   "subscription": {
     "title": "Choose Your Plan",

@@ -24,7 +24,7 @@ function detectLocaleFromHeader(request: NextRequest): string {
   return routing.defaultLocale;
 }
 
-const publicPages = ["/", "/login", "/signup"];
+const publicPages = ["/", "/login", "/signup", "/forgot-password", "/reset-password"];
 
 export async function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;

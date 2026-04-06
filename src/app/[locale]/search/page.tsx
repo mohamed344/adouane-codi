@@ -299,6 +299,19 @@ export default function SearchPage() {
       <AppHeader activeItem="search" />
 
       <main className="flex-1 pt-4">
+        {/* Hidden file input — always in DOM so both search bars can trigger it */}
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.xlsx"
+          className="hidden"
+          onChange={(e) => {
+            const file = e.target.files?.[0];
+            if (file) handleFileSelect(file);
+            e.target.value = "";
+          }}
+        />
+
         {/* Welcome screen */}
         {showWelcome && (
           <div className="flex flex-1 flex-col items-center justify-center px-4 min-h-[calc(100vh-6rem)]">
@@ -336,17 +349,6 @@ export default function SearchPage() {
                       <Paperclip className="h-5 w-5" />
                     )}
                   </button>
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept=".jpg,.jpeg,.png,.webp,.pdf,.docx,.xlsx"
-                    className="hidden"
-                    onChange={(e) => {
-                      const file = e.target.files?.[0];
-                      if (file) handleFileSelect(file);
-                      e.target.value = "";
-                    }}
-                  />
                   <Input
                     ref={inputRef}
                     value={query}
@@ -418,6 +420,46 @@ export default function SearchPage() {
         {/* Results section */}
         {hasSearched && (
           <div className="max-w-4xl mx-auto px-4 py-4">
+            {/* Search bar */}
+            <form onSubmit={handleSearch} className="flex gap-2 mb-6">
+              <div className="relative flex-1">
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={isAnalyzing}
+                  className="absolute start-3 top-1/2 -translate-y-1/2 p-1 rounded-full text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                  title={t("search.uploadButton")}
+                >
+                  {isAnalyzing ? (
+                    <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                  ) : (
+                    <Paperclip className="h-4 w-4" />
+                  )}
+                </button>
+                <Input
+                  ref={inputRef}
+                  value={query}
+                  onChange={(e) => setQuery(e.target.value)}
+                  placeholder={t("search.placeholder")}
+                  className="h-11 ps-11 pe-4 rounded-lg"
+                  dir="auto"
+                />
+              </div>
+              <Button
+                type="submit"
+                size="default"
+                className="h-11 px-6 rounded-lg"
+                disabled={loading || isAnalyzing || query.trim().length < 2}
+              >
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Search className="h-4 w-4" />
+                )}
+                <span className="hidden sm:inline ms-2">{t("search.button")}</span>
+              </Button>
+            </form>
+
             {/* Extracted keywords banner */}
             {extractedKeywords.length > 0 && (
               <div className="mb-4 bg-primary/5 border border-primary/20 rounded-lg p-4">

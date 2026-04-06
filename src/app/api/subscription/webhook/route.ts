@@ -47,8 +47,8 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Extract metadata
-    const metadata = body.webhook_meta_data || body.meta_data || [];
+    // Extract metadata (flat object or legacy array format)
+    const metadata = body.webhook_meta_data || body.meta_data || {};
     let userId = "";
     let planId = "";
     let billingCycle = "monthly";
@@ -59,6 +59,10 @@ export async function POST(request: NextRequest) {
         if (item.plan_id) planId = item.plan_id;
         if (item.billing_cycle) billingCycle = item.billing_cycle;
       }
+    } else {
+      userId = metadata.user_id || "";
+      planId = metadata.plan_id || "";
+      billingCycle = metadata.billing_cycle || "monthly";
     }
 
     if (completed === 1 && userId && planId) {

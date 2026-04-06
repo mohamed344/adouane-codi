@@ -70,15 +70,15 @@ export async function POST(request: NextRequest) {
       firstname: userData?.first_name || "",
       lastname: userData?.last_name || "",
       email: userData?.email || user.email || "",
-      phone: userData?.phone || "0000000000",
+      phone: userData?.phone || "0550000000",
       address: "Algeria",
       webhook_url: webhookUrl,
       webhook_signature: webhookSecret,
-      webhook_meta_data: [
-        { user_id: user.id },
-        { plan_id: planId },
-        { billing_cycle: plan.billing_cycle },
-      ],
+      webhook_meta_data: {
+        user_id: user.id,
+        plan_id: planId,
+        billing_cycle: plan.billing_cycle,
+      },
       note: `Subscription: ${planLabel} - ${plan.price} DA`,
     });
 

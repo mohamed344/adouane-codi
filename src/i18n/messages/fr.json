@@ -188,7 +188,19 @@
     "lastNameRequired": "Le nom est requis",
     "signUpSuccess": "Compte cree avec succes ! Veuillez verifier votre e-mail.",
     "signInError": "E-mail ou mot de passe invalide",
-    "signUpError": "Echec de la creation du compte. Veuillez reessayer."
+    "signUpError": "Echec de la creation du compte. Veuillez reessayer.",
+    "forgotPasswordTitle": "Reinitialiser votre mot de passe",
+    "forgotPasswordSubtitle": "Entrez votre e-mail et nous vous enverrons un lien de reinitialisation",
+    "sendResetLink": "Envoyer le lien",
+    "resetEmailSent": "Consultez votre e-mail pour un lien de reinitialisation",
+    "resetPasswordTitle": "Nouveau mot de passe",
+    "resetPasswordSubtitle": "Entrez votre nouveau mot de passe ci-dessous",
+    "newPassword": "Nouveau mot de passe",
+    "confirmNewPassword": "Confirmer le nouveau mot de passe",
+    "resetPasswordButton": "Reinitialiser le mot de passe",
+    "resetSuccess": "Mot de passe mis a jour avec succes",
+    "resetError": "Echec de la reinitialisation du mot de passe",
+    "backToLogin": "Retour a la connexion"
   },
   "subscription": {
     "title": "Choisissez votre plan",

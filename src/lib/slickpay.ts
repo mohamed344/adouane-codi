@@ -19,7 +19,7 @@ interface SlickPayInvoiceParams {
   address?: string;
   webhook_url?: string;
   webhook_signature?: string;
-  webhook_meta_data?: Record<string, string>[];
+  webhook_meta_data?: Record<string, string>;
   note?: string;
 }
 
@@ -69,15 +69,22 @@ async function slickPayRequest<T>(
     },
   });
 
-  const data = await response.json();
-  console.log(`[SlickPay] Response ${response.status}:`, JSON.stringify(data));
+  const text = await response.text();
+  console.log(`[SlickPay] Response ${response.status}:`, text.substring(0, 500));
+
+  let data: T;
+  try {
+    data = JSON.parse(text) as T;
+  } catch {
+    throw new Error(`SlickPay returned non-JSON (HTTP ${response.status}): ${text.substring(0, 200)}`);
+  }
 
   if (!response.ok) {
-    const errorData = data as SlickPayErrorResponse;
+    const errorData = data as unknown as SlickPayErrorResponse;
     throw new Error(errorData.message || `SlickPay API error: ${response.status}`);
   }
 
-  return data as T;
+  return data;
 }
 
 export async function createInvoice(
