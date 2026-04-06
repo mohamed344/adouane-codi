@@ -41,7 +41,7 @@ export function LanguageSwitcher() {
         <Globe className="h-5 w-5" />
       </Button>
       {open && (
-        <div className="absolute end-0 top-full mt-1 w-36 rounded-md border bg-popover p-1 shadow-md z-50">
+        <div className="absolute end-0 top-full mt-1 w-36 rounded-lg border bg-popover p-1 z-50">
           {languages.map((lang) => (
             <button
               key={lang.code}

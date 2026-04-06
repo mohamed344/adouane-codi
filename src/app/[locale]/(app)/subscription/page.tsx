@@ -10,7 +10,6 @@ import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
 import { Check, Loader2, Sparkles } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
 import { CURRENCY, formatPrice } from "@/config/plans";
 
 interface Plan {
@@ -106,10 +105,8 @@ export default function SubscriptionPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader activeItem="subscription" />
-
-      <main className="flex flex-1 flex-col items-center justify-center p-4 py-12 pt-4">
+    <div>
+      <div className="flex flex-col items-center justify-center py-12 pt-4">
         <div className="mb-12 text-center">
           <h1 className="text-3xl font-bold sm:text-4xl">
             {t("subscription.title")}
@@ -153,9 +150,9 @@ export default function SubscriptionPage() {
               return (
                 <Card
                   key={plan.id}
-                  className={`relative flex flex-col transition-all duration-300 hover:shadow-lg ${
+                  className={`relative flex flex-col transition-colors duration-200 ${
                     plan.is_popular
-                      ? "border-primary shadow-lg shadow-primary/10 scale-[1.02]"
+                      ? "bg-primary/5"
                       : ""
                   }`}
                 >
@@ -203,11 +200,7 @@ export default function SubscriptionPage() {
                     </ul>
 
                     <Button
-                      className={`w-full ${
-                        plan.is_popular
-                          ? "shadow-md shadow-primary/20 hover:shadow-lg hover:shadow-primary/30"
-                          : ""
-                      }`}
+                      className="w-full"
                       variant={plan.is_popular ? "default" : "outline"}
                       onClick={() => handleSubscribe(plan)}
                       disabled={processingPlan !== null}
@@ -227,7 +220,7 @@ export default function SubscriptionPage() {
             })}
           </div>
         )}
-      </main>
+      </div>
     </div>
   );
 }

@@ -45,7 +45,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
     <AdminProvider>
       <div className="flex min-h-screen flex-col">
         {/* Header */}
-        <header className="sticky top-0 z-50 w-full border-b bg-background/80 backdrop-blur-xl">
+        <header className="sticky top-0 z-50 w-full bg-background/98 backdrop-blur-sm">
           <div className="flex h-14 items-center justify-between px-4">
             <Link href="/" className="flex items-center gap-2.5 group">
               <CustomsLogo className="h-8 w-8 transition-transform duration-300 group-hover:scale-105" />
@@ -66,7 +66,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
 
         <div className="flex flex-1">
           {/* Sidebar */}
-          <aside className="hidden md:flex w-64 flex-col border-r bg-muted/30 p-4 gap-1">
+          <aside className="hidden md:flex w-64 flex-col bg-muted/30 p-4 gap-1">
             <nav className="flex flex-col gap-1">
               {sidebarItemDefs.map((item) => (
                 <Link

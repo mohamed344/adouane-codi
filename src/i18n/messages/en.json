@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "E-Douane",
+    "appName": "CODI PRO MAX",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -103,8 +103,8 @@
     "heroSearchPlaceholder": "Search HS codes, tariffs, regulations...",
     "stat1Value": "15,000+",
     "stat1Label": "Tariff Codes",
-    "stat2Value": "<1s",
-    "stat2Label": "Search Speed",
+    "stat2Value": "99.9%",
+    "stat2Label": "Accuracy",
     "stat3Value": "0 DA",
     "stat3Label": "Starting Price",
     "stat4Value": "98.5%",

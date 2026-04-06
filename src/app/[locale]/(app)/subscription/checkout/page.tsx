@@ -115,7 +115,7 @@ export default function CheckoutPage() {
       </header>
 
       <main className="flex flex-1 flex-col items-center justify-center p-4 py-12 pt-4">
-        <Card className="w-full max-w-md border-border/50 shadow-xl shadow-black/[0.04]">
+        <Card className="w-full max-w-md rounded-2xl bg-card">
           <CardContent className="pt-8 pb-8 text-center space-y-6">
             {error ? (
               <>

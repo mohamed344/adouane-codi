@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "E-Douane",
+    "appName": "CODI PRO MAX",
     "loading": "Chargement...",
     "save": "Enregistrer",
     "cancel": "Annuler",
@@ -103,8 +103,8 @@
     "heroSearchPlaceholder": "Rechercher codes SH, tarifs, reglementations...",
     "stat1Value": "15 000+",
     "stat1Label": "Codes Tarifaires",
-    "stat2Value": "<1s",
-    "stat2Label": "Vitesse de Recherche",
+    "stat2Value": "99.9%",
+    "stat2Label": "Precision",
     "stat3Value": "0 DA",
     "stat3Label": "Prix de Depart",
     "stat4Value": "98,5%",

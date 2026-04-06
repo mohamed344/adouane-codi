@@ -54,7 +54,7 @@ export function UserNav({ userName, userEmail }: UserNavProps) {
       </button>
 
       {open && (
-        <div className="absolute end-0 top-full mt-2 w-56 rounded-lg border border-border bg-card shadow-lg z-50">
+        <div className="absolute end-0 top-full mt-2 w-56 rounded-lg border border-border bg-card z-50">
           {(userName || userEmail) && (
             <div className="px-3 py-2.5 border-b border-border">
               {userName && (

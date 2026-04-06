@@ -177,7 +177,7 @@ export default function SubscriptionSuccessPage() {
               </p>
             </div>
 
-            <Card className="border-border/50 shadow-xl shadow-black/[0.04]">
+            <Card className="rounded-2xl bg-card">
               <CardHeader className="flex flex-row items-center justify-between pb-4 border-b">
                 <CardTitle className="text-lg flex items-center gap-2">
                   <Receipt className="h-5 w-5 text-primary" />
@@ -242,11 +242,11 @@ export default function SubscriptionSuccessPage() {
             </Card>
 
             <Button
-              className="w-full h-11 shadow-md shadow-primary/20"
+              className="w-full h-11"
               onClick={() => router.push("/search")}
             >
               {t("subscription.goToSearch")}
-              <ArrowRight className="h-4 w-4" />
+              <ArrowRight className="h-4 w-4 rtl:rotate-180" />
             </Button>
           </div>
         ) : (

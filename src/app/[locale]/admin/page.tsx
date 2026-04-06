@@ -117,7 +117,7 @@ export default function AdminDashboardPage() {
               </Card>
             ))
           : statCards.map((stat, i) => (
-              <Card key={i} className="hover:shadow-md transition-shadow">
+              <Card key={i} className="hover:bg-muted/30 transition-colors">
                 <CardContent className="flex items-center gap-4 pt-6">
                   <div className={`rounded-full ${stat.bg} p-3`}>
                     <stat.icon className={`h-6 w-6 ${stat.color}`} />

@@ -16,7 +16,6 @@ import {
   Sparkles,
   X,
 } from "lucide-react";
-import { AppHeader } from "@/components/app-header";
 import { InfoBanner } from "@/components/info-banner";
 import { CustomsLogo } from "@/components/customs-logo";
 import type { AnalysisResult } from "@/components/file-upload-zone";
@@ -295,10 +294,8 @@ export default function SearchPage() {
   const quickSearchItems = QUICK_SEARCH[locale] || QUICK_SEARCH.fr;
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader activeItem="search" />
-
-      <main className="flex-1 pt-4">
+    <div className="flex flex-col">
+      <div className="flex-1 pt-4">
         {/* Hidden file input — always in DOM so both search bars can trigger it */}
         <input
           ref={fileInputRef}
@@ -535,7 +532,7 @@ export default function SearchPage() {
 
             {/* Result detail panel */}
             {selectedResult && (
-              <div className="mb-6 bg-card border border-border rounded-xl overflow-hidden shadow-sm">
+              <div className="mb-6 bg-card border border-border rounded-xl overflow-hidden ">
                 {/* Header bar with code + close */}
                 <div className="bg-secondary px-5 py-3.5 flex items-center justify-between">
                   <div className="flex items-center gap-3">
@@ -769,9 +766,9 @@ export default function SearchPage() {
                     <button
                       key={item.full_code}
                       onClick={() => handleSelectResult(item)}
-                      className={`w-full text-start rounded-lg border px-4 py-3.5 transition-all hover:border-primary/30 hover:shadow-sm ${
+                      className={`w-full text-start rounded-lg border px-4 py-3.5 transition-all hover:border-primary/30 hover: ${
                         isSelected
-                          ? "border-primary/40 bg-primary/[0.03] shadow-sm"
+                          ? "border-primary/40 bg-primary/[0.03] "
                           : "border-border bg-card"
                       }`}
                     >
@@ -883,7 +880,7 @@ export default function SearchPage() {
 
           </div>
         )}
-      </main>
+      </div>
 
     </div>
   );

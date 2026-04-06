@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "الجمارك الرقمية",
+    "appName": "CODI PRO MAX",
     "loading": "جاري التحميل...",
     "save": "حفظ",
     "cancel": "إلغاء",
@@ -103,8 +103,8 @@
     "heroSearchPlaceholder": "ابحث عن رموز النظام المنسق، التعريفات، اللوائح...",
     "stat1Value": "+15,000",
     "stat1Label": "رمز تعريفي",
-    "stat2Value": "<1 ث",
-    "stat2Label": "سرعة البحث",
+    "stat2Value": "99.9%",
+    "stat2Label": "دقة النتائج",
     "stat3Value": "0 د.ج",
     "stat3Label": "سعر البداية",
     "stat4Value": "98.5%",

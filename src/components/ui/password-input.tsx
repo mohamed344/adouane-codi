@@ -15,7 +15,7 @@ const PasswordInput = React.forwardRef<
       <input
         type={showPassword ? "text" : "password"}
         className={cn(
-          "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 pe-10 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
+          "flex h-12 w-full rounded-lg border border-input bg-background px-4 py-3 pe-10 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
           className
         )}
         ref={ref}
@@ -24,7 +24,7 @@ const PasswordInput = React.forwardRef<
       <button
         type="button"
         tabIndex={-1}
-        className="absolute end-0 top-0 flex h-10 w-10 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+        className="absolute end-0 top-0 flex h-12 w-12 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
         onClick={() => setShowPassword((prev) => !prev)}
         aria-label={showPassword ? "Hide password" : "Show password"}
       >

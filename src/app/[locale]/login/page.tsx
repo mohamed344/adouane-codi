@@ -88,7 +88,7 @@ export default function LoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
       {/* Language switcher — top right */}
       <div className="fixed top-4 right-4 z-50">
         <LanguageSwitcher />
@@ -107,7 +107,7 @@ export default function LoginPage() {
         </div>
 
         {/* Form card */}
-        <Card className="border-border/50 shadow-xl shadow-black/[0.04]">
+        <Card className="rounded-2xl bg-card p-2">
           <form onSubmit={handleSubmit}>
             <CardContent className="space-y-4 pt-6">
               <div className="space-y-2">

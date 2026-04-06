@@ -4,7 +4,6 @@ import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
-import { AppHeader } from "@/components/app-header";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -68,11 +67,8 @@ export default function SettingsPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader activeItem="settings" />
-
-      <main className="flex-1">
-        <div className="container py-8 max-w-2xl">
+    <div>
+        <div className="py-8 max-w-2xl">
           <PageHeader
             title={t("settingsPage.title")}
             subtitle={t("settingsPage.subtitle")}
@@ -188,7 +184,6 @@ export default function SettingsPage() {
             </Card>
           </div>
         </div>
-      </main>
     </div>
   );
 }

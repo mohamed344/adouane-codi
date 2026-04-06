@@ -5,12 +5,19 @@ import { Toaster } from "@/components/ui/toaster";
 import { isRtl, type Locale } from "@/i18n/config";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Inter, Noto_Sans_Arabic } from "next/font/google";
+import { Inter, Lexend, Noto_Sans_Arabic } from "next/font/google";
 
 const inter = Inter({
   subsets: ["latin"],
   weight: ["400", "500", "600", "700"],
   variable: "--font-inter",
+  display: "swap",
+});
+
+const lexend = Lexend({
+  subsets: ["latin"],
+  weight: ["500", "600", "700", "800"],
+  variable: "--font-lexend",
   display: "swap",
 });
 
@@ -39,7 +46,7 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>
-      <body className={`${inter.variable} ${notoSansArabic.variable} min-h-screen antialiased`}>
+      <body className={`${inter.variable} ${lexend.variable} ${notoSansArabic.variable} min-h-screen antialiased`}>
         <ThemeProvider
           attribute="class"
           defaultTheme="light"

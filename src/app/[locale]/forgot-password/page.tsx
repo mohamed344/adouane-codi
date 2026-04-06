@@ -51,7 +51,7 @@ export default function ForgotPasswordPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-background px-4">
+    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
       <div className="fixed top-4 right-4 z-50">
         <LanguageSwitcher />
       </div>
@@ -68,7 +68,7 @@ export default function ForgotPasswordPage() {
           </p>
         </div>
 
-        <Card className="border-border/50 shadow-xl shadow-black/[0.04]">
+        <Card className="rounded-2xl bg-card p-2">
           {sent ? (
             <CardContent className="pt-8 pb-6 text-center space-y-4">
               <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-500/10">

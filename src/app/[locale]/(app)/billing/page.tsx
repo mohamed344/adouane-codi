@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
-import { AppHeader } from "@/components/app-header";
 import { PageHeader } from "@/components/page-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
@@ -81,11 +80,8 @@ export default function BillingPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-background">
-      <AppHeader activeItem="billing" />
-
-      <main className="flex-1">
-        <div className="container py-8">
+    <div>
+        <div className="py-8">
           <PageHeader
             title={t("billing.title")}
             subtitle={t("billing.subtitle")}
@@ -207,7 +203,6 @@ export default function BillingPage() {
             </div>
           )}
         </div>
-      </main>
     </div>
   );
 }
