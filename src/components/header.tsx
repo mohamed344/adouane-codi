@@ -13,7 +13,6 @@ export function Header() {
   const t = useTranslations("common");
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
-  const [scrolled, setScrolled] = useState(false);
 
   useEffect(() => {
     const supabase = createClient();
@@ -26,28 +25,19 @@ export function Header() {
     return () => subscription.unsubscribe();
   }, []);
 
-  useEffect(() => {
-    function onScroll() {
-      setScrolled(window.scrollY > 10);
-    }
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
   return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-colors duration-200 ${
-        scrolled ? "bg-background/98 backdrop-blur-sm" : "bg-background"
-      }`}
-    >
-      <div className="container flex h-16 items-center justify-between">
-        <Link href="/" className="flex items-center gap-2.5">
-          <CustomsLogo className="h-8 w-8" />
-          <span className="text-base font-bold tracking-tight text-foreground">
+    <header className="sticky top-0 z-50 w-full py-3 px-4">
+      {/* Floating dark pill navbar */}
+      <div className="mx-auto max-w-5xl rounded-full bg-secondary/95 backdrop-blur-sm px-6 py-2.5 flex items-center justify-between">
+        {/* Logo */}
+        <Link href="/" className="flex items-center gap-2">
+          <CustomsLogo className="h-7 w-7" />
+          <span className="text-sm font-bold tracking-tight text-white">
             {t("appName")}
           </span>
         </Link>
 
+        {/* Desktop nav */}
         <nav className="hidden items-center gap-1 lg:flex">
           {[
             { href: "#services", label: t("services") },
@@ -58,51 +48,51 @@ export function Header() {
             <a
               key={item.href}
               href={item.href}
-              className="px-3 py-1.5 text-sm font-medium text-foreground/60 hover:text-primary transition-colors"
+              className="px-3 py-1.5 text-sm font-medium text-white/60 hover:text-white transition-colors"
             >
               {item.label}
             </a>
           ))}
         </nav>
 
-        <div className="hidden items-center gap-3 lg:flex">
-          <LanguageSwitcher />
+        {/* Desktop actions */}
+        <div className="hidden items-center gap-2 lg:flex">
+          <LanguageSwitcher variant="dark" />
           {isAuthenticated ? (
-            <Button asChild size="sm" className="rounded-lg">
+            <Button asChild size="sm" className="rounded-full h-9 px-5">
               <Link href="/search">{t("dashboard")}</Link>
             </Button>
           ) : (
             <>
-              <Button variant="ghost" asChild size="sm">
+              <Button variant="ghost" asChild size="sm" className="text-white/70 hover:text-white hover:bg-white/10 rounded-full">
                 <Link href="/login">{t("login")}</Link>
               </Button>
-              <Button asChild size="sm" className="rounded-lg">
+              <Button asChild size="sm" className="rounded-full h-9 px-5">
                 <Link href="/signup">{t("signup")}</Link>
               </Button>
             </>
           )}
         </div>
 
+        {/* Mobile toggle */}
         <div className="flex items-center gap-1.5 lg:hidden">
-          <LanguageSwitcher />
-          <Button
-            variant="ghost"
-            size="icon"
-            className="h-8 w-8"
+          <LanguageSwitcher variant="dark" />
+          <button
+            className="flex h-9 w-9 items-center justify-center rounded-full text-white/70 hover:text-white hover:bg-white/10 transition-colors"
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
           >
             {mobileMenuOpen ? <X className="h-4 w-4" /> : <Menu className="h-4 w-4" />}
-          </Button>
+          </button>
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu dropdown */}
       <div
         className={`lg:hidden overflow-hidden transition-all duration-200 ${
-          mobileMenuOpen ? "max-h-80" : "max-h-0"
+          mobileMenuOpen ? "max-h-80 mt-2" : "max-h-0"
         }`}
       >
-        <div className="container pb-4">
+        <div className="mx-auto max-w-5xl rounded-2xl bg-secondary/95 backdrop-blur-sm px-6 pb-4 pt-2">
           <nav className="flex flex-col gap-1">
             {[
               { href: "#services", label: t("services") },
@@ -113,23 +103,23 @@ export function Header() {
               <a
                 key={item.href}
                 href={item.href}
-                className="px-3 py-2.5 text-sm font-medium text-foreground/70 hover:text-primary transition-colors"
+                className="px-3 py-2.5 text-sm font-medium text-white/70 hover:text-white transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {item.label}
               </a>
             ))}
-            <div className="flex gap-2 pt-3 mt-2 border-t border-border">
+            <div className="flex gap-2 pt-3 mt-2 border-t border-white/10">
               {isAuthenticated ? (
-                <Button asChild className="flex-1 rounded-lg">
+                <Button asChild className="flex-1 rounded-full">
                   <Link href="/search">{t("dashboard")}</Link>
                 </Button>
               ) : (
                 <>
-                  <Button variant="ghost" asChild className="flex-1">
+                  <Button variant="ghost" asChild className="flex-1 text-white/70 hover:text-white hover:bg-white/10 rounded-full">
                     <Link href="/login">{t("login")}</Link>
                   </Button>
-                  <Button asChild className="flex-1 rounded-lg">
+                  <Button asChild className="flex-1 rounded-full">
                     <Link href="/signup">{t("signup")}</Link>
                   </Button>
                 </>
