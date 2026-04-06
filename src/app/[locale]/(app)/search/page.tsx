@@ -351,7 +351,7 @@ export default function SearchPage() {
                     value={query}
                     onChange={(e) => setQuery(e.target.value)}
                     placeholder={t("search.placeholder")}
-                    className="h-14 text-lg ps-12 pe-6 rounded-lg"
+                    className="h-14 text-lg ps-12 pe-6 rounded-lg bg-white border-border/60"
                     dir="auto"
                   />
                 </div>
@@ -438,7 +438,7 @@ export default function SearchPage() {
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   placeholder={t("search.placeholder")}
-                  className="h-11 ps-11 pe-4 rounded-lg"
+                  className="h-11 ps-11 pe-4 rounded-lg bg-white border-border/60"
                   dir="auto"
                 />
               </div>
