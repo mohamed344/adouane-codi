@@ -4,14 +4,15 @@ import { useEffect, useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
+import { PageShell } from "@/components/page-shell";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Skeleton } from "@/components/ui/skeleton";
+import { Card } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
-import { User, Calendar, Loader2 } from "lucide-react";
+import { LoadingSkeleton } from "@/components/loading-skeleton";
+import { User, Calendar, Mail, Phone } from "lucide-react";
 
 export default function ProfilePage() {
   const t = useTranslations();
@@ -31,10 +32,7 @@ export default function ProfilePage() {
     async function load() {
       const supabase = createClient();
       const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/login");
-        return;
-      }
+      if (!user) { router.push("/login"); return; }
       setEmail(user.email || "");
       setCreatedAt(user.created_at || "");
       setFormData({
@@ -58,12 +56,8 @@ export default function ProfilePage() {
         phone: formData.phone,
       },
     });
-
-    if (error) {
-      toast({ variant: "destructive", title: t("profile.saveError") });
-    } else {
-      toast({ variant: "success", title: t("profile.saved") });
-    }
+    if (error) toast({ variant: "destructive", title: t("profile.saveError") });
+    else toast({ variant: "success", title: t("profile.saved") });
     setSaving(false);
   }
 
@@ -79,100 +73,98 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="flex justify-center">
-        <div className="py-8 w-full max-w-2xl">
-          <PageHeader
-            title={t("profile.title")}
-            subtitle={t("profile.subtitle")}
-          />
+    <PageShell maxWidth="narrow">
+      <PageHeader
+        title={t("profile.title")}
+        subtitle={t("profile.subtitle")}
+        breadcrumbs={[
+          { label: t("common.home", { defaultMessage: "Home" }), href: "/search" },
+          { label: t("profile.title") },
+        ]}
+      />
 
-          {loading ? (
-            <div className="space-y-6">
-              <Skeleton className="h-40 w-full" />
-              <Skeleton className="h-64 w-full" />
-            </div>
-          ) : (
-            <div className="space-y-6">
-              {/* Profile Card */}
-              <Card>
-                <CardContent className="pt-6">
-                  <div className="flex items-center gap-4">
-                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-primary-foreground text-xl font-bold">
-                      {initials}
-                    </div>
-                    <div>
-                      <p className="text-lg font-semibold">
-                        {formData.firstName} {formData.lastName}
-                      </p>
-                      <p className="text-sm text-muted-foreground">{email}</p>
-                      {createdAt && (
-                        <p className="text-xs text-muted-foreground mt-1 flex items-center gap-1">
-                          <Calendar className="h-3 w-3" />
-                          {t("profile.memberSince")} {formatDate(createdAt)}
-                        </p>
-                      )}
-                    </div>
+      {loading ? (
+        <LoadingSkeleton variant="profile-card" />
+      ) : (
+        <Card variant="default" className="overflow-hidden">
+          {/* Profile header */}
+          <div className="bg-gradient-to-r from-[hsl(var(--primary)/0.08)] via-[hsl(var(--primary)/0.03)] to-transparent px-6 py-8 sm:px-8">
+            <div className="flex items-center gap-5">
+              <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent-2))] text-xl font-semibold text-white shadow-[0_8px_24px_-8px_hsl(var(--primary)/0.45)]">
+                {initials}
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold tracking-[-0.015em] text-[hsl(var(--foreground))]">
+                  {formData.firstName} {formData.lastName}
+                </h2>
+                <div className="mt-1 flex items-center gap-1.5 text-sm text-[hsl(var(--muted-fg))]">
+                  <Mail className="size-3.5" />
+                  {email}
+                </div>
+                {createdAt ? (
+                  <div className="mt-1 flex items-center gap-1.5 text-xs text-[hsl(var(--muted-fg-2))]">
+                    <Calendar className="size-3" />
+                    {t("profile.memberSince")} {formatDate(createdAt)}
                   </div>
-                </CardContent>
-              </Card>
-
-              {/* Edit Form */}
-              <Card>
-                <CardHeader>
-                  <CardTitle className="flex items-center gap-2 text-lg">
-                    <User className="h-5 w-5 text-primary" />
-                    {t("profile.personalInfo")}
-                  </CardTitle>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleSave} className="space-y-4">
-                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                      <div className="space-y-2">
-                        <Label htmlFor="firstName">{t("common.firstName")}</Label>
-                        <Input
-                          id="firstName"
-                          value={formData.firstName}
-                          onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                          className="h-11"
-                        />
-                      </div>
-                      <div className="space-y-2">
-                        <Label htmlFor="lastName">{t("common.lastName")}</Label>
-                        <Input
-                          id="lastName"
-                          value={formData.lastName}
-                          onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                          className="h-11"
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="email">{t("common.email")}</Label>
-                      <Input id="email" value={email} disabled className="h-11 bg-muted" />
-                      <p className="text-xs text-muted-foreground">{t("profile.emailReadonly")}</p>
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="phone">{t("common.phone")}</Label>
-                      <Input
-                        id="phone"
-                        type="tel"
-                        value={formData.phone}
-                        onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                        className="h-11"
-                      />
-                    </div>
-                    <div className="pt-2">
-                      <Button type="submit" className="rounded-lg" disabled={saving}>
-                        {saving && <Loader2 className="animate-spin" />}
-                        {t("profile.saveChanges")}
-                      </Button>
-                    </div>
-                  </form>
-                </CardContent>
-              </Card>
+                ) : null}
+              </div>
             </div>
-          )}
-        </div>
-    </div>
+          </div>
+
+          <div className="border-t border-[hsl(var(--border))]" />
+
+          {/* Form */}
+          <div className="p-6 sm:p-8">
+            <div className="mb-6 flex items-center gap-2">
+              <User className="size-5 text-[hsl(var(--primary))]" />
+              <h3 className="text-base font-semibold tracking-[-0.015em] text-[hsl(var(--foreground))]">
+                {t("profile.personalInfo")}
+              </h3>
+            </div>
+
+            <form onSubmit={handleSave} className="space-y-5">
+              <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+                <FormField label={t("common.firstName")} htmlFor="firstName" required>
+                  <Input
+                    id="firstName"
+                    autoComplete="given-name"
+                    value={formData.firstName}
+                    onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
+                  />
+                </FormField>
+                <FormField label={t("common.lastName")} htmlFor="lastName" required>
+                  <Input
+                    id="lastName"
+                    autoComplete="family-name"
+                    value={formData.lastName}
+                    onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
+                  />
+                </FormField>
+              </div>
+
+              <FormField label={t("common.email")} htmlFor="email" hint={t("profile.emailReadonly")}>
+                <Input id="email" value={email} disabled />
+              </FormField>
+
+              <FormField label={t("common.phone")} htmlFor="phone">
+                <Input
+                  id="phone"
+                  type="tel"
+                  autoComplete="tel"
+                  value={formData.phone}
+                  onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+                />
+              </FormField>
+
+              <div className="pt-2">
+                <Button type="submit" size="lg" loading={saving} disabled={saving}>
+                  {t("profile.saveChanges")}
+                </Button>
+              </div>
+            </form>
+          </div>
+        </Card>
+      )}
+    </PageShell>
   );
 }

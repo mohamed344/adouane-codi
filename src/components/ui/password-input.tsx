@@ -3,40 +3,40 @@
 import * as React from "react";
 import { Eye, EyeOff } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { Input, InputGroup, InputRightSlot, type InputProps } from "@/components/ui/input";
 
-const PasswordInput = React.forwardRef<
-  HTMLInputElement,
-  React.InputHTMLAttributes<HTMLInputElement>
->(({ className, ...props }, ref) => {
-  const [showPassword, setShowPassword] = React.useState(false);
+export interface PasswordInputProps extends Omit<InputProps, "type"> {
+  toggleAriaLabel?: string;
+}
 
-  return (
-    <div className="relative">
-      <input
-        type={showPassword ? "text" : "password"}
-        className={cn(
-          "flex h-12 w-full rounded-lg border border-input bg-background px-4 py-3 pe-10 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-          className
-        )}
-        ref={ref}
-        {...props}
-      />
-      <button
-        type="button"
-        tabIndex={-1}
-        className="absolute end-0 top-0 flex h-12 w-12 items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
-        onClick={() => setShowPassword((prev) => !prev)}
-        aria-label={showPassword ? "Hide password" : "Show password"}
-      >
-        {showPassword ? (
-          <EyeOff className="h-4 w-4" />
-        ) : (
-          <Eye className="h-4 w-4" />
-        )}
-      </button>
-    </div>
-  );
-});
+const PasswordInput = React.forwardRef<HTMLInputElement, PasswordInputProps>(
+  ({ className, toggleAriaLabel = "Toggle password visibility", ...props }, ref) => {
+    const [visible, setVisible] = React.useState(false);
+
+    return (
+      <InputGroup>
+        <Input
+          ref={ref}
+          type={visible ? "text" : "password"}
+          className={cn("pe-10", className)}
+          {...props}
+        />
+        <InputRightSlot>
+          <button
+            type="button"
+            tabIndex={-1}
+            onClick={() => setVisible((v) => !v)}
+            aria-label={toggleAriaLabel}
+            aria-pressed={visible}
+            className="flex h-7 w-7 items-center justify-center rounded-md text-[hsl(var(--muted-fg))] transition-colors hover:bg-[hsl(var(--surface-2))] hover:text-[hsl(var(--foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+          >
+            {visible ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
+          </button>
+        </InputRightSlot>
+      </InputGroup>
+    );
+  }
+);
 PasswordInput.displayName = "PasswordInput";
 
 export { PasswordInput };

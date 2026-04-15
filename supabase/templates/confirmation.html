@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Confirm Your Email — CODI PRO MAX</title>
+</head>
+<body style="margin:0;padding:0;background-color:#f8fafc;font-family:'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;">
+  <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background-color:#f8fafc;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table role="presentation" width="480" cellpadding="0" cellspacing="0" style="background-color:#ffffff;border-radius:12px;border:1px solid #e2e8f0;overflow:hidden;max-width:480px;width:100%;">
+          <!-- Header -->
+          <tr>
+            <td style="background:linear-gradient(135deg,#1e3a5f 0%,#0d9488 100%);padding:32px 40px;text-align:center;">
+              <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto;">
+                <tr>
+                  <td style="width:36px;height:36px;background-color:rgba(255,255,255,0.2);border-radius:8px;text-align:center;vertical-align:middle;font-size:18px;font-weight:700;color:#ffffff;padding:0;">
+                    C
+                  </td>
+                  <td style="padding-left:10px;font-size:18px;font-weight:700;color:#ffffff;letter-spacing:-0.02em;">
+                    CODI PRO MAX
+                  </td>
+                </tr>
+              </table>
+            </td>
+          </tr>
+
+          <!-- Body -->
+          <tr>
+            <td style="padding:40px;">
+              <!-- Icon -->
+              <div style="width:48px;height:48px;background-color:#f0fdf4;border-radius:50%;margin:0 auto 20px;text-align:center;line-height:48px;">
+                <span style="font-size:24px;">&#9993;</span>
+              </div>
+
+              <h1 style="margin:0 0 8px;font-size:22px;font-weight:600;color:#0f172a;text-align:center;letter-spacing:-0.02em;">
+                Confirm Your Email
+              </h1>
+              <p style="margin:0 0 28px;font-size:14px;color:#64748b;text-align:center;line-height:1.6;">
+                Thank you for signing up for CODI PRO MAX. Please confirm your email address to activate your account.
+              </p>
+
+              <!-- CTA Button -->
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0">
+                <tr>
+                  <td align="center">
+                    <a href="{{ .ConfirmationURL }}"
+                       style="display:inline-block;background-color:#1e3a5f;color:#ffffff;font-size:14px;font-weight:600;text-decoration:none;padding:12px 32px;border-radius:10px;letter-spacing:-0.01em;">
+                      Confirm Email Address
+                    </a>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Divider -->
+              <hr style="margin:28px 0;border:none;border-top:1px solid #e2e8f0;" />
+
+              <p style="margin:0 0 12px;font-size:12px;color:#94a3b8;line-height:1.6;text-align:center;">
+                If the button doesn't work, copy and paste this link into your browser:
+              </p>
+              <p style="margin:0 0 0;font-size:11px;color:#0d9488;word-break:break-all;text-align:center;line-height:1.5;">
+                {{ .ConfirmationURL }}
+              </p>
+            </td>
+          </tr>
+
+          <!-- Footer -->
+          <tr>
+            <td style="background-color:#f8fafc;padding:20px 40px;border-top:1px solid #e2e8f0;">
+              <p style="margin:0;font-size:11px;color:#94a3b8;text-align:center;line-height:1.5;">
+                You received this email because you signed up for CODI PRO MAX.<br/>
+                If you didn't create an account, you can safely ignore this email.
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

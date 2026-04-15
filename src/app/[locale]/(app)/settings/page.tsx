@@ -4,85 +4,55 @@ import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/routing";
 import { createClient } from "@/lib/supabase/client";
+import { Lock, Globe, Bell, Check } from "lucide-react";
+import { PageShell } from "@/components/page-shell";
 import { PageHeader } from "@/components/page-header";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { FormField } from "@/components/form-field";
 import { Button } from "@/components/ui/button";
-import { Label } from "@/components/ui/label";
 import { PasswordInput } from "@/components/ui/password-input";
 import { Switch } from "@/components/ui/switch";
+import { Card } from "@/components/ui/card";
 import { toast } from "@/components/ui/use-toast";
-import { Lock, Globe, Bell, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const LANGUAGES = [
-  { code: "en", label: "English" },
-  { code: "fr", label: "Français" },
-  { code: "ar", label: "العربية" },
+  { code: "en", label: "English", flag: "EN" },
+  { code: "fr", label: "Français", flag: "FR" },
+  { code: "ar", label: "العربية", flag: "AR" },
 ] as const;
+
+const TABS = ["security", "language", "notifications"] as const;
+type Tab = (typeof TABS)[number];
 
 export default function SettingsPage() {
   const t = useTranslations();
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
+  const [activeTab, setActiveTab] = useState<Tab>("security");
 
-  const [passwords, setPasswords] = useState({
-    current: "",
-    new: "",
-    confirm: "",
-  });
+  const [passwords, setPasswords] = useState({ current: "", new: "", confirm: "" });
   const [passwordLoading, setPasswordLoading] = useState(false);
   const [passwordError, setPasswordError] = useState("");
 
   async function handlePasswordChange(e: React.FormEvent) {
     e.preventDefault();
     setPasswordError("");
-
-    if (!passwords.current) {
-      setPasswordError(t("settingsPage.currentPasswordRequired"));
-      return;
-    }
-    if (passwords.new.length < 6) {
-      setPasswordError(t("auth.passwordMin"));
-      return;
-    }
-    if (passwords.new !== passwords.confirm) {
-      setPasswordError(t("auth.passwordMatch"));
-      return;
-    }
+    if (!passwords.current) { setPasswordError(t("settingsPage.currentPasswordRequired")); return; }
+    if (passwords.new.length < 6) { setPasswordError(t("auth.passwordMin")); return; }
+    if (passwords.new !== passwords.confirm) { setPasswordError(t("auth.passwordMatch")); return; }
 
     setPasswordLoading(true);
     const supabase = createClient();
-
-    // Verify current password by re-authenticating
     const { data: { user } } = await supabase.auth.getUser();
-    if (!user?.email) {
-      setPasswordError(t("settingsPage.passwordError"));
-      setPasswordLoading(false);
-      return;
-    }
+    if (!user?.email) { setPasswordError(t("settingsPage.passwordError")); setPasswordLoading(false); return; }
 
-    const { error: signInError } = await supabase.auth.signInWithPassword({
-      email: user.email,
-      password: passwords.current,
-    });
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email: user.email, password: passwords.current });
+    if (signInError) { setPasswordError(t("settingsPage.currentPasswordWrong")); setPasswordLoading(false); return; }
 
-    if (signInError) {
-      setPasswordError(t("settingsPage.currentPasswordWrong"));
-      setPasswordLoading(false);
-      return;
-    }
-
-    // Update to new password
-    const { error } = await supabase.auth.updateUser({
-      password: passwords.new,
-    });
-
-    if (error) {
-      toast({ variant: "destructive", title: t("settingsPage.passwordError") });
-    } else {
-      toast({ variant: "success", title: t("settingsPage.passwordUpdated") });
-      setPasswords({ current: "", new: "", confirm: "" });
-    }
+    const { error } = await supabase.auth.updateUser({ password: passwords.new });
+    if (error) toast({ variant: "destructive", title: t("settingsPage.passwordError") });
+    else { toast({ variant: "success", title: t("settingsPage.passwordUpdated") }); setPasswords({ current: "", new: "", confirm: "" }); }
     setPasswordLoading(false);
   }
 
@@ -91,124 +61,163 @@ export default function SettingsPage() {
     router.replace(pathname, { locale: langCode });
   }
 
-  return (
-    <div className="flex justify-center">
-        <div className="py-8 w-full max-w-2xl">
-          <PageHeader
-            title={t("settingsPage.title")}
-            subtitle={t("settingsPage.subtitle")}
-          />
+  const tabConfig = {
+    security: { icon: Lock, label: t("settingsPage.changePassword") },
+    language: { icon: Globe, label: t("settingsPage.languagePreference") },
+    notifications: { icon: Bell, label: t("settingsPage.notifications") },
+  };
 
-          <div className="space-y-6">
-            {/* Change Password */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Lock className="h-5 w-5 text-primary" />
-                  {t("settingsPage.changePassword")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <form onSubmit={handlePasswordChange} className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="currentPassword">{t("settingsPage.currentPassword")}</Label>
+  return (
+    <PageShell maxWidth="wide">
+      <PageHeader
+        title={t("settingsPage.title")}
+        subtitle={t("settingsPage.subtitle")}
+        breadcrumbs={[
+          { label: t("common.home", { defaultMessage: "Home" }), href: "/search" },
+          { label: t("settingsPage.title") },
+        ]}
+      />
+
+      <div className="flex flex-col gap-6 md:flex-row">
+        {/* Tab navigation */}
+        <nav className="shrink-0 md:w-56">
+          <div className="flex gap-1 overflow-x-auto md:flex-col md:overflow-visible">
+            {TABS.map((tab) => {
+              const config = tabConfig[tab];
+              const Icon = config.icon;
+              const isActive = activeTab === tab;
+              return (
+                <button
+                  key={tab}
+                  type="button"
+                  onClick={() => setActiveTab(tab)}
+                  className={cn(
+                    "flex min-h-[44px] items-center gap-3 whitespace-nowrap rounded-lg px-3 py-2.5 text-sm font-medium transition-colors",
+                    isActive
+                      ? "bg-[hsl(var(--primary)/0.10)] text-[hsl(var(--primary-2))]"
+                      : "text-[hsl(var(--muted-fg))] hover:bg-[hsl(var(--surface-2))] hover:text-[hsl(var(--foreground))]"
+                  )}
+                >
+                  <Icon className="size-4 shrink-0" />
+                  {config.label}
+                </button>
+              );
+            })}
+          </div>
+        </nav>
+
+        {/* Content */}
+        <div className="flex-1">
+          <Card variant="default" className="overflow-hidden">
+            {/* Security */}
+            {activeTab === "security" ? (
+              <div className="p-6 sm:p-8">
+                <div className="mb-6 flex items-center gap-2">
+                  <Lock className="size-5 text-[hsl(var(--primary))]" />
+                  <h3 className="text-base font-semibold">{t("settingsPage.changePassword")}</h3>
+                </div>
+                <form onSubmit={handlePasswordChange} className="max-w-md space-y-5">
+                  <FormField label={t("settingsPage.currentPassword")} htmlFor="currentPassword" required>
                     <PasswordInput
                       id="currentPassword"
+                      autoComplete="current-password"
                       value={passwords.current}
                       onChange={(e) => setPasswords({ ...passwords, current: e.target.value })}
-                      className="h-11"
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="newPassword">{t("settingsPage.newPassword")}</Label>
+                  </FormField>
+                  <FormField label={t("settingsPage.newPassword")} htmlFor="newPassword" required>
                     <PasswordInput
                       id="newPassword"
+                      autoComplete="new-password"
                       value={passwords.new}
                       onChange={(e) => setPasswords({ ...passwords, new: e.target.value })}
-                      className="h-11"
                     />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmNewPassword">{t("settingsPage.confirmNewPassword")}</Label>
+                  </FormField>
+                  <FormField label={t("settingsPage.confirmNewPassword")} htmlFor="confirmNewPassword" required>
                     <PasswordInput
                       id="confirmNewPassword"
+                      autoComplete="new-password"
                       value={passwords.confirm}
                       onChange={(e) => setPasswords({ ...passwords, confirm: e.target.value })}
-                      className="h-11"
                     />
-                  </div>
-                  {passwordError && (
-                    <p className="text-sm text-destructive">{passwordError}</p>
-                  )}
-                  <div className="pt-2">
-                    <Button type="submit" className="rounded-lg" disabled={passwordLoading}>
-                      {passwordLoading && <Loader2 className="animate-spin" />}
-                      {t("settingsPage.updatePassword")}
-                    </Button>
-                  </div>
+                  </FormField>
+                  {passwordError ? (
+                    <p role="alert" className="text-sm text-[hsl(var(--destructive))]">{passwordError}</p>
+                  ) : null}
+                  <Button type="submit" size="lg" loading={passwordLoading} disabled={passwordLoading}>
+                    {t("settingsPage.updatePassword")}
+                  </Button>
                 </form>
-              </CardContent>
-            </Card>
+              </div>
+            ) : null}
 
-            {/* Language Preference */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Globe className="h-5 w-5 text-primary" />
-                  {t("settingsPage.languagePreference")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <p className="text-sm text-muted-foreground mb-4">
+            {/* Language */}
+            {activeTab === "language" ? (
+              <div className="p-6 sm:p-8">
+                <div className="mb-2 flex items-center gap-2">
+                  <Globe className="size-5 text-[hsl(var(--primary))]" />
+                  <h3 className="text-base font-semibold">{t("settingsPage.languagePreference")}</h3>
+                </div>
+                <p className="mb-6 text-sm text-[hsl(var(--muted-fg))]">
                   {t("settingsPage.languageDescription")}
                 </p>
-                <div className="flex flex-wrap gap-3">
-                  {LANGUAGES.map((lang) => (
-                    <button
-                      key={lang.code}
-                      onClick={() => handleLanguageChange(lang.code)}
-                      className={`px-4 py-2.5 rounded-lg border text-sm font-medium transition-colors ${
-                        locale === lang.code
-                          ? "border-primary bg-primary/10 text-primary"
-                          : "border-border text-foreground/70 hover:border-foreground/30 hover:bg-muted"
-                      }`}
-                    >
-                      {lang.label}
-                    </button>
-                  ))}
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
+                  {LANGUAGES.map((lang) => {
+                    const isSelected = locale === lang.code;
+                    return (
+                      <button
+                        key={lang.code}
+                        type="button"
+                        onClick={() => handleLanguageChange(lang.code)}
+                        className={cn(
+                          "relative flex flex-col items-center gap-2 rounded-xl border-2 p-5 text-sm font-medium transition-all",
+                          isSelected
+                            ? "border-[hsl(var(--primary))] bg-[hsl(var(--primary-soft))] text-[hsl(var(--primary-2))]"
+                            : "border-[hsl(var(--border))] text-[hsl(var(--foreground-2))] hover:border-[hsl(var(--border-2))] hover:bg-[hsl(var(--surface))]"
+                        )}
+                      >
+                        {isSelected ? (
+                          <div className="absolute end-2.5 top-2.5">
+                            <Check className="size-4 text-[hsl(var(--primary))]" />
+                          </div>
+                        ) : null}
+                        <span className="text-2xl font-bold">{lang.flag}</span>
+                        <span>{lang.label}</span>
+                      </button>
+                    );
+                  })}
                 </div>
-              </CardContent>
-            </Card>
+              </div>
+            ) : null}
 
             {/* Notifications */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-lg">
-                  <Bell className="h-5 w-5 text-primary" />
-                  {t("settingsPage.notifications")}
-                </CardTitle>
-              </CardHeader>
-              <CardContent>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
+            {activeTab === "notifications" ? (
+              <div className="p-6 sm:p-8">
+                <div className="mb-6 flex items-center gap-2">
+                  <Bell className="size-5 text-[hsl(var(--primary))]" />
+                  <h3 className="text-base font-semibold">{t("settingsPage.notifications")}</h3>
+                </div>
+                <div className="space-y-1">
+                  <div className="flex items-center justify-between rounded-lg p-4 transition-colors hover:bg-[hsl(var(--surface))]">
                     <div>
-                      <p className="text-sm font-medium">{t("settingsPage.subscriptionReminders")}</p>
-                      <p className="text-xs text-muted-foreground">{t("settingsPage.emailNotifications")}</p>
+                      <p className="text-sm font-medium text-[hsl(var(--foreground))]">{t("settingsPage.subscriptionReminders")}</p>
+                      <p className="mt-0.5 text-xs text-[hsl(var(--muted-fg))]">{t("settingsPage.emailNotifications")}</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
-                  <div className="flex items-center justify-between">
+                  <div className="flex items-center justify-between rounded-lg p-4 transition-colors hover:bg-[hsl(var(--surface))]">
                     <div>
-                      <p className="text-sm font-medium">{t("settingsPage.productUpdates")}</p>
-                      <p className="text-xs text-muted-foreground">{t("settingsPage.emailNotifications")}</p>
+                      <p className="text-sm font-medium text-[hsl(var(--foreground))]">{t("settingsPage.productUpdates")}</p>
+                      <p className="mt-0.5 text-xs text-[hsl(var(--muted-fg))]">{t("settingsPage.emailNotifications")}</p>
                     </div>
                     <Switch defaultChecked />
                   </div>
                 </div>
-              </CardContent>
-            </Card>
-          </div>
+              </div>
+            ) : null}
+          </Card>
         </div>
-    </div>
+      </div>
+    </PageShell>
   );
 }

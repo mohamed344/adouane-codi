@@ -2,7 +2,8 @@
 
 import { useState, useRef, useCallback } from "react";
 import { useTranslations } from "next-intl";
-import { Upload, FileText, ImageIcon, Loader2, X, AlertCircle } from "lucide-react";
+import { Upload, Loader2 } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
 
@@ -32,6 +33,10 @@ interface FileUploadZoneProps {
   setIsAnalyzing: (v: boolean) => void;
 }
 
+/**
+ * FileUploadZone — drag-and-drop / click upload that POSTs to /api/tariff/analyze.
+ * Backend integration is unchanged; only the visual layer was redesigned.
+ */
 export function FileUploadZone({
   locale,
   onAnalysisComplete,
@@ -46,13 +51,10 @@ export function FileUploadZone({
 
   const handleFile = useCallback(
     async (file: File) => {
-      // Validate type
       if (!ACCEPTED_TYPES[file.type]) {
         onError(t("uploadInvalidType"));
         return;
       }
-
-      // Validate size
       if (file.size > MAX_FILE_SIZE) {
         onError(t("uploadFileTooLarge"));
         return;
@@ -73,15 +75,10 @@ export function FileUploadZone({
 
         if (!response.ok) {
           const data = await response.json();
-          if (data.error === "INVALID_FILE_TYPE") {
-            onError(t("uploadInvalidType"));
-          } else if (data.error === "FILE_TOO_LARGE") {
-            onError(t("uploadFileTooLarge"));
-          } else if (data.error === "EMPTY_DOCUMENT") {
-            onError(t("uploadEmptyDoc"));
-          } else {
-            onError(t("uploadError"));
-          }
+          if (data.error === "INVALID_FILE_TYPE") onError(t("uploadInvalidType"));
+          else if (data.error === "FILE_TOO_LARGE") onError(t("uploadFileTooLarge"));
+          else if (data.error === "EMPTY_DOCUMENT") onError(t("uploadEmptyDoc"));
+          else onError(t("uploadError"));
           return;
         }
 
@@ -121,33 +118,35 @@ export function FileUploadZone({
     (e: React.ChangeEvent<HTMLInputElement>) => {
       const file = e.target.files?.[0];
       if (file) handleFile(file);
-      // Reset input so the same file can be selected again
       e.target.value = "";
     },
     [handleFile]
   );
 
-  const getFileIcon = () => {
-    if (isAnalyzing) return <Loader2 className="h-8 w-8 animate-spin text-primary" />;
-    if (isDragging) return <Upload className="h-8 w-8 text-primary" />;
-    return <Upload className="h-8 w-8 text-muted-foreground" />;
-  };
-
   return (
     <div
+      role="button"
+      tabIndex={0}
       onDrop={handleDrop}
       onDragOver={handleDragOver}
       onDragLeave={handleDragLeave}
       onClick={() => !isAnalyzing && fileInputRef.current?.click()}
-      className={`
-        relative cursor-pointer rounded-lg border-2 border-dashed p-6
-        transition-all duration-200 text-center
-        ${isDragging
-          ? "border-primary bg-primary/5 scale-[1.01]"
-          : "border-border hover:border-primary/50 hover:bg-muted/50"
+      onKeyDown={(e) => {
+        if ((e.key === "Enter" || e.key === " ") && !isAnalyzing) {
+          e.preventDefault();
+          fileInputRef.current?.click();
         }
-        ${isAnalyzing ? "pointer-events-none opacity-75" : ""}
-      `}
+      }}
+      aria-label={t("uploadTitle")}
+      aria-busy={isAnalyzing}
+      className={cn(
+        "relative cursor-pointer rounded-xl border-2 border-dashed p-8 text-center transition-all duration-200",
+        "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]",
+        isDragging
+          ? "border-[hsl(var(--primary))] bg-[hsl(var(--primary-soft))]"
+          : "border-[hsl(var(--border-2))] hover:border-[hsl(var(--primary))] hover:bg-[hsl(var(--surface))]",
+        isAnalyzing && "pointer-events-none opacity-75"
+      )}
     >
       <input
         ref={fileInputRef}
@@ -158,21 +157,42 @@ export function FileUploadZone({
       />
 
       <div className="flex flex-col items-center gap-3">
-        {getFileIcon()}
+        <div
+          className={cn(
+            "flex h-12 w-12 items-center justify-center rounded-xl",
+            isDragging || isAnalyzing
+              ? "bg-[hsl(var(--primary)/0.12)] text-[hsl(var(--primary))]"
+              : "bg-[hsl(var(--surface-2))] text-[hsl(var(--muted-fg))]"
+          )}
+        >
+          {isAnalyzing ? (
+            <Loader2 className="h-6 w-6 animate-spin" />
+          ) : (
+            <Upload className="h-6 w-6" />
+          )}
+        </div>
 
         {isAnalyzing ? (
           <div className="space-y-1">
-            <p className="text-sm font-medium text-foreground">{t("uploadAnalyzing")}</p>
-            {fileName && (
-              <p className="text-xs text-muted-foreground">{fileName}</p>
-            )}
+            <p className="text-sm font-medium text-[hsl(var(--foreground))]">
+              {t("uploadAnalyzing")}
+            </p>
+            {fileName ? (
+              <p className="font-mono text-xs text-[hsl(var(--muted-fg))]">{fileName}</p>
+            ) : null}
           </div>
         ) : isDragging ? (
-          <p className="text-sm font-medium text-primary">{t("uploadDragActive")}</p>
+          <p className="text-sm font-medium text-[hsl(var(--primary))]">
+            {t("uploadDragActive")}
+          </p>
         ) : (
           <div className="space-y-1">
-            <p className="text-sm font-medium text-foreground">{t("uploadTitle")}</p>
-            <p className="text-xs text-muted-foreground">{t("uploadSubtitle")}</p>
+            <p className="text-sm font-medium text-[hsl(var(--foreground))]">
+              {t("uploadTitle")}
+            </p>
+            <p className="text-xs text-[hsl(var(--muted-fg))]">
+              {t("uploadSubtitle")}
+            </p>
           </div>
         )}
       </div>

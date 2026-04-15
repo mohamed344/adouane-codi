@@ -15,9 +15,14 @@ const ALLOWED_TYPES = new Set([
 
 const IMAGE_TYPES = new Set(["image/jpeg", "image/png", "image/webp"]);
 
-const ANALYSIS_PROMPT = `You are analyzing a document related to international trade and customs.
-Extract the product names, descriptions, and any HS/tariff codes mentioned.
+function buildAnalysisPrompt(userContext?: string): string {
+  const contextLine = userContext
+    ? `\nThe user also provided this description/context: "${userContext}". Use it to better identify the relevant products and generate more precise keywords.\n`
+    : "";
 
+  return `You are analyzing a document related to international trade and customs.
+Extract the product names, descriptions, and any HS/tariff codes mentioned.
+${contextLine}
 Return ONLY a valid JSON object with this exact structure:
 {
   "keywords": ["keyword1", "keyword2"],
@@ -26,16 +31,18 @@ Return ONLY a valid JSON object with this exact structure:
 }
 
 Rules:
-- "keywords" should contain 3-8 product keywords suitable for customs tariff code search. Keywords MUST be in French (the Algerian customs database is in French).
+- "keywords" should contain 3-8 product keywords suitable for customs tariff code search. Keywords MUST be in French (the Algerian customs database is in French).${userContext ? "\n- Prioritize keywords that match the user's description/context." : ""}
 - "description" is a 1-2 sentence summary of the products found.
 - "detectedCodes" lists any HS/tariff codes explicitly found in the document (empty array if none).
 - Return ONLY the JSON, no markdown fences, no other text.`;
+}
 
 export async function POST(request: NextRequest) {
   try {
     const formData = await request.formData();
     const file = formData.get("file") as File | null;
     const lang = (formData.get("lang") as string) || "fr";
+    const userContext = (formData.get("context") as string) || "";
 
     if (!file) {
       return NextResponse.json({ error: "NO_FILE" }, { status: 400 });
@@ -78,7 +85,7 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    parts.push({ text: ANALYSIS_PROMPT });
+    parts.push({ text: buildAnalysisPrompt(userContext || undefined) });
 
     const result = await model.generateContent(parts);
     const response = result.response;

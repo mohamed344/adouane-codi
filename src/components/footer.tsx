@@ -2,89 +2,113 @@
 
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/routing";
+import { ArrowUp, Mail, MapPin, Phone } from "lucide-react";
 import { CustomsLogo } from "@/components/customs-logo";
 
+/**
+ * Footer — slate-50 surface with 4-column link grid + bottom system status bar.
+ */
 export function Footer() {
   const t = useTranslations();
 
+  function scrollToTop() {
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  const linkClass =
+    "text-sm text-[hsl(var(--muted-fg))] transition-colors hover:text-[hsl(var(--foreground))]";
+
   return (
-    <footer className="bg-foreground text-white">
-      <div className="container py-16">
+    <footer className="border-t border-[hsl(var(--border))] bg-[hsl(var(--surface))]">
+      <div className="container-app py-16">
+        {/* Top row */}
+        <div className="mb-10 flex justify-end">
+          <button
+            onClick={scrollToTop}
+            type="button"
+            className="group inline-flex items-center gap-1.5 text-xs font-medium text-[hsl(var(--muted-fg))] transition-colors hover:text-[hsl(var(--foreground))]"
+            aria-label="Back to top"
+          >
+            {t("common.backToTop")}
+            <ArrowUp className="h-3.5 w-3.5 transition-transform group-hover:-translate-y-0.5" />
+          </button>
+        </div>
+
+        {/* Main grid */}
         <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+          {/* Brand */}
           <div className="lg:col-span-1">
-            <div className="flex items-center gap-2.5 mb-5">
+            <div className="mb-5 flex items-center gap-2.5">
               <CustomsLogo className="h-9 w-9" />
-              <span className="text-xl font-bold">{t("common.appName")}</span>
+              <span className="text-lg font-semibold tracking-[-0.015em] text-[hsl(var(--foreground))]">
+                {t("common.appName")}
+              </span>
             </div>
-            <p className="text-sm text-white/70 leading-relaxed mb-6">
+            <p className="mb-4 text-sm leading-relaxed text-[hsl(var(--muted-fg))]">
               {t("landing.footerDesc")}
             </p>
-            <p className="text-xs text-white/50 italic">
+            <p className="text-xs italic text-[hsl(var(--muted-fg-2))]">
               {t("landing.footerMinistry")}
             </p>
           </div>
 
-          <div>
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-white/90">
+          {/* Quick links */}
+          <nav aria-label="Quick links">
+            <h4 className="mb-5 text-xs font-semibold uppercase tracking-[0.12em] text-[hsl(var(--foreground))]">
               {t("landing.footerQuickLinks")}
             </h4>
-            <ul className="space-y-3 text-sm text-white/70">
+            <ul className="space-y-3">
               {[
-                { href: "#services", label: t("common.services") },
+                { href: "#features", label: t("common.services") },
                 { href: "#how-it-works", label: t("common.howItWorks") },
                 { href: "#features", label: t("common.features") },
                 { href: "#pricing", label: t("common.pricing") },
-              ].map((item) => (
-                <li key={item.href}>
-                  <a href={item.href} className="hover:text-primary transition-colors duration-200">
+              ].map((item, i) => (
+                <li key={`${item.href}-${i}`}>
+                  <a href={item.href} className={linkClass}>
                     {item.label}
                   </a>
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
-          <div>
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-white/90">
+          {/* Legal */}
+          <nav aria-label="Legal links">
+            <h4 className="mb-5 text-xs font-semibold uppercase tracking-[0.12em] text-[hsl(var(--foreground))]">
               {t("landing.footerLegal")}
             </h4>
-            <ul className="space-y-3 text-sm text-white/70">
+            <ul className="space-y-3">
               {[
-                { label: t("common.about") },
-                { label: t("common.terms") },
-                { label: t("common.privacy") },
-              ].map((item) => (
-                <li key={item.label}>
-                  <Link href="/" className="hover:text-primary transition-colors duration-200">
-                    {item.label}
+                t("common.about"),
+                t("common.terms"),
+                t("common.privacy"),
+              ].map((label) => (
+                <li key={label}>
+                  <Link href="/" className={linkClass}>
+                    {label}
                   </Link>
                 </li>
               ))}
             </ul>
-          </div>
+          </nav>
 
+          {/* Contact */}
           <div>
-            <h4 className="font-semibold mb-5 text-sm uppercase tracking-wider text-white/90">
+            <h4 className="mb-5 text-xs font-semibold uppercase tracking-[0.12em] text-[hsl(var(--foreground))]">
               {t("landing.footerContact")}
             </h4>
-            <ul className="space-y-3 text-sm text-white/70">
-              <li className="flex items-start gap-2">
-                <svg className="h-4 w-4 mt-0.5 shrink-0 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z" />
-                </svg>
+            <ul className="space-y-3 text-sm text-[hsl(var(--muted-fg))]">
+              <li className="flex items-start gap-2.5">
+                <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(var(--primary))]" />
                 {t("landing.footerAddress")}
               </li>
-              <li className="flex items-start gap-2">
-                <svg className="h-4 w-4 mt-0.5 shrink-0 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
-                </svg>
+              <li className="flex items-start gap-2.5">
+                <Mail className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(var(--primary))]" />
                 {t("landing.footerEmail")}
               </li>
-              <li className="flex items-start gap-2">
-                <svg className="h-4 w-4 mt-0.5 shrink-0 text-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth="2">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
+              <li className="flex items-start gap-2.5">
+                <Phone className="mt-0.5 h-4 w-4 shrink-0 text-[hsl(var(--primary))]" />
                 {t("landing.footerPhone")}
               </li>
             </ul>
@@ -92,21 +116,26 @@ export function Footer() {
         </div>
 
         {/* Disclaimer */}
-        <div className="mt-10 pt-6 border-t border-white/10">
-          <p className="text-xs text-white/40 leading-relaxed max-w-3xl">
+        <div className="mt-12 border-t border-[hsl(var(--border))] pt-6">
+          <p className="max-w-3xl text-xs leading-relaxed text-[hsl(var(--muted-fg-2))]">
             {t("disclaimer.footerText")}
           </p>
         </div>
 
-        <div className="mt-6 pt-6 border-t border-white/10 flex flex-col sm:flex-row justify-between items-center gap-4">
-          <p className="text-xs text-white/50">
-            &copy; {new Date().getFullYear()} {t("common.appName")}. {t("landing.footerRights")}
+        {/* Copyright */}
+        <div className="mt-6 flex flex-col items-center justify-between gap-4 border-t border-[hsl(var(--border))] pt-6 sm:flex-row">
+          <p className="text-xs text-[hsl(var(--muted-fg))]">
+            &copy; {new Date().getFullYear()} {t("common.appName")}.{" "}
+            {t("landing.footerRights")}
           </p>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5">
-              <div className="h-2 w-2 rounded-full bg-green-500" />
-              <span className="text-xs text-white/50">{t("common.systemOperational")}</span>
-            </div>
+          <div className="flex items-center gap-2">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-[hsl(var(--success))] opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-[hsl(var(--success))]" />
+            </span>
+            <span className="text-xs text-[hsl(var(--muted-fg))]">
+              {t("common.systemOperational")}
+            </span>
           </div>
         </div>
       </div>

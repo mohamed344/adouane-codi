@@ -67,18 +67,18 @@ export async function POST(request: NextRequest) {
         },
       ],
       url: `${origin}/${locale}/subscription/success?plan=${planId}`,
-      firstname: userData?.first_name || "",
-      lastname: userData?.last_name || "",
+      firstname: userData?.first_name || user.user_metadata?.first_name || "Client",
+      lastname: userData?.last_name || user.user_metadata?.last_name || "Client",
       email: userData?.email || user.email || "",
-      phone: userData?.phone || "0550000000",
+      phone: userData?.phone || user.phone || "0550000000",
       address: "Algeria",
       webhook_url: webhookUrl,
       webhook_signature: webhookSecret,
-      webhook_meta_data: {
-        user_id: user.id,
-        plan_id: planId,
-        billing_cycle: plan.billing_cycle,
-      },
+      webhook_meta_data: [
+        { user_id: user.id },
+        { plan_id: planId },
+        { billing_cycle: plan.billing_cycle },
+      ],
       note: `Subscription: ${planLabel} - ${plan.price} DA`,
     });
 

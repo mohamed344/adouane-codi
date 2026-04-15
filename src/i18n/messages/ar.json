@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "CODI PRO MAX",
+    "skipToContent": "انتقل إلى المحتوى",
+    "backToTop": "العودة إلى الأعلى",
     "loading": "جاري التحميل...",
     "save": "حفظ",
     "cancel": "إلغاء",
@@ -39,7 +41,10 @@
     "profile": "الملف الشخصي",
     "billing": "الفواتير",
     "settings": "الإعدادات",
-    "systemOperational": "النظام يعمل"
+    "systemOperational": "النظام يعمل",
+    "home": "الرئيسية",
+    "backToHome": "الرئيسية",
+    "continue": "متابعة"
   },
   "disclaimer": {
     "searchBanner": "توفر E-Douane بيانات التعريفة الجمركية لأغراض إعلامية فقط. تحقق دائمًا من المعدلات واللوائح لدى السلطات الجمركية الرسمية قبل اتخاذ قرارات الاستيراد والتصدير.",
@@ -107,8 +112,8 @@
     "stat1Label": "رمز تعريفي",
     "stat2Value": "99.9%",
     "stat2Label": "دقة النتائج",
-    "stat3Value": "0 د.ج",
-    "stat3Label": "سعر البداية",
+    "stat3Value": "3",
+    "stat3Label": "لغات مدعومة",
     "stat4Value": "98.5%",
     "stat4Label": "معدل الدقة",
     "bottomBanner": "بيانات فورية + بحث رموز SH + حاسبة رسوم + امتثال كامل",
@@ -189,6 +194,8 @@
     "firstNameRequired": "الاسم الأول مطلوب",
     "lastNameRequired": "اسم العائلة مطلوب",
     "signUpSuccess": "تم إنشاء الحساب بنجاح! يرجى التحقق من بريدك الإلكتروني.",
+    "confirmEmailTitle": "تحقق من بريدك الإلكتروني",
+    "confirmEmailSent": "لقد أرسلنا رابط تأكيد إلى عنوان بريدك الإلكتروني. يرجى التحقق من صندوق الوارد وتأكيد حسابك قبل تسجيل الدخول.",
     "signInError": "بريد إلكتروني أو كلمة مرور غير صالحة",
     "signUpError": "فشل في إنشاء الحساب. يرجى المحاولة مرة أخرى.",
     "forgotPasswordTitle": "إعادة تعيين كلمة المرور",
@@ -293,7 +300,8 @@
     "searchWithTerms": "البحث بهذه المصطلحات",
     "editQuery": "تعديل",
     "clearExtraction": "مسح",
-    "uploadButton": "تحميل"
+    "uploadButton": "تحميل",
+    "uploadContextPlaceholder": "صف ما تبحث عنه (اختياري)..."
   },
   "admin": {
     "title": "لوحة تحكم المسؤول",
@@ -354,7 +362,33 @@
     "reactivate": "إعادة التفعيل",
     "subscriptionCancelled": "تم إلغاء تفعيل الاشتراك بنجاح",
     "subscriptionReactivated": "تم إعادة تفعيل الاشتراك بنجاح",
-    "subscriptionUpdateError": "فشل في تحديث الاشتراك"
+    "subscriptionUpdateError": "فشل في تحديث الاشتراك",
+    "grantSubscription": "منح اشتراك",
+    "grantSubscriptionDesc": "تعيين اشتراك يدويًا لـ {name}",
+    "selectDuration": "المدة",
+    "durationCustomMonths": "مخصص (أشهر)",
+    "numberOfMonths": "عدد الأشهر",
+    "durationYearly": "سنة واحدة",
+    "durationLifetime": "مدى الحياة",
+    "grant": "منح",
+    "subscriptionGranted": "تم منح الاشتراك بنجاح",
+    "subscriptionGrantError": "فشل في منح الاشتراك",
+    "selectPlan": "الخطة",
+    "noPlansAvailable": "لا توجد خطط متاحة",
+    "colName": "الاسم",
+    "colEmail": "البريد الإلكتروني",
+    "colPhone": "الهاتف",
+    "colRole": "الدور",
+    "colJoined": "تاريخ الانضمام",
+    "colActions": "الإجراءات",
+    "colUser": "المستخدم",
+    "colPlan": "الخطة",
+    "colStatus": "الحالة",
+    "colPeriod": "الفترة",
+    "colPrice": "السعر",
+    "colBilling": "الفوترة",
+    "colFeatures": "المميزات",
+    "colActive": "نشط"
   },
   "languagePicker": {
     "title": "اختر لغتك",

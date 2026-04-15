@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "CODI PRO MAX",
+    "skipToContent": "Aller au contenu",
+    "backToTop": "Retour en haut",
     "loading": "Chargement...",
     "save": "Enregistrer",
     "cancel": "Annuler",
@@ -39,7 +41,10 @@
     "profile": "Profil",
     "billing": "Facturation",
     "settings": "Parametres",
-    "systemOperational": "Systeme operationnel"
+    "systemOperational": "Systeme operationnel",
+    "home": "Accueil",
+    "backToHome": "Accueil",
+    "continue": "Continuer"
   },
   "disclaimer": {
     "searchBanner": "E-Douane fournit des donnees tarifaires a titre informatif uniquement. Verifiez toujours les taux et reglementations aupres des autorites douanieres officielles avant toute decision d'import/export.",
@@ -107,8 +112,8 @@
     "stat1Label": "Codes Tarifaires",
     "stat2Value": "99.9%",
     "stat2Label": "Precision",
-    "stat3Value": "0 DA",
-    "stat3Label": "Prix de Depart",
+    "stat3Value": "3",
+    "stat3Label": "Langues Supportées",
     "stat4Value": "98,5%",
     "stat4Label": "Taux de Precision",
     "bottomBanner": "Donnees en temps reel + recherche de codes SH + calculateur de droits + conformite totale",
@@ -189,6 +194,8 @@
     "firstNameRequired": "Le prenom est requis",
     "lastNameRequired": "Le nom est requis",
     "signUpSuccess": "Compte cree avec succes ! Veuillez verifier votre e-mail.",
+    "confirmEmailTitle": "Verifiez votre e-mail",
+    "confirmEmailSent": "Nous avons envoye un lien de confirmation a votre adresse e-mail. Veuillez verifier votre boite de reception et confirmer votre compte avant de vous connecter.",
     "signInError": "E-mail ou mot de passe invalide",
     "signUpError": "Echec de la creation du compte. Veuillez reessayer.",
     "forgotPasswordTitle": "Reinitialiser votre mot de passe",
@@ -293,7 +300,8 @@
     "searchWithTerms": "Rechercher avec ces termes",
     "editQuery": "Modifier",
     "clearExtraction": "Effacer",
-    "uploadButton": "Telecharger"
+    "uploadButton": "Telecharger",
+    "uploadContextPlaceholder": "Decrivez ce que vous cherchez (optionnel)..."
   },
   "admin": {
     "title": "Tableau de Bord Administrateur",
@@ -354,7 +362,33 @@
     "reactivate": "Reactiver",
     "subscriptionCancelled": "Abonnement desactive avec succes",
     "subscriptionReactivated": "Abonnement reactive avec succes",
-    "subscriptionUpdateError": "Echec de la mise a jour de l'abonnement"
+    "subscriptionUpdateError": "Echec de la mise a jour de l'abonnement",
+    "grantSubscription": "Accorder un abonnement",
+    "grantSubscriptionDesc": "Attribuer manuellement un abonnement a {name}",
+    "selectDuration": "Duree",
+    "durationCustomMonths": "Personnalise (mois)",
+    "numberOfMonths": "Nombre de mois",
+    "durationYearly": "1 An",
+    "durationLifetime": "A vie",
+    "grant": "Accorder",
+    "subscriptionGranted": "Abonnement accorde avec succes",
+    "subscriptionGrantError": "Echec de l'attribution de l'abonnement",
+    "selectPlan": "Plan",
+    "noPlansAvailable": "Aucun plan disponible",
+    "colName": "Nom",
+    "colEmail": "Email",
+    "colPhone": "Telephone",
+    "colRole": "Role",
+    "colJoined": "Inscription",
+    "colActions": "Actions",
+    "colUser": "Utilisateur",
+    "colPlan": "Plan",
+    "colStatus": "Statut",
+    "colPeriod": "Periode",
+    "colPrice": "Prix",
+    "colBilling": "Facturation",
+    "colFeatures": "Fonctionnalites",
+    "colActive": "Actif"
   },
   "languagePicker": {
     "title": "Choisissez Votre Langue",

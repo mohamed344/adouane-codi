@@ -1,17 +1,28 @@
 "use client";
 
-import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
+import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
+import {
+  ArrowRight,
+  Check,
+  Zap,
+  Shield,
+  Globe,
+  Calculator,
+  FileSearch,
+  Languages,
+  BarChart3,
+} from "lucide-react";
+import { createClient } from "@/lib/supabase/client";
 import { Header } from "@/components/header";
 import { Footer } from "@/components/footer";
 import { Button } from "@/components/ui/button";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Check, ArrowRight, Zap, Shield, Globe, Calculator } from "lucide-react";
-import { useEffect, useState } from "react";
-import { createClient } from "@/lib/supabase/client";
+import { Badge } from "@/components/ui/badge";
+import { Card, CardContent } from "@/components/ui/card";
 import { CURRENCY, formatPrice, PLANS } from "@/config/plans";
-import { useLocale } from "next-intl";
-import { CustomsLogo } from "@/components/customs-logo";
+import { cn } from "@/lib/utils";
 
 interface Plan {
   id: string;
@@ -31,17 +42,21 @@ export default function LandingPage() {
   const [plansLoading, setPlansLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
+  // ───── Auth state (preserved) ─────
   useEffect(() => {
     const supabase = createClient();
     supabase.auth.getSession().then(({ data: { session } }) => {
       setIsAuthenticated(!!session);
     });
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((_event, session) => {
       setIsAuthenticated(!!session);
     });
     return () => subscription.unsubscribe();
   }, []);
 
+  // ───── Plans fetch (preserved) ─────
   const fallbackPlans: Plan[] = PLANS.map((p) => ({
     id: p.slug,
     name: t(`subscription.plan_${p.slug}`),
@@ -72,35 +87,39 @@ export default function LandingPage() {
       }
     }
     fetchPlans();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ───── IntersectionObserver for fade-up reveals ─────
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    const els = document.querySelectorAll<HTMLElement>(".reveal");
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            e.target.classList.add("is-visible");
+            io.unobserve(e.target);
+          }
+        });
+      },
+      { rootMargin: "0px 0px -8% 0px", threshold: 0.05 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
   }, []);
 
   const features = [
-    {
-      icon: Zap,
-      title: t("landing.service1Title"),
-      desc: t("landing.service1Desc"),
-    },
-    {
-      icon: Shield,
-      title: t("landing.service2Title"),
-      desc: t("landing.service2Desc"),
-    },
-    {
-      icon: Calculator,
-      title: t("landing.service3Title"),
-      desc: t("landing.service3Desc"),
-    },
-    {
-      icon: Globe,
-      title: t("landing.service4Title"),
-      desc: t("landing.service4Desc"),
-    },
+    { icon: Zap, title: t("landing.service1Title"), desc: t("landing.service1Desc") },
+    { icon: Shield, title: t("landing.service2Title"), desc: t("landing.service2Desc") },
+    { icon: Calculator, title: t("landing.service3Title"), desc: t("landing.service3Desc") },
+    { icon: Globe, title: t("landing.service4Title"), desc: t("landing.service4Desc") },
   ];
 
   const steps = [
-    { num: "1", title: t("landing.step1Title"), desc: t("landing.step1Desc") },
-    { num: "2", title: t("landing.step2Title"), desc: t("landing.step2Desc") },
-    { num: "3", title: t("landing.step3Title"), desc: t("landing.step3Desc") },
+    { num: "01", title: t("landing.step1Title"), desc: t("landing.step1Desc") },
+    { num: "02", title: t("landing.step2Title"), desc: t("landing.step2Desc") },
+    { num: "03", title: t("landing.step3Title"), desc: t("landing.step3Desc") },
   ];
 
   const testimonials = [
@@ -112,126 +131,140 @@ export default function LandingPage() {
   const ctaHref = isAuthenticated ? "/search" : "/signup";
   const ctaLabel = isAuthenticated ? t("common.search") : t("landing.heroCta");
 
+  // Trust strip — text labels (replace with actual logos if available)
+  const trustLogos = [
+    "ALG-CUSTOMS",
+    "CMA CGM",
+    "MAERSK",
+    "DHL",
+    "UPS",
+    "FEDEX",
+    "MSC",
+    "EVERGREEN",
+  ];
+
   return (
-    <div className="flex min-h-screen flex-col overflow-x-hidden">
+    <div className="flex min-h-screen flex-col overflow-x-hidden bg-[hsl(var(--background))]">
       <Header />
 
       {/* ═══════════════════════════════════════════
-          HERO — Split layout, logo visual on right
+          HERO — mesh gradient + grid + shimmer badge
           ═══════════════════════════════════════════ */}
-      <section className="py-20 sm:py-32">
-        <div className="container">
-          <div className="grid lg:grid-cols-2 gap-12 lg:gap-20 items-center">
-            {/* Left — Copy */}
-            <div>
-              <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-primary/10 text-primary text-sm font-medium mb-8">
-                <Zap className="h-3.5 w-3.5" />
-                {t("landing.stat1Value")} {t("landing.stat1Label")}
-              </div>
+      <section className="relative isolate overflow-hidden pt-16 sm:pt-24 pb-24 sm:pb-32">
+        {/* Layered backgrounds */}
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-mesh" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-grid" />
+        {/* Soft fade to background at the bottom */}
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-x-0 bottom-0 -z-10 h-40 bg-gradient-to-b from-transparent to-[hsl(var(--background))]"
+        />
 
-              <h1 className="text-4xl sm:text-5xl lg:text-[3.5rem] font-bold tracking-tight leading-[1.08]">
-                {t("landing.heroTitle")}
-              </h1>
+        <div className="container-app">
+          <div className="mx-auto max-w-3xl text-center">
+            <h1 className="text-balance text-5xl font-semibold leading-[1.02] tracking-[-0.04em] text-[hsl(var(--foreground))] sm:text-6xl lg:text-7xl">
+              {t("landing.heroTitle").split(" ").map((word, i, arr) =>
+                i === arr.length - 1 ? (
+                  <span key={i} className="text-gradient"> {word}</span>
+                ) : (
+                  <span key={i}>{i > 0 ? " " : ""}{word}</span>
+                )
+              )}
+            </h1>
 
-              <p className="mt-6 text-lg text-muted-foreground leading-relaxed max-w-lg">
-                {t("landing.heroSubtitle")}
-              </p>
+            <p className="mx-auto mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-[hsl(var(--muted-fg))] sm:text-xl">
+              {t("landing.heroSubtitle")}
+            </p>
 
-              <div className="mt-10 flex flex-wrap items-center gap-4">
-                <Button size="lg" asChild className="h-12 px-8 rounded-xl text-base">
-                  <Link href={ctaHref}>
-                    {ctaLabel}
-                    <ArrowRight className="ms-2 h-4 w-4 rtl:rotate-180" />
-                  </Link>
-                </Button>
-                <Button variant="ghost" asChild className="h-12 px-6 text-base text-muted-foreground">
-                  <a href="#how-it-works">
-                    {t("landing.howItWorksTitle")}
-                  </a>
-                </Button>
-              </div>
-
-              {/* Mini stats */}
-              <div className="mt-14 flex gap-10">
-                {[
-                  { value: t("landing.stat2Value"), label: t("landing.stat2Label") },
-                  { value: t("landing.stat3Value"), label: t("landing.stat3Label") },
-                ].map((stat, i) => (
-                  <div key={i}>
-                    <p className="text-2xl font-bold">{stat.value}</p>
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider mt-0.5">{stat.label}</p>
-                  </div>
-                ))}
-              </div>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
+              <Button asChild size="lg" className="glow-primary">
+                <Link href={ctaHref}>
+                  {ctaLabel}
+                  <ArrowRight className="size-4 rtl:rotate-180" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <a href="#how-it-works">{t("landing.howItWorksTitle")}</a>
+              </Button>
             </div>
 
-            {/* Right — Abstract visual */}
-            <div className="hidden lg:block">
-              <div className="relative aspect-square max-w-md ms-auto">
-                {/* Layered geometric shapes — warm, organic feel */}
-                <div className="absolute inset-0 rounded-[2.5rem] bg-primary/[0.06] rotate-3" />
-                <div className="absolute inset-3 rounded-[2rem] bg-primary/[0.04] -rotate-2" />
-                <div className="absolute inset-6 rounded-[1.5rem] bg-surface-warm flex items-center justify-center">
-                  <div className="text-center">
-                    <CustomsLogo className="h-20 w-20 mx-auto mb-6" />
-                    <p className="text-2xl font-bold text-foreground tracking-tight">CODI PRO MAX</p>
-                    <p className="text-sm text-muted-foreground mt-2">{t("landing.heroSubtitle").slice(0, 50)}...</p>
-                  </div>
+            {/* mini stats inline */}
+            <div className="mt-14 flex flex-wrap items-center justify-center gap-x-10 gap-y-4">
+              {[
+                { value: t("landing.stat2Value"), label: t("landing.stat2Label") },
+                { value: t("landing.stat3Value"), label: t("landing.stat3Label") },
+              ].map((stat) => (
+                <div key={stat.label} className="flex items-baseline gap-2">
+                  <span className="font-mono text-2xl font-semibold text-[hsl(var(--foreground))]">
+                    {stat.value}
+                  </span>
+                  <span className="text-xs uppercase tracking-[0.12em] text-[hsl(var(--muted-fg))]">
+                    {stat.label}
+                  </span>
                 </div>
-                {/* Floating accent dots */}
-                <div className="absolute top-8 end-8 h-4 w-4 rounded-full bg-primary/30" />
-                <div className="absolute bottom-16 start-4 h-3 w-3 rounded-full bg-primary/20" />
-                <div className="absolute top-1/3 start-0 h-2 w-2 rounded-full bg-primary/40" />
-              </div>
+              ))}
             </div>
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════
-          FEATURES — Bento-style grid, warm bg
+          LOGOS — marquee strip
           ═══════════════════════════════════════════ */}
-      <section id="services" className="py-16 sm:py-24 bg-surface-warm">
-        <div className="container">
-          <div className="mb-12 sm:mb-16 max-w-xl">
-            <h2 className="text-2xl sm:text-3xl font-bold leading-tight">
+      <section className="border-y border-[hsl(var(--border))] bg-[hsl(var(--surface))] py-10">
+        <div className="container-app">
+          <p className="mb-6 text-center text-xs font-medium uppercase tracking-[0.16em] text-[hsl(var(--muted-fg))]">
+            {t("landing.testimonialsSubtitle")}
+          </p>
+          <div className="relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,#000_10%,#000_90%,transparent)]">
+            <div className="marquee gap-12">
+              {[...trustLogos, ...trustLogos].map((label, i) => (
+                <span
+                  key={`${label}-${i}`}
+                  className="font-mono text-sm font-semibold tracking-tight text-[hsl(var(--muted-fg-2))]"
+                >
+                  {label}
+                </span>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          FEATURES — 3 column icon cards (reveal)
+          ═══════════════════════════════════════════ */}
+      <section id="features" className="py-24 sm:py-32">
+        <div className="container-app">
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-[hsl(var(--primary))]">
               {t("landing.servicesTitle")}
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              {t("landing.servicesSubtitle")}
             </p>
+            <h2 className="text-balance text-3xl font-semibold tracking-[-0.025em] text-[hsl(var(--foreground))] sm:text-4xl">
+              {t("landing.servicesSubtitle")}
+            </h2>
           </div>
 
-          {/* Bento grid — varied card sizes */}
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {features.map((feature, i) => {
+          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            {features.slice(0, 3).map((feature, i) => {
               const Icon = feature.icon;
-
-              if (i === 0) {
-                return (
-                  <div key={i} className="bg-card rounded-2xl p-8 sm:p-10 sm:row-span-2 flex flex-col justify-between">
-                    <div>
-                      <div className="inline-flex items-center justify-center h-12 w-12 rounded-xl bg-primary/10 text-primary mb-6">
-                        <Icon className="h-6 w-6" />
-                      </div>
-                      <h3 className="text-xl font-semibold mb-3">{feature.title}</h3>
-                      <p className="text-muted-foreground leading-relaxed">{feature.desc}</p>
-                    </div>
-                    <div className="mt-8 pt-6 border-t border-border/50">
-                      <p className="text-sm font-medium text-primary">{t("landing.stat1Value")}+ {t("landing.stat1Label")}</p>
-                    </div>
-                  </div>
-                );
-              }
-
               return (
-                <div key={i} className="bg-card rounded-2xl p-6 sm:p-8">
-                  <div className="inline-flex items-center justify-center h-10 w-10 rounded-lg bg-primary/10 text-primary mb-5">
-                    <Icon className="h-5 w-5" />
+                <Card
+                  key={i}
+                  variant="interactive"
+                  className="reveal p-7"
+                  style={{ transitionDelay: `${i * 80}ms` }}
+                >
+                  <div className="mb-5 inline-flex size-11 items-center justify-center rounded-xl bg-[hsl(var(--primary)/0.10)] text-[hsl(var(--primary))] ring-1 ring-[hsl(var(--primary)/0.20)]">
+                    <Icon className="size-5" />
                   </div>
-                  <h3 className="font-semibold mb-2">{feature.title}</h3>
-                  <p className="text-sm text-muted-foreground leading-relaxed">{feature.desc}</p>
-                </div>
+                  <h3 className="mb-2 text-lg font-semibold tracking-[-0.015em] text-[hsl(var(--foreground))]">
+                    {feature.title}
+                  </h3>
+                  <p className="text-sm leading-relaxed text-[hsl(var(--muted-fg))]">
+                    {feature.desc}
+                  </p>
+                </Card>
               );
             })}
           </div>
@@ -239,34 +272,43 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          HOW IT WORKS — Horizontal steps with line
+          HOW IT WORKS — 3 numbered steps
           ═══════════════════════════════════════════ */}
-      <section id="how-it-works" className="py-16 sm:py-24">
-        <div className="container">
-          <div className="mb-12 sm:mb-16 max-w-xl">
-            <h2 className="text-2xl sm:text-3xl font-bold leading-tight">
+      <section
+        id="how-it-works"
+        className="border-y border-[hsl(var(--border))] bg-[hsl(var(--surface))] py-24 sm:py-32"
+      >
+        <div className="container-app">
+          <div className="mb-16 max-w-2xl">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-[hsl(var(--primary))]">
               {t("landing.howItWorksTitle")}
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              {t("landing.howItWorksSubtitle")}
             </p>
+            <h2 className="text-balance text-3xl font-semibold tracking-[-0.025em] text-[hsl(var(--foreground))] sm:text-4xl">
+              {t("landing.howItWorksSubtitle")}
+            </h2>
           </div>
 
-          <div className="grid sm:grid-cols-3 gap-8 sm:gap-12 max-w-4xl">
+          <div className="relative grid gap-10 md:grid-cols-3">
+            {/* Connecting line behind the cards */}
+            <div
+              aria-hidden="true"
+              className="absolute inset-x-12 top-6 hidden h-px bg-gradient-to-r from-transparent via-[hsl(var(--border-2))] to-transparent md:block"
+            />
             {steps.map((step, i) => (
-              <div key={i} className="relative">
-                {/* Step number */}
-                <div className="flex items-center gap-4 mb-5">
-                  <span className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-bold">
-                    {step.num}
-                  </span>
-                  {/* Connecting line (hidden on mobile and last item) */}
-                  {i < steps.length - 1 && (
-                    <div className="hidden sm:block flex-1 h-px bg-border" />
-                  )}
+              <div
+                key={i}
+                className="reveal relative"
+                style={{ transitionDelay: `${i * 90}ms` }}
+              >
+                <div className="mb-5 inline-flex h-12 w-12 items-center justify-center rounded-full border border-[hsl(var(--border))] bg-[hsl(var(--background))] font-mono text-sm font-semibold text-[hsl(var(--primary))]">
+                  {step.num}
                 </div>
-                <h3 className="font-semibold mb-2">{step.title}</h3>
-                <p className="text-sm text-muted-foreground leading-relaxed">{step.desc}</p>
+                <h3 className="mb-2 text-lg font-semibold tracking-[-0.015em] text-[hsl(var(--foreground))]">
+                  {step.title}
+                </h3>
+                <p className="text-sm leading-relaxed text-[hsl(var(--muted-fg))]">
+                  {step.desc}
+                </p>
               </div>
             ))}
           </div>
@@ -274,169 +316,237 @@ export default function LandingPage() {
       </section>
 
       {/* ═══════════════════════════════════════════
-          PRICING — Cards on white surface
+          BENTO — asymmetric showcase
           ═══════════════════════════════════════════ */}
-      <section id="pricing" className="py-16 sm:py-24 bg-surface-white">
-        <div className="container">
-          <div className="text-center mb-12 sm:mb-16">
-            <h2 className="text-2xl sm:text-3xl font-bold leading-tight">
-              {t("landing.pricingTitle")}
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground max-w-xl mx-auto">
-              {t("landing.pricingSubtitle")}
+      <section className="py-24 sm:py-32">
+        <div className="container-app">
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-[hsl(var(--primary))]">
+              {t("common.features")}
             </p>
+            <h2 className="text-balance text-3xl font-semibold tracking-[-0.025em] sm:text-4xl">
+              {t("landing.servicesSubtitle")}
+            </h2>
+          </div>
+
+          <div className="grid gap-4 md:grid-cols-6 md:grid-rows-2">
+            {/* Tall left card — AI tariff search */}
+            <Card variant="interactive" className="reveal md:col-span-2 md:row-span-2 p-7">
+              <div className="mb-5 inline-flex size-11 items-center justify-center rounded-xl bg-[hsl(var(--primary)/0.10)] text-[hsl(var(--primary))] ring-1 ring-[hsl(var(--primary)/0.20)]">
+                <FileSearch className="size-5" />
+              </div>
+              <h3 className="mb-2 text-xl font-semibold tracking-[-0.015em]">
+                {features[0].title}
+              </h3>
+              <p className="mb-6 text-sm leading-relaxed text-[hsl(var(--muted-fg))]">
+                {features[0].desc}
+              </p>
+              <div className="rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--surface))] p-3">
+                <p className="font-mono text-xs text-[hsl(var(--muted-fg))]">$ tariff search</p>
+                <p className="mt-1 font-mono text-sm text-[hsl(var(--foreground))]">
+                  → 8517.12.00
+                  <span className="text-[hsl(var(--muted-fg))]"> · Smartphones</span>
+                </p>
+              </div>
+            </Card>
+
+            {/* Top-right pair */}
+            <Card variant="interactive" className="reveal md:col-span-2 p-6" style={{ transitionDelay: "60ms" }}>
+              <div className="mb-4 inline-flex size-10 items-center justify-center rounded-lg bg-[hsl(var(--accent)/0.12)] text-[hsl(var(--accent-2))]">
+                <Languages className="size-5" />
+              </div>
+              <h3 className="mb-1 font-semibold tracking-[-0.015em]">{features[3].title}</h3>
+              <p className="text-sm leading-relaxed text-[hsl(var(--muted-fg))]">{features[3].desc}</p>
+            </Card>
+
+            <Card variant="interactive" className="reveal md:col-span-2 p-6" style={{ transitionDelay: "120ms" }}>
+              <div className="mb-4 inline-flex size-10 items-center justify-center rounded-lg bg-[hsl(var(--success-soft))] text-[hsl(var(--success))]">
+                <Shield className="size-5" />
+              </div>
+              <h3 className="mb-1 font-semibold tracking-[-0.015em]">{features[1].title}</h3>
+              <p className="text-sm leading-relaxed text-[hsl(var(--muted-fg))]">{features[1].desc}</p>
+            </Card>
+
+            {/* Bottom-right wide card */}
+            <Card variant="interactive" className="reveal md:col-span-4 p-6" style={{ transitionDelay: "180ms" }}>
+              <div className="flex items-center gap-4">
+                <div className="inline-flex size-10 shrink-0 items-center justify-center rounded-lg bg-[hsl(var(--warning-soft))] text-[hsl(var(--warning))]">
+                  <BarChart3 className="size-5" />
+                </div>
+                <div>
+                  <h3 className="font-semibold tracking-[-0.015em]">{features[2].title}</h3>
+                  <p className="mt-0.5 text-sm leading-relaxed text-[hsl(var(--muted-fg))]">
+                    {features[2].desc}
+                  </p>
+                </div>
+              </div>
+            </Card>
+          </div>
+        </div>
+      </section>
+
+      {/* ═══════════════════════════════════════════
+          PRICING — 3 plans, indigo highlight on featured
+          ═══════════════════════════════════════════ */}
+      <section
+        id="pricing"
+        className="border-y border-[hsl(var(--border))] bg-[hsl(var(--surface))] py-24 sm:py-32"
+      >
+        <div className="container-app">
+          <div className="mx-auto mb-16 max-w-2xl text-center">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-[hsl(var(--primary))]">
+              {t("landing.pricingTitle")}
+            </p>
+            <h2 className="text-balance text-3xl font-semibold tracking-[-0.025em] sm:text-4xl">
+              {t("landing.pricingSubtitle")}
+            </h2>
           </div>
 
           {plansLoading ? (
-            <div className="grid gap-6 sm:grid-cols-3 max-w-5xl mx-auto">
+            <div className="mx-auto grid max-w-5xl gap-6 sm:grid-cols-2 lg:grid-cols-3">
               {[1, 2, 3].map((i) => (
-                <div key={i} className="rounded-2xl bg-card p-8 space-y-4">
-                  <Skeleton className="h-6 w-24" />
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-10 w-32 mt-4" />
-                  <Skeleton className="h-11 w-full mt-auto" />
-                </div>
+                <Skeleton key={i} className="h-96 rounded-xl" />
               ))}
             </div>
           ) : plans.length > 0 ? (
-            <div className="max-w-5xl mx-auto space-y-4">
-              {/* Non-popular plans side by side */}
-              <div className="grid gap-4 sm:grid-cols-2">
-                {plans.filter((p) => !p.is_popular).map((plan) => (
-                  <div key={plan.id} className="flex flex-col rounded-2xl bg-card p-8">
-                    <div className="flex items-start justify-between mb-6">
-                      <div>
-                        <h3 className="text-lg font-bold">{plan.name}</h3>
-                        <p className="mt-1 text-sm text-muted-foreground">{plan.description}</p>
-                      </div>
-                      <div className="text-end shrink-0 ms-4">
-                        <span className="text-2xl font-bold">{formatPrice(plan.price)}</span>
-                        <p className="text-xs text-muted-foreground">
-                          {CURRENCY}/{plan.billing_cycle === "monthly" ? t("common.perMonth") : t("common.perYear")}
-                        </p>
-                      </div>
-                    </div>
-                    <ul className="mb-6 space-y-2 flex-1">
-                      {plan.features?.slice(0, 4).map((feature, i) => (
-                        <li key={i} className="flex items-start gap-2 text-sm">
-                          <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
-                          <span>{feature}</span>
-                        </li>
-                      ))}
-                    </ul>
-                    <Button asChild variant="outline" className="w-full">
-                      <Link href={ctaHref}>{ctaLabel}</Link>
-                    </Button>
-                  </div>
-                ))}
-              </div>
+            <div className="mx-auto grid max-w-5xl gap-6 lg:grid-cols-3 lg:items-stretch">
+              {plans.map((plan) => {
+                const featured = plan.is_popular;
+                return (
+                  <Card
+                    key={plan.id}
+                    variant={featured ? "featured" : "default"}
+                    className={cn("relative flex flex-col p-8", featured && "lg:scale-[1.02]")}
+                  >
+                    {featured ? (
+                      <Badge variant="indigo" className="absolute -top-3 start-1/2 -translate-x-1/2">
+                        ★ {t("subscription.popular")}
+                      </Badge>
+                    ) : null}
 
-              {/* Popular plan — full width, highlighted */}
-              {plans.filter((p) => p.is_popular).map((plan) => (
-                <div key={plan.id} className="rounded-2xl bg-secondary text-secondary-foreground p-8 sm:p-10">
-                  <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-3">
-                        <h3 className="text-xl font-bold">{plan.name}</h3>
-                        <span className="bg-primary text-primary-foreground text-xs font-semibold px-2.5 py-0.5 rounded-full">
-                          {t("subscription.popular")}
+                    <CardContent className="flex flex-1 flex-col p-0">
+                      <h3 className="text-base font-semibold tracking-[-0.015em] text-[hsl(var(--foreground))]">
+                        {plan.name}
+                      </h3>
+                      <p className="mt-1 text-sm text-[hsl(var(--muted-fg))]">
+                        {plan.description}
+                      </p>
+
+                      <div className="mt-6 flex items-baseline gap-1.5">
+                        <span className="font-mono text-4xl font-semibold tracking-[-0.02em] text-[hsl(var(--foreground))]">
+                          {formatPrice(plan.price)}
+                        </span>
+                        <span className="text-sm text-[hsl(var(--muted-fg))]">
+                          {CURRENCY}/{plan.billing_cycle === "monthly" ? t("common.perMonth") : t("common.perYear")}
                         </span>
                       </div>
-                      <p className="text-secondary-foreground/70 mb-4">{plan.description}</p>
-                      <ul className="grid sm:grid-cols-2 gap-x-6 gap-y-2">
+
+                      <ul className="mt-6 mb-8 flex-1 space-y-3">
                         {plan.features?.map((feature, i) => (
-                          <li key={i} className="flex items-start gap-2 text-sm text-secondary-foreground/90">
-                            <Check className="h-4 w-4 text-primary shrink-0 mt-0.5" />
+                          <li key={i} className="flex items-start gap-2.5 text-sm text-[hsl(var(--foreground-2))]">
+                            <Check
+                              className={cn(
+                                "mt-0.5 size-4 shrink-0",
+                                featured ? "text-[hsl(var(--primary))]" : "text-[hsl(var(--success))]"
+                              )}
+                            />
                             <span>{feature}</span>
                           </li>
                         ))}
                       </ul>
-                    </div>
-                    <div className="sm:text-end shrink-0">
-                      <div className="mb-4">
-                        <span className="text-4xl font-bold">{formatPrice(plan.price)}</span>
-                        <span className="text-sm text-secondary-foreground/60 ms-1">
-                          {CURRENCY}/{plan.billing_cycle === "monthly" ? t("common.perMonth") : t("common.perYear")}
-                        </span>
-                      </div>
-                      <Button size="lg" asChild className="h-12 px-8 rounded-xl bg-white text-secondary hover:bg-white/90">
+
+                      <Button
+                        asChild
+                        size="lg"
+                        variant={featured ? "primary" : "outline"}
+                        className={cn("w-full", featured && "glow-primary")}
+                      >
                         <Link href={ctaHref}>{ctaLabel}</Link>
                       </Button>
-                    </div>
-                  </div>
-                </div>
-              ))}
+                    </CardContent>
+                  </Card>
+                );
+              })}
             </div>
           ) : (
-            <p className="text-center text-muted-foreground">{t("subscription.noPlans")}</p>
+            <p className="text-center text-[hsl(var(--muted-fg))]">{t("subscription.noPlans")}</p>
           )}
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════
-          TESTIMONIALS — Staggered cards on warm bg
+          TESTIMONIALS — staggered grid
           ═══════════════════════════════════════════ */}
-      <section id="testimonials" className="py-16 sm:py-24 bg-surface-warm">
-        <div className="container">
-          <div className="mb-12 sm:mb-16 max-w-xl">
-            <h2 className="text-2xl sm:text-3xl font-bold leading-tight">
+      <section id="testimonials" className="py-24 sm:py-32">
+        <div className="container-app">
+          <div className="mb-16 max-w-2xl">
+            <p className="mb-3 text-xs font-medium uppercase tracking-[0.16em] text-[hsl(var(--primary))]">
               {t("landing.testimonialsTitle")}
-            </h2>
-            <p className="mt-4 text-lg text-muted-foreground leading-relaxed">
-              {t("landing.testimonialsSubtitle")}
             </p>
+            <h2 className="text-balance text-3xl font-semibold tracking-[-0.025em] sm:text-4xl">
+              {t("landing.testimonialsSubtitle")}
+            </h2>
           </div>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-6 max-w-5xl">
+          <div className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
             {testimonials.map((testimonial, i) => (
-              <div
+              <Card
                 key={i}
-                className={`bg-card rounded-2xl p-6 sm:p-8 ${
-                  i === 0 ? "sm:translate-y-0" : i === 1 ? "sm:translate-y-4" : "sm:translate-y-8"
-                }`}
+                variant="default"
+                className={cn(
+                  "reveal p-7",
+                  i === 1 && "lg:translate-y-6",
+                  i === 2 && "lg:translate-y-12"
+                )}
+                style={{ transitionDelay: `${i * 90}ms` }}
               >
-                {/* Quote */}
-                <p className={`text-foreground leading-relaxed mb-6 ${i === 0 ? "text-lg" : "text-sm"}`}>
+                <p className="mb-6 text-base leading-relaxed text-[hsl(var(--foreground-2))]">
                   &ldquo;{testimonial.text}&rdquo;
                 </p>
-
-                {/* Author */}
                 <div className="flex items-center gap-3">
-                  <div className="h-10 w-10 rounded-full bg-primary/10 flex items-center justify-center text-primary font-semibold text-sm">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-[hsl(var(--primary))] to-[hsl(var(--accent-2))] text-sm font-semibold text-white">
                     {testimonial.name[0]}
                   </div>
                   <div>
-                    <p className="text-sm font-semibold">{testimonial.name}</p>
-                    <p className="text-xs text-muted-foreground">{testimonial.role}</p>
+                    <p className="text-sm font-semibold text-[hsl(var(--foreground))]">
+                      {testimonial.name}
+                    </p>
+                    <p className="text-xs text-[hsl(var(--muted-fg))]">{testimonial.role}</p>
                   </div>
                 </div>
-              </div>
+              </Card>
             ))}
           </div>
         </div>
       </section>
 
       {/* ═══════════════════════════════════════════
-          FINAL CTA — Dark, compact, strong
+          FINAL CTA — mesh + glowing CTA
           ═══════════════════════════════════════════ */}
-      <section className="py-16 sm:py-20 bg-secondary">
-        <div className="container">
-          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-8 max-w-4xl mx-auto">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-secondary-foreground leading-tight">
-                {t("landing.ctaTitle")}
-              </h2>
-              <p className="mt-3 text-secondary-foreground/70 leading-relaxed max-w-lg">
-                {t("landing.ctaSubtitle")}
-              </p>
+      <section className="relative isolate overflow-hidden py-24 sm:py-32">
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-mesh" />
+        <div aria-hidden="true" className="pointer-events-none absolute inset-0 -z-10 bg-grid" />
+
+        <div className="container-app">
+          <Card variant="elevated" className="mx-auto max-w-4xl p-10 sm:p-14 text-center">
+            <h2 className="text-balance text-3xl font-semibold tracking-[-0.025em] text-[hsl(var(--foreground))] sm:text-4xl">
+              {t("landing.ctaTitle")}
+            </h2>
+            <p className="mx-auto mt-4 max-w-2xl text-base leading-relaxed text-[hsl(var(--muted-fg))]">
+              {t("landing.ctaSubtitle")}
+            </p>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+              <Button asChild size="lg" className="glow-primary">
+                <Link href={ctaHref}>
+                  {isAuthenticated ? t("common.search") : t("landing.ctaButton")}
+                  <ArrowRight className="size-4 rtl:rotate-180" />
+                </Link>
+              </Button>
+              <Button asChild size="lg" variant="outline">
+                <a href="#pricing">{t("landing.pricingTitle")}</a>
+              </Button>
             </div>
-            <Button size="lg" asChild className="h-12 px-8 rounded-xl text-base bg-white text-secondary hover:bg-white/90 shrink-0">
-              <Link href={ctaHref}>
-                {isAuthenticated ? t("common.search") : t("landing.ctaButton")}
-                <ArrowRight className="ms-2 h-4 w-4 rtl:rotate-180" />
-              </Link>
-            </Button>
-          </div>
+          </Card>
         </div>
       </section>
 

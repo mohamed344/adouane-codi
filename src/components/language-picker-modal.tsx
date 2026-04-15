@@ -3,6 +3,7 @@
 import { useState, useEffect } from "react";
 import { useTranslations } from "next-intl";
 import { useRouter, usePathname } from "@/i18n/routing";
+import { Check } from "lucide-react";
 import {
   Dialog,
   DialogContent,
@@ -11,6 +12,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
 const languages = [
   { code: "en", label: "English", flag: "🇬🇧" },
@@ -20,7 +22,7 @@ const languages = [
 
 export function LanguagePickerModal() {
   const [open, setOpen] = useState(false);
-  const [selected, setSelected] = useState<string>("en");
+  const [selected, setSelected] = useState<string>("fr");
   const t = useTranslations("languagePicker");
   const router = useRouter();
   const pathname = usePathname();
@@ -42,28 +44,37 @@ export function LanguagePickerModal() {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle className="text-center text-xl">
-            {t("title")}
-          </DialogTitle>
-          <DialogDescription className="text-center">
-            {t("subtitle")}
-          </DialogDescription>
+          <DialogTitle>{t("title")}</DialogTitle>
+          <DialogDescription>{t("subtitle")}</DialogDescription>
         </DialogHeader>
-        <div className="grid gap-3 py-4">
-          {languages.map((lang) => (
-            <button
-              key={lang.code}
-              onClick={() => setSelected(lang.code)}
-              className={`flex items-center gap-3 rounded-lg border-2 p-4 text-start transition-colors ${
-                selected === lang.code
-                  ? "border-primary bg-primary/5"
-                  : "border-border hover:border-primary/50"
-              }`}
-            >
-              <span className="text-2xl">{lang.flag}</span>
-              <span className="text-lg font-medium">{lang.label}</span>
-            </button>
-          ))}
+        <div className="grid gap-2 py-2">
+          {languages.map((lang) => {
+            const isSelected = selected === lang.code;
+            return (
+              <button
+                key={lang.code}
+                type="button"
+                onClick={() => setSelected(lang.code)}
+                aria-pressed={isSelected}
+                className={cn(
+                  "flex items-center justify-between gap-3 rounded-xl border px-4 py-3 text-start transition-all",
+                  isSelected
+                    ? "border-[hsl(var(--primary))] bg-[hsl(var(--primary-soft))] ring-1 ring-[hsl(var(--primary)/0.30)]"
+                    : "border-[hsl(var(--border))] hover:border-[hsl(var(--border-2))] hover:bg-[hsl(var(--surface))]"
+                )}
+              >
+                <span className="flex items-center gap-3">
+                  <span className="text-xl" aria-hidden="true">{lang.flag}</span>
+                  <span className="text-base font-medium text-[hsl(var(--foreground))]">
+                    {lang.label}
+                  </span>
+                </span>
+                {isSelected ? (
+                  <Check className="size-5 text-[hsl(var(--primary))]" />
+                ) : null}
+              </button>
+            );
+          })}
         </div>
         <Button onClick={handleContinue} className="w-full" size="lg">
           {t("continue")}

@@ -1,11 +1,11 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { AlertCircle, Info, AlertTriangle, X } from "lucide-react";
+import { AlertCircle, Info, AlertTriangle, X, CheckCircle2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface InfoBannerProps {
-  variant?: "info" | "warning" | "disclaimer";
+  variant?: "info" | "warning" | "success" | "disclaimer";
   dismissible?: boolean;
   storageKey?: string;
   className?: string;
@@ -14,19 +14,35 @@ interface InfoBannerProps {
 
 const variantStyles = {
   info: {
-    container: "border-l-primary/60 bg-primary/5 text-foreground/80",
+    container:
+      "border-[hsl(var(--primary)/0.25)] bg-[hsl(var(--primary-soft))] text-[hsl(var(--primary-2))]",
+    iconColor: "text-[hsl(var(--primary))]",
     icon: Info,
   },
   warning: {
-    container: "border-l-yellow-500 bg-yellow-50 text-yellow-900",
+    container:
+      "border-[hsl(var(--warning)/0.30)] bg-[hsl(var(--warning-soft))] text-[hsl(var(--warning))]",
+    iconColor: "text-[hsl(var(--warning))]",
     icon: AlertTriangle,
   },
+  success: {
+    container:
+      "border-[hsl(var(--success)/0.30)] bg-[hsl(var(--success-soft))] text-[hsl(var(--success))]",
+    iconColor: "text-[hsl(var(--success))]",
+    icon: CheckCircle2,
+  },
   disclaimer: {
-    container: "border-l-accent bg-muted/60 text-muted-foreground",
+    container:
+      "border-[hsl(var(--border))] bg-[hsl(var(--surface))] text-[hsl(var(--muted-fg))]",
+    iconColor: "text-[hsl(var(--muted-fg))]",
     icon: AlertCircle,
   },
 };
 
+/**
+ * InfoBanner — full-width inline notice (info / warning / success / disclaimer).
+ * Optionally dismissible with localStorage persistence via `storageKey`.
+ */
 export function InfoBanner({
   variant = "info",
   dismissible = false,
@@ -45,7 +61,7 @@ export function InfoBanner({
 
   if (dismissed) return null;
 
-  const { container, icon: Icon } = variantStyles[variant];
+  const { container, iconColor, icon: Icon } = variantStyles[variant];
 
   function handleDismiss() {
     setDismissed(true);
@@ -56,22 +72,25 @@ export function InfoBanner({
 
   return (
     <div
+      role={variant === "warning" ? "alert" : "status"}
       className={cn(
-        "flex items-start gap-3 rounded-lg border-l-4 px-4 py-3 text-sm",
+        "flex items-start gap-3 rounded-xl border px-4 py-3 text-sm leading-relaxed",
         container,
         className
       )}
     >
-      <Icon className="h-4 w-4 mt-0.5 shrink-0" />
-      <div className="flex-1">{children}</div>
-      {dismissible && (
+      <Icon className={cn("mt-0.5 h-4 w-4 shrink-0", iconColor)} />
+      <div className="flex-1 text-[hsl(var(--foreground-2))]">{children}</div>
+      {dismissible ? (
         <button
+          type="button"
           onClick={handleDismiss}
-          className="shrink-0 p-0.5 rounded hover:bg-foreground/10 transition-colors"
+          aria-label="Dismiss"
+          className="-me-1 -mt-0.5 shrink-0 rounded-md p-1 text-[hsl(var(--muted-fg))] transition-colors hover:bg-[hsl(var(--surface-2))] hover:text-[hsl(var(--foreground))]"
         >
           <X className="h-3.5 w-3.5" />
         </button>
-      )}
+      ) : null}
     </div>
   );
 }

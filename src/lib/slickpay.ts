@@ -19,7 +19,7 @@ interface SlickPayInvoiceParams {
   address?: string;
   webhook_url?: string;
   webhook_signature?: string;
-  webhook_meta_data?: Record<string, string>;
+  webhook_meta_data?: Record<string, string>[];
   note?: string;
 }
 
@@ -81,7 +81,12 @@ async function slickPayRequest<T>(
 
   if (!response.ok) {
     const errorData = data as unknown as SlickPayErrorResponse;
-    throw new Error(errorData.message || `SlickPay API error: ${response.status}`);
+    const details = errorData.errors
+      ? Object.entries(errorData.errors).map(([k, v]) => `${k}: ${v.join(", ")}`).join("; ")
+      : "";
+    const msg = [errorData.message, details].filter(Boolean).join(" — ");
+    console.error("[SlickPay] Error details:", JSON.stringify(errorData));
+    throw new Error(msg || `SlickPay API error: ${response.status}`);
   }
 
   return data;

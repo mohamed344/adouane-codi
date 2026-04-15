@@ -3,15 +3,14 @@
 import { useState } from "react";
 import { useTranslations, useLocale } from "next-intl";
 import { Link } from "@/i18n/routing";
+import { ArrowLeft, CheckCircle2 } from "lucide-react";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { FormField } from "@/components/form-field";
 import { CustomsLogo } from "@/components/customs-logo";
-import { Loader2, CheckCircle, ArrowLeft } from "lucide-react";
-import { z } from "zod";
 
 export default function ForgotPasswordPage() {
   const t = useTranslations();
@@ -21,103 +20,78 @@ export default function ForgotPasswordPage() {
   const [sent, setSent] = useState(false);
   const [fieldError, setFieldError] = useState("");
 
-  const schema = z.object({
-    email: z.string().email(t("auth.invalidEmail")),
-  });
+  const schema = z.object({ email: z.string().email(t("auth.invalidEmail")) });
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     setFieldError("");
-
     const result = schema.safeParse({ email });
-    if (!result.success) {
-      setFieldError(result.error.issues[0].message);
-      return;
-    }
+    if (!result.success) { setFieldError(result.error.issues[0].message); return; }
 
     setLoading(true);
-    const supabase = createClient();
-
-    const redirectTo = `${window.location.origin}/auth/callback?next=/${locale}/reset-password`;
-
-    const { error } = await supabase.auth.resetPasswordForEmail(email, {
-      redirectTo,
-    });
-
-    if (!error) {
-      setSent(true);
+    try {
+      const supabase = createClient();
+      const redirectTo = `${window.location.origin}/auth/callback?next=/${locale}/reset-password`;
+      const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
+      if (error) {
+        setFieldError(error.message);
+      } else {
+        setSent(true);
+      }
+    } catch (err) {
+      setFieldError(String(err));
     }
     setLoading(false);
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
-      <div className="fixed top-4 right-4 z-50">
+    <div className="flex min-h-screen flex-col bg-[hsl(var(--background))]">
+      <div className="flex items-center justify-between px-6 py-5">
+        <Link href="/login" className="inline-flex items-center gap-2 rounded-md text-sm text-[hsl(var(--muted-fg))] transition-colors hover:text-[hsl(var(--foreground))]">
+          <ArrowLeft className="size-4 rtl:rotate-180" />
+          {t("auth.backToLogin")}
+        </Link>
         <LanguageSwitcher />
       </div>
 
-      <div className="w-full max-w-sm">
-        <div className="flex flex-col items-center mb-8">
-          <Link href="/" className="flex items-center gap-2.5 mb-6 group">
-            <CustomsLogo className="h-10 w-10 transition-transform duration-300 group-hover:scale-105" />
-            <span className="text-xl font-bold tracking-tight">{t("common.appName")}</span>
-          </Link>
-          <h1 className="text-2xl font-bold tracking-tight">{t("auth.forgotPasswordTitle")}</h1>
-          <p className="mt-2 text-sm text-muted-foreground text-center">
-            {t("auth.forgotPasswordSubtitle")}
-          </p>
-        </div>
+      <div className="flex flex-1 items-center justify-center px-6 pb-16">
+        <div className="w-full max-w-sm">
+          <div className="mb-10 text-center">
+            <CustomsLogo className="mx-auto mb-5 h-12 w-12" />
+            <h1 className="text-2xl font-semibold tracking-[-0.02em] text-[hsl(var(--foreground))]">
+              {t("auth.forgotPasswordTitle")}
+            </h1>
+            <p className="mt-2 text-sm text-[hsl(var(--muted-fg))]">
+              {t("auth.forgotPasswordSubtitle")}
+            </p>
+          </div>
 
-        <Card className="rounded-2xl bg-card p-2">
           {sent ? (
-            <CardContent className="pt-8 pb-6 text-center space-y-4">
-              <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-full bg-green-500/10">
-                <CheckCircle className="h-8 w-8 text-green-500" />
+            <div className="rounded-xl border border-[hsl(var(--success)/0.30)] bg-[hsl(var(--success-soft))] p-6 text-center">
+              <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-[hsl(var(--success)/0.15)]">
+                <CheckCircle2 className="size-6 text-[hsl(var(--success))]" />
               </div>
-              <p className="text-sm text-muted-foreground">
+              <p className="mb-4 text-sm leading-relaxed text-[hsl(var(--foreground-2))]">
                 {t("auth.resetEmailSent")}
               </p>
-              <Link
-                href="/login"
-                className="inline-flex items-center gap-1 text-sm text-primary font-medium hover:underline"
-              >
-                <ArrowLeft className="h-3.5 w-3.5" />
-                {t("auth.backToLogin")}
-              </Link>
-            </CardContent>
-          ) : (
-            <form onSubmit={handleSubmit}>
-              <CardContent className="space-y-4 pt-6">
-                <div className="space-y-2">
-                  <Label htmlFor="email">{t("common.email")}</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={email}
-                    onChange={(e) => setEmail(e.target.value)}
-                    className="h-11"
-                  />
-                  {fieldError && (
-                    <p className="text-xs text-destructive">{fieldError}</p>
-                  )}
-                </div>
-              </CardContent>
-              <CardFooter className="flex flex-col gap-4 pb-6">
-                <Button type="submit" className="w-full h-11 font-medium rounded-lg" disabled={loading}>
-                  {loading && <Loader2 className="animate-spin" />}
-                  {t("auth.sendResetLink")}
-                </Button>
-                <Link
-                  href="/login"
-                  className="inline-flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
-                >
-                  <ArrowLeft className="h-3.5 w-3.5" />
+              <Button asChild variant="outline" size="sm">
+                <Link href="/login">
+                  <ArrowLeft className="size-4 rtl:rotate-180" />
                   {t("auth.backToLogin")}
                 </Link>
-              </CardFooter>
+              </Button>
+            </div>
+          ) : (
+            <form onSubmit={handleSubmit} className="space-y-5">
+              <FormField label={t("common.email")} htmlFor="email" error={fieldError} required>
+                <Input id="email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} invalid={!!fieldError} />
+              </FormField>
+              <Button type="submit" size="lg" className="w-full" loading={loading} disabled={loading}>
+                {t("auth.sendResetLink")}
+              </Button>
             </form>
           )}
-        </Card>
+        </div>
       </div>
     </div>
   );

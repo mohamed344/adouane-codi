@@ -3,17 +3,16 @@
 import { useState } from "react";
 import { useTranslations } from "next-intl";
 import { Link, useRouter } from "@/i18n/routing";
+import { ArrowLeft } from "lucide-react";
+import { z } from "zod";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { PasswordInput } from "@/components/ui/password-input";
-import { Label } from "@/components/ui/label";
-import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { LanguageSwitcher } from "@/components/language-switcher";
-import { toast } from "@/components/ui/use-toast";
-import { Loader2 } from "lucide-react";
+import { FormField } from "@/components/form-field";
 import { CustomsLogo } from "@/components/customs-logo";
-import { z } from "zod";
+import { toast } from "@/components/ui/use-toast";
 
 export default function LoginPage() {
   const t = useTranslations();
@@ -50,10 +49,7 @@ export default function LoginPage() {
     });
 
     if (authError) {
-      toast({
-        variant: "destructive",
-        title: t("auth.signInError"),
-      });
+      toast({ variant: "destructive", title: t("auth.signInError") });
       setLoading(false);
       return;
     }
@@ -78,83 +74,101 @@ export default function LoginPage() {
         .eq("status", "active")
         .single();
 
-      if (subscription) {
-        router.push("/search");
-      } else {
-        router.push("/subscription");
-      }
+      if (subscription) router.push("/search");
+      else router.push("/subscription");
     }
     setLoading(false);
   }
 
   return (
-    <div className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-primary/5 to-background px-4">
-      {/* Language switcher — top right */}
-      <div className="fixed top-4 right-4 z-50">
+    <div className="flex min-h-screen flex-col bg-[hsl(var(--background))]">
+      {/* Top bar */}
+      <div className="flex items-center justify-between px-6 py-5">
+        <Link
+          href="/"
+          className="inline-flex items-center gap-2 rounded-md text-sm text-[hsl(var(--muted-fg))] transition-colors hover:text-[hsl(var(--foreground))] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))]"
+        >
+          <ArrowLeft className="size-4 rtl:rotate-180" />
+          {t("common.appName")}
+        </Link>
         <LanguageSwitcher />
       </div>
 
-      {/* Content */}
-      <div className="w-full max-w-sm">
-        {/* Logo + heading */}
-        <div className="flex flex-col items-center mb-8">
-          <Link href="/" className="flex items-center gap-2.5 mb-6 group">
-            <CustomsLogo className="h-10 w-10 transition-transform duration-300 group-hover:scale-105" />
-            <span className="text-xl font-bold tracking-tight">{t("common.appName")}</span>
-          </Link>
-          <h1 className="text-2xl font-bold tracking-tight">{t("auth.signInTitle")}</h1>
-          <p className="mt-2 text-sm text-muted-foreground">{t("auth.signInSubtitle")}</p>
-        </div>
+      {/* Centered form — no card, directly on the page */}
+      <div className="flex flex-1 items-center justify-center px-6 pb-16">
+        <div className="w-full max-w-sm">
+          {/* Logo + heading */}
+          <div className="mb-10 text-center">
+            <CustomsLogo className="mx-auto mb-5 h-12 w-12" />
+            <h1 className="text-2xl font-semibold tracking-[-0.02em] text-[hsl(var(--foreground))]">
+              {t("auth.signInTitle")}
+            </h1>
+            <p className="mt-2 text-sm text-[hsl(var(--muted-fg))]">
+              {t("auth.signInSubtitle")}
+            </p>
+          </div>
 
-        {/* Form card */}
-        <Card className="rounded-2xl bg-card p-2">
-          <form onSubmit={handleSubmit}>
-            <CardContent className="space-y-4 pt-6">
-              <div className="space-y-2">
-                <Label htmlFor="email">{t("common.email")}</Label>
-                <Input
-                  id="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                  className="h-11"
-                />
-                {fieldErrors.email && (
-                  <p className="text-xs text-destructive">{fieldErrors.email}</p>
-                )}
-              </div>
-              <div className="space-y-2">
-                <div className="flex items-center justify-between">
-                  <Label htmlFor="password">{t("common.password")}</Label>
-                  <Link href="/forgot-password" className="text-xs text-primary hover:underline">
-                    {t("auth.forgotPassword")}
-                  </Link>
-                </div>
-                <PasswordInput
-                  id="password"
-                  value={formData.password}
-                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
-                  className="h-11"
-                />
-                {fieldErrors.password && (
-                  <p className="text-xs text-destructive">{fieldErrors.password}</p>
-                )}
-              </div>
-            </CardContent>
-            <CardFooter className="flex flex-col gap-4 pb-6">
-              <Button type="submit" className="w-full h-11 font-medium rounded-lg" disabled={loading}>
-                {loading && <Loader2 className="animate-spin" />}
-                {t("auth.signInButton")}
-              </Button>
-              <p className="text-sm text-muted-foreground">
-                {t("auth.noAccount")}{" "}
-                <Link href="/signup" className="text-primary font-medium hover:underline">
-                  {t("common.signup")}
-                </Link>
-              </p>
-            </CardFooter>
+          <form onSubmit={handleSubmit} className="space-y-5">
+            <FormField
+              label={t("common.email")}
+              htmlFor="email"
+              error={fieldErrors.email}
+              required
+            >
+              <Input
+                id="email"
+                type="email"
+                autoComplete="email"
+                value={formData.email}
+                onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                invalid={!!fieldErrors.email}
+                aria-describedby={fieldErrors.email ? "email-error" : undefined}
+              />
+            </FormField>
+
+            <FormField
+              label={t("common.password")}
+              htmlFor="password"
+              error={fieldErrors.password}
+              required
+            >
+              <PasswordInput
+                id="password"
+                autoComplete="current-password"
+                value={formData.password}
+                onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                invalid={!!fieldErrors.password}
+                aria-describedby={fieldErrors.password ? "password-error" : undefined}
+              />
+            </FormField>
+
+            <div className="flex items-center justify-end">
+              <Link
+                href="/forgot-password"
+                className="text-xs font-medium text-[hsl(var(--accent))] hover:underline"
+              >
+                {t("auth.forgotPassword")}
+              </Link>
+            </div>
+
+            <Button
+              type="submit"
+              size="lg"
+              className="w-full"
+              loading={loading}
+              disabled={loading}
+            >
+              {t("auth.signInButton")}
+            </Button>
           </form>
-        </Card>
+
+          <p className="mt-8 text-center text-sm text-[hsl(var(--muted-fg))]">
+            {t("auth.noAccount")}{" "}
+            <Link href="/signup" className="font-medium text-[hsl(var(--accent))] hover:underline">
+              {t("common.signup")}
+            </Link>
+          </p>
+        </div>
       </div>
     </div>
   );

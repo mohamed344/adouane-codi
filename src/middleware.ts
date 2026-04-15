@@ -71,6 +71,11 @@ export async function middleware(request: NextRequest) {
     }
   }
 
+  // Let auth callback through — it handles its own redirects
+  if (pathWithoutLocale.startsWith("/auth/")) {
+    return supabaseResponse;
+  }
+
   // For protected routes, check authentication
   if (!isPublicPage) {
     if (!user) {

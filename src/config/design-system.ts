@@ -1,192 +1,224 @@
 /**
  * CODI PRO MAX — Design System Configuration
- * Based on ui-ux-pro-max-skill rules for B2B SaaS
  *
- * Style: Flat + Minimal with Warm personality
- * Category: B2B SaaS / Trade / Data Tools
- * Priority: Trust & Authority + Approachability
+ * Style:    Linear / Vercel modern minimal (Flat Design)
+ * Palette:  Indigo / Violet on slate neutrals (light only)
+ * Type:     Geist Sans + Geist Mono
+ * Skill:    .claude/skills/ui-ux-pro-max/SKILL.md
  *
- * USAGE: Import constants from this file to keep UI consistent.
- * Update this file when design decisions change — single source of truth.
+ * Single source of truth for layout, spacing, typography, and pattern tokens.
+ * Components should pull from these constants instead of hard-coding classnames.
  */
 
-// ─── SPACING SCALE (4pt grid) ───
-export const SPACING = {
-  /** Section padding — creates rhythm between sections */
-  section: {
-    compact: "py-12 sm:py-16",       // Stats, banners
-    default: "py-16 sm:py-24",       // Standard sections
-    generous: "py-20 sm:py-32",      // Hero, CTA
-  },
-  /** Container max-widths */
+// ─── Z-INDEX SCALE ────────────────────────────────────────────
+export const Z_INDEX = {
+  base: "z-0",
+  dropdown: "z-10",
+  sticky: "z-20",
+  overlay: "z-30",
+  modal: "z-40",
+  toast: "z-50",
+} as const;
+
+// ─── LAYOUT CONTAINER WIDTHS ──────────────────────────────────
+export const LAYOUT = {
   maxWidth: {
-    narrow: "max-w-2xl",             // Text-heavy, forms
-    default: "max-w-4xl",            // Standard content
-    wide: "max-w-6xl",               // Grids, dashboards
+    text:    "max-w-[68ch]",   // optimal reading width
+    narrow:  "max-w-2xl",      // forms, profile
+    default: "max-w-3xl",      // standard content
+    wide:    "max-w-6xl",      // dashboards, grids
+    full:    "max-w-7xl",      // landing, full-width
   },
-  /** Card padding */
+  pagePadding:  "px-4 sm:px-6 lg:px-8",
+  pageVertical: "py-8 sm:py-12",
+} as const;
+
+// ─── SPACING SCALE  (4/8 grid) ────────────────────────────────
+export const SPACING = {
+  section: {
+    compact:  "py-12 sm:py-16",
+    default:  "py-20 sm:py-28",
+    generous: "py-28 sm:py-36",
+  },
+  maxWidth: {
+    narrow:  "max-w-2xl",
+    default: "max-w-4xl",
+    wide:    "max-w-6xl",
+  },
   card: {
-    compact: "p-5",
-    default: "p-6 sm:p-8",
+    compact:  "p-5",
+    default:  "p-6 sm:p-8",
     generous: "p-8 sm:p-10",
   },
-  /** Gap between elements */
   gap: {
-    tight: "gap-3",
+    tight:   "gap-3",
     default: "gap-6",
-    wide: "gap-8 sm:gap-12",
+    wide:    "gap-8 sm:gap-12",
     section: "gap-16 sm:gap-20",
   },
 } as const;
 
-// ─── BORDER RADIUS ───
+// ─── BORDER RADIUS ────────────────────────────────────────────
 export const RADIUS = {
   none: "rounded-none",
-  sm: "rounded-lg",         // Buttons, inputs, badges
-  md: "rounded-xl",         // Cards, small containers
-  lg: "rounded-2xl",        // Feature cards, modals
-  full: "rounded-full",     // Avatars, pills, badges
+  sm:   "rounded-md",   // 6px  – chips, small badges
+  md:   "rounded-lg",   // 8px  – buttons, inputs
+  lg:   "rounded-xl",   // 12px – cards
+  xl:   "rounded-2xl",  // 16px – feature cards, modals
+  full: "rounded-full", // pills, avatars
 } as const;
 
-// ─── TYPOGRAPHY SCALE ───
+// ─── TYPOGRAPHY SCALE  (Linear/Vercel tight tracking) ─────────
 export const TYPOGRAPHY = {
-  /** Display — Hero headlines only */
-  display: "text-4xl sm:text-5xl lg:text-6xl font-bold tracking-tight leading-[1.08]",
-  /** H1 — Page titles */
-  h1: "text-3xl sm:text-4xl font-bold tracking-tight leading-tight",
-  /** H2 — Section headings */
-  h2: "text-2xl sm:text-3xl font-bold leading-tight",
-  /** H3 — Card titles, sub-sections */
-  h3: "text-lg sm:text-xl font-semibold",
-  /** H4 — Small headings */
-  h4: "text-base font-semibold",
-  /** Body — Default text */
-  body: "text-base leading-relaxed",
-  /** Body small */
+  display:   "text-5xl sm:text-6xl lg:text-7xl font-semibold tracking-[-0.04em] leading-[0.95]",
+  h1:        "text-3xl sm:text-4xl lg:text-5xl font-semibold tracking-[-0.025em] leading-[1.05]",
+  h2:        "text-2xl sm:text-3xl font-semibold tracking-[-0.02em] leading-tight",
+  h3:        "text-xl sm:text-2xl font-semibold tracking-[-0.015em]",
+  h4:        "text-lg font-semibold tracking-tight",
+  body:      "text-base leading-relaxed",
+  bodyLg:    "text-lg leading-relaxed",
   bodySmall: "text-sm leading-relaxed",
-  /** Caption */
-  caption: "text-xs uppercase tracking-wider font-medium",
-  /** Label */
-  label: "text-sm font-medium",
+  caption:   "text-xs uppercase tracking-[0.12em] font-medium text-[hsl(var(--muted-fg))]",
+  label:     "text-sm font-medium text-[hsl(var(--foreground-2))]",
+  mono:      "font-mono text-sm tracking-tight",
+  monoSm:    "font-mono text-xs tracking-tight",
 } as const;
 
-// ─── ANIMATION TIMING ───
+// ─── ANIMATION TIMING ─────────────────────────────────────────
 export const ANIMATION = {
-  /** Micro-interactions: button press, toggle */
-  micro: "duration-100",
-  /** Standard hover, focus transitions */
-  standard: "duration-200",
-  /** Page transitions, modal enter */
-  page: "duration-300",
-  /** Premium smooth effects */
-  premium: "duration-500",
-  /** Easing functions */
+  micro:    "duration-100",  // button press, toggle
+  standard: "duration-200",  // hover, focus
+  page:     "duration-300",  // modal enter, panel slide
+  premium:  "duration-500",  // hero entrance
   easing: {
     default: "ease-out",
-    spring: "cubic-bezier(0.34, 1.56, 0.64, 1)",
-    smooth: "cubic-bezier(0.16, 1, 0.3, 1)",
+    smooth:  "cubic-bezier(0.16, 1, 0.3, 1)",
+    spring:  "cubic-bezier(0.34, 1.56, 0.64, 1)",
   },
 } as const;
 
-// ─── COLOR USAGE RULES ───
+// ─── TRANSITIONS  (composed timing + easing) ──────────────────
+export const TRANSITIONS = {
+  micro:        "transition-all duration-100 ease-out",
+  standard:     "transition-all duration-200 ease-out",
+  page:         "transition-all duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]",
+  premium:      "transition-all duration-500 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]",
+  reducedMotion:"motion-reduce:transition-none",
+} as const;
+
+// ─── SKELETON PATTERNS  (prevent layout shift) ────────────────
+export const SKELETON = {
+  card:        "h-48 rounded-xl",
+  cardCompact: "h-32 rounded-lg",
+  tableRow:    "h-14 rounded-md",
+  statsCard:   "h-28 rounded-xl",
+  formField:   "h-10 rounded-md",
+  avatar:      "h-10 w-10 rounded-full",
+  heading:     "h-8 w-48 rounded-md",
+  paragraph:   "h-4 rounded",
+  button:      "h-10 w-32 rounded-lg",
+  pricingCard: "h-96 rounded-xl",
+} as const;
+
+// ─── COLOR USAGE RULES ────────────────────────────────────────
 export const COLOR_USAGE = {
-  /** Background alternation for visual rhythm */
   sectionBg: {
-    base: "bg-background",                // Cream — default
-    elevated: "bg-surface-white",          // White — stats, pricing
-    warm: "bg-surface-warm",               // Amber tint — features, testimonials
-    dark: "bg-secondary text-secondary-foreground", // Dark — CTA
+    base:     "bg-[hsl(var(--background))]",
+    elevated: "bg-[hsl(var(--surface))]",
+    soft:     "bg-[hsl(var(--surface-2))]",
+    accent:   "bg-gradient-to-b from-[hsl(var(--background))] to-[hsl(var(--surface))]",
   },
-  /** Interactive states */
   interactive: {
-    active: "bg-primary/10 text-primary",
-    hover: "hover:bg-muted/50 hover:text-foreground",
-    muted: "text-muted-foreground",
+    active: "bg-[hsl(var(--primary)/0.10)] text-[hsl(var(--primary))]",
+    hover:  "hover:bg-[hsl(var(--surface-2))] hover:text-[hsl(var(--foreground))]",
+    muted:  "text-[hsl(var(--muted-fg))]",
   },
-  /** Emphasis */
   emphasis: {
-    highlight: "bg-primary/5",             // Popular plan, featured items
-    subtle: "bg-muted/30",                 // Sidebar, secondary surfaces
+    highlight: "bg-[hsl(var(--primary)/0.06)] ring-1 ring-[hsl(var(--primary)/0.15)]",
+    subtle:    "bg-[hsl(var(--surface))]",
   },
 } as const;
 
-// ─── COMPONENT PATTERNS ───
+// ─── COMPONENT PATTERNS ───────────────────────────────────────
 export const PATTERNS = {
-  /** Section header — left-aligned for human feel */
   sectionHeader: {
-    wrapper: "mb-12 sm:mb-16",
-    title: "text-2xl sm:text-3xl font-bold leading-tight",
-    subtitle: "mt-4 text-lg text-muted-foreground leading-relaxed max-w-2xl",
+    wrapper:  "mb-12 sm:mb-16",
+    eyebrow:  "text-xs uppercase tracking-[0.16em] font-medium text-[hsl(var(--primary))]",
+    title:    "mt-3 text-3xl sm:text-4xl font-semibold tracking-[-0.02em] leading-[1.1]",
+    subtitle: "mt-4 text-lg text-[hsl(var(--muted-fg))] leading-relaxed max-w-2xl",
   },
-  /** Cards */
   card: {
-    base: "rounded-2xl bg-card",
-    interactive: "rounded-2xl bg-card transition-colors hover:bg-muted/20",
-    featured: "rounded-2xl bg-primary/5",
+    base:        "rounded-xl bg-[hsl(var(--background))] border border-[hsl(var(--border))]",
+    interactive: "rounded-xl bg-[hsl(var(--background))] border border-[hsl(var(--border))] transition-all duration-200 hover:border-[hsl(var(--border-2))] hover:-translate-y-px hover:shadow-sm",
+    elevated:    "rounded-xl bg-[hsl(var(--background))] border border-[hsl(var(--border))] shadow-[0_1px_2px_rgba(15,23,42,0.04),0_8px_24px_-12px_rgba(15,23,42,0.08)]",
+    featured:    "rounded-xl bg-[hsl(var(--background))] border border-[hsl(var(--primary)/0.30)] ring-1 ring-[hsl(var(--primary)/0.10)] shadow-[0_8px_40px_-12px_hsl(var(--primary)/0.30)]",
   },
-  /** Buttons */
   button: {
-    primary: "h-12 px-8 rounded-xl text-base font-medium",
-    secondary: "h-11 px-6 rounded-lg text-sm font-medium",
-    ghost: "h-10 px-4 rounded-lg text-sm font-medium",
+    primary:     "h-10 px-5 rounded-lg text-sm font-medium",
+    secondary:   "h-10 px-5 rounded-lg text-sm font-medium",
+    ghost:       "h-9 px-3 rounded-lg text-sm font-medium",
+    lg:          "h-11 px-6 rounded-lg text-base font-medium",
+    sm:          "h-8 px-3 rounded-md text-xs font-medium",
   },
-  /** Avatar */
   avatar: {
-    sm: "h-9 w-9 rounded-full text-sm font-semibold",
-    md: "h-11 w-11 rounded-full font-semibold",
-    lg: "h-14 w-14 rounded-full text-lg font-semibold",
+    sm: "h-8 w-8 rounded-full text-xs font-semibold",
+    md: "h-9 w-9 rounded-full text-sm font-semibold",
+    lg: "h-12 w-12 rounded-full text-base font-semibold",
+  },
+  input: {
+    base: "h-10 px-3 rounded-md border border-[hsl(var(--border))] bg-[hsl(var(--background))] text-sm placeholder:text-[hsl(var(--muted-fg-2))] focus-visible:border-[hsl(var(--primary))] focus-visible:ring-2 focus-visible:ring-[hsl(var(--primary)/0.20)]",
   },
 } as const;
 
-// ─── ANTI-PATTERNS (DO NOT USE) ───
+// ─── ANTI-PATTERNS  (DO NOT USE) ──────────────────────────────
 export const ANTI_PATTERNS = [
-  "shadow-* on cards (use color/whitespace for hierarchy)",
-  "border on every card (use bg color differentiation)",
-  "Identical card sizes in grids (vary spans for visual interest)",
-  "Everything centered (left-align text for natural reading)",
-  "Generic stock photo backgrounds",
-  "More than 2 animations visible at once per viewport",
+  "Drop-shadow blur > 24px (use subtle 1-2px shadows or none)",
+  "Amber/gold backgrounds (legacy brand — replaced with indigo/violet)",
+  "Identical card sizes in feature grids (vary spans for visual rhythm)",
+  "Centered text everywhere (left-align body for natural reading)",
+  "Stock photo backgrounds (use abstract gradients or product screenshots)",
+  "More than 2 simultaneous animations per viewport",
   "Hover-only information (must work on touch)",
-  "Purple/pink AI gradients in B2B context",
-  "Color-only status indicators (add icon or text)",
-  "z-index values above 50 (use scale: 10, 20, 30, 40, 50)",
+  "Color-only status indicators (always pair with icon or text)",
+  "Z-index values above 50 (use scale: 0/10/20/30/40/50)",
+  "Hard-coded hex colors in components (use --color-* tokens)",
+  "Margin between flex/grid items (use gap-*)",
+  "Bold weight for body text (semibold reserved for headings)",
 ] as const;
 
-// ─── ACCESSIBILITY REQUIREMENTS ───
+// ─── ACCESSIBILITY REQUIREMENTS ───────────────────────────────
 export const A11Y = {
-  /** Minimum contrast ratios */
   contrast: {
-    bodyText: 4.5,      // WCAG AA
-    largeText: 3.0,     // 18pt+ or 14pt bold+
-    cta: 7.0,           // WCAG AAA for CTA buttons
+    bodyText:  4.5,   // WCAG AA
+    largeText: 3.0,   // 18pt+ or 14pt bold+
+    cta:       7.0,   // WCAG AAA
   },
-  /** Touch targets */
   touchTarget: {
     min: "min-h-[44px] min-w-[44px]",
-    gap: "gap-2",       // 8px between interactive elements
+    gap: "gap-2",
   },
-  /** Focus */
-  focus: "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-  /** Reduced motion */
+  focus: "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[hsl(var(--ring))] focus-visible:ring-offset-2 focus-visible:ring-offset-[hsl(var(--background))]",
   reducedMotion: "motion-reduce:animate-none motion-reduce:transition-none",
 } as const;
 
-// ─── BREAKPOINTS REFERENCE ───
+// ─── BREAKPOINTS REFERENCE ────────────────────────────────────
 export const BREAKPOINTS = {
-  mobile: 375,
-  tablet: 768,
-  desktop: 1024,
-  wide: 1280,
+  mobile:    375,
+  tablet:    768,
+  desktop:   1024,
+  wide:      1280,
   ultrawide: 1536,
 } as const;
 
-// ─── LANDING PAGE SECTION ORDER ───
+// ─── LANDING PAGE SECTION ORDER ───────────────────────────────
 export const LANDING_SECTIONS = [
-  "hero",           // Value prop + CTA — generous padding
-  "stats",          // Social proof numbers — compact
-  "features",       // Key differentiators — warm bg
-  "how-it-works",   // 3-step flow — base bg
-  "pricing",        // Plans — elevated bg
-  "testimonials",   // Social proof — warm bg
-  "cta",            // Final push — dark bg
+  "hero",          // mesh gradient + grid + animated badge
+  "logos",         // social proof marquee
+  "features",      // 3-column icon cards
+  "how-it-works",  // 3 numbered steps
+  "bento",         // asymmetric showcase grid
+  "pricing",       // 3 plans, indigo highlight on Pro
+  "testimonials",  // 2-row staggered quotes
+  "faq",           // accordion
+  "cta",           // final mesh + glowing CTA
 ] as const;

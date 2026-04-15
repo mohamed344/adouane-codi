@@ -1,21 +1,44 @@
+"use client";
+
 import * as React from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
+/**
+ * Badge — CODI PRO MAX
+ * Pill / chip used for status, counts, plan tier, etc.
+ */
 const badgeVariants = cva(
-  "inline-flex items-center rounded-full border px-2.5 py-0.5 text-xs font-semibold transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2",
+  "inline-flex items-center gap-1 whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium leading-5 [&_svg]:size-3 [&_svg]:shrink-0 transition-colors",
   {
     variants: {
       variant: {
-        default: "border-transparent bg-primary text-primary-foreground hover:bg-primary/80",
-        secondary: "border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80",
-        destructive: "border-transparent bg-destructive text-destructive-foreground hover:bg-destructive/80",
-        outline: "text-foreground",
+        default:
+          "bg-[hsl(var(--surface-2))] text-[hsl(var(--foreground-2))] ring-1 ring-inset ring-[hsl(var(--border))]",
+        indigo:
+          "bg-[hsl(var(--primary)/0.10)] text-[hsl(var(--primary-2))] ring-1 ring-inset ring-[hsl(var(--primary)/0.20)]",
+        violet:
+          "bg-[hsl(var(--accent)/0.12)] text-[hsl(var(--accent-2))] ring-1 ring-inset ring-[hsl(var(--accent)/0.25)]",
+        emerald:
+          "bg-[hsl(var(--success-soft))] text-[hsl(var(--success))] ring-1 ring-inset ring-[hsl(var(--success)/0.25)]",
+        amber:
+          "bg-[hsl(var(--warning-soft))] text-[hsl(var(--warning))] ring-1 ring-inset ring-[hsl(var(--warning)/0.30)]",
+        rose:
+          "bg-[hsl(var(--destructive-soft))] text-[hsl(var(--destructive))] ring-1 ring-inset ring-[hsl(var(--destructive)/0.25)]",
+        slate:
+          "bg-[hsl(var(--surface-2))] text-[hsl(var(--muted-fg))] ring-1 ring-inset ring-[hsl(var(--border))]",
+        outline:
+          "border border-[hsl(var(--border-2))] text-[hsl(var(--foreground-2))] bg-transparent",
+        solid:
+          "bg-[hsl(var(--primary))] text-[hsl(var(--on-primary))]",
+        /* legacy compat aliases for shadcn-style callers */
+        secondary:
+          "bg-[hsl(var(--surface-2))] text-[hsl(var(--foreground-2))] ring-1 ring-inset ring-[hsl(var(--border))]",
+        destructive:
+          "bg-[hsl(var(--destructive-soft))] text-[hsl(var(--destructive))] ring-1 ring-inset ring-[hsl(var(--destructive)/0.25)]",
       },
     },
-    defaultVariants: {
-      variant: "default",
-    },
+    defaultVariants: { variant: "default" },
   }
 );
 

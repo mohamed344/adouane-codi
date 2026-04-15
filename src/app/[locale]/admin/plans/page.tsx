@@ -8,7 +8,6 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Switch } from "@/components/ui/switch";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import {
@@ -119,74 +118,91 @@ export default function AdminPlansPage() {
         </Button>
       </div>
 
-      <Card>
-        <CardContent className="pt-6">
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center justify-between gap-4 rounded-lg border p-4">
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-5 w-32" />
-                    <Skeleton className="h-4 w-48" />
-                    <Skeleton className="h-5 w-20" />
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Skeleton className="h-6 w-10 rounded-full" />
-                    <Skeleton className="h-8 w-8 rounded" />
-                    <Skeleton className="h-8 w-8 rounded" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : plans.length === 0 ? (
-            <p className="text-center py-8 text-muted-foreground">{t("admin.noPlans")}</p>
-          ) : (
-            <div className="space-y-4">
-              {plans.map((plan) => (
-                <div
-                  key={plan.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-lg border p-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-1">
-                      <h3 className="font-semibold">{plan.name}</h3>
-                      {plan.is_popular && (
-                        <Badge variant="default" className="text-xs">{t("subscription.popular")}</Badge>
-                      )}
-                      <Badge variant={plan.is_active ? "default" : "secondary"}>
-                        {plan.is_active ? t("admin.planActive") : t("admin.planInactive")}
+      <div className="rounded-xl border border-[hsl(var(--border))] overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[hsl(var(--border))] bg-[hsl(var(--muted)/0.4)]">
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))]">{t("admin.colName")}</th>
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))] hidden md:table-cell">{t("admin.planDescription")}</th>
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))]">{t("admin.colPrice")}</th>
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))]">{t("admin.colBilling")}</th>
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))] hidden lg:table-cell">{t("admin.colFeatures")}</th>
+                <th className="px-4 py-3 text-center font-medium text-[hsl(var(--muted-fg))]">{t("admin.colActive")}</th>
+                <th className="px-4 py-3 text-end font-medium text-[hsl(var(--muted-fg))]">{t("admin.colActions")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 3 }).map((_, i) => (
+                  <tr key={i} className="border-b border-[hsl(var(--border))]">
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-24" /></td>
+                    <td className="px-4 py-3 hidden md:table-cell"><Skeleton className="h-4 w-40" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-16" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-5 w-16 rounded-full" /></td>
+                    <td className="px-4 py-3 hidden lg:table-cell"><Skeleton className="h-4 w-32" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-5 w-10 mx-auto rounded-full" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-16 ms-auto" /></td>
+                  </tr>
+                ))
+              ) : plans.length === 0 ? (
+                <tr>
+                  <td colSpan={7} className="px-4 py-12 text-center text-[hsl(var(--muted-fg))]">
+                    {t("admin.noPlans")}
+                  </td>
+                </tr>
+              ) : (
+                plans.map((plan) => (
+                  <tr key={plan.id} className="border-b border-[hsl(var(--border))] hover:bg-[hsl(var(--muted)/0.3)] transition-colors">
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <span className="font-medium">{plan.name}</span>
+                        {plan.is_popular && (
+                          <Badge variant="default" className="text-xs">{t("subscription.popular")}</Badge>
+                        )}
+                      </div>
+                    </td>
+                    <td className="px-4 py-3 text-[hsl(var(--muted-fg))] hidden md:table-cell max-w-[200px] truncate">
+                      {plan.description}
+                    </td>
+                    <td className="px-4 py-3 font-semibold">
+                      {plan.price} DA
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge variant="secondary" className="text-xs">
+                        {plan.billing_cycle === "monthly" ? t("admin.monthly") : t("admin.yearly")}
                       </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground">{plan.description}</p>
-                    <p className="text-lg font-bold mt-1">
-                      ${plan.price}
-                      <span className="text-sm font-normal text-muted-foreground">
-                        /{plan.billing_cycle === "monthly" ? t("admin.monthly") : t("admin.yearly")}
-                      </span>
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Switch checked={plan.is_active} onCheckedChange={() => handleToggleActive(plan)} />
-                    <Button variant="ghost" size="icon" onClick={() => openEditDialog(plan)}>
-                      <Pencil className="h-4 w-4" />
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      onClick={() => {
-                        setDeletingPlan(plan);
-                        setDeleteDialogOpen(true);
-                      }}
-                    >
-                      <Trash2 className="h-4 w-4 text-destructive" />
-                    </Button>
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    </td>
+                    <td className="px-4 py-3 text-[hsl(var(--muted-fg))] hidden lg:table-cell max-w-[200px] truncate">
+                      {plan.features?.join(", ")}
+                    </td>
+                    <td className="px-4 py-3 text-center">
+                      <Switch checked={plan.is_active} onCheckedChange={() => handleToggleActive(plan)} />
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end gap-1">
+                        <Button variant="ghost" size="sm" onClick={() => openEditDialog(plan)}>
+                          <Pencil className="h-4 w-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            setDeletingPlan(plan);
+                            setDeleteDialogOpen(true);
+                          }}
+                        >
+                          <Trash2 className="h-4 w-4 text-destructive" />
+                        </Button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
 
       {/* Create/Edit Plan Dialog */}
       <Dialog open={dialogOpen} onOpenChange={setDialogOpen}>
@@ -219,7 +235,7 @@ export default function AdminPlansPage() {
                 <select
                   value={formData.billing_cycle}
                   onChange={(e) => setFormData({ ...formData, billing_cycle: e.target.value })}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="flex h-10 w-full rounded-lg border border-[hsl(var(--border))] bg-[hsl(var(--background))] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[hsl(var(--ring))]"
                 >
                   <option value="monthly">{t("admin.monthly")}</option>
                   <option value="yearly">{t("admin.yearly")}</option>

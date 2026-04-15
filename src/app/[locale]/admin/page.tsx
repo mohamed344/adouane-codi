@@ -32,7 +32,7 @@ import {
 } from "recharts";
 import { useAdmin } from "./context";
 
-const CHART_COLORS = ["#22c55e", "#ef4444", "#6b7280", "#3b82f6", "#a855f7"];
+const CHART_COLORS = ["#0d9488", "#ef4444", "#94a3b8", "#1e3a5f", "#10b981"];
 
 export default function AdminDashboardPage() {
   const t = useTranslations();
@@ -146,7 +146,7 @@ export default function AdminDashboardPage() {
                     <XAxis dataKey="month" tick={{ fontSize: 12 }} />
                     <YAxis allowDecimals={false} tick={{ fontSize: 12 }} />
                     <Tooltip />
-                    <Area type="monotone" dataKey="users" stroke="#3b82f6" fill="#3b82f6" fillOpacity={0.15} strokeWidth={2} />
+                    <Area type="monotone" dataKey="users" stroke="#0d9488" fill="#0d9488" fillOpacity={0.12} strokeWidth={2} />
                   </AreaChart>
                 </ResponsiveContainer>
               </CardContent>
@@ -191,8 +191,8 @@ export default function AdminDashboardPage() {
                         name === "revenue" ? t("admin.revenue") : t("admin.subscriptionCount"),
                       ]}
                     />
-                    <Bar dataKey="revenue" fill="#f97316" radius={[4, 4, 0, 0]} />
-                    <Bar dataKey="count" fill="#a855f7" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="revenue" fill="#1e3a5f" radius={[4, 4, 0, 0]} />
+                    <Bar dataKey="count" fill="#0d9488" radius={[4, 4, 0, 0]} />
                   </BarChart>
                 </ResponsiveContainer>
               </CardContent>

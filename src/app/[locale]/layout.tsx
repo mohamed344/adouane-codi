@@ -1,23 +1,20 @@
 import { NextIntlClientProvider } from "next-intl";
 import { getMessages } from "next-intl/server";
-import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/toaster";
 import { isRtl, type Locale } from "@/i18n/config";
 import { notFound } from "next/navigation";
 import { routing } from "@/i18n/routing";
-import { Inter, Lexend, Noto_Sans_Arabic } from "next/font/google";
+import { Geist, Geist_Mono, Noto_Sans_Arabic } from "next/font/google";
 
-const inter = Inter({
+const geistSans = Geist({
   subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  variable: "--font-inter",
+  variable: "--font-geist-sans",
   display: "swap",
 });
 
-const lexend = Lexend({
+const geistMono = Geist_Mono({
   subsets: ["latin"],
-  weight: ["500", "600", "700", "800"],
-  variable: "--font-lexend",
+  variable: "--font-geist-mono",
   display: "swap",
 });
 
@@ -46,19 +43,13 @@ export default async function LocaleLayout({
 
   return (
     <html lang={locale} dir={dir} suppressHydrationWarning>
-      <body className={`${inter.variable} ${lexend.variable} ${notoSansArabic.variable} min-h-screen antialiased`}>
-        <ThemeProvider
-          attribute="class"
-          defaultTheme="light"
-          forcedTheme="light"
-          enableSystem={false}
-          disableTransitionOnChange
-        >
-          <NextIntlClientProvider messages={messages}>
-            {children}
-            <Toaster />
-          </NextIntlClientProvider>
-        </ThemeProvider>
+      <body
+        className={`${geistSans.variable} ${geistMono.variable} ${notoSansArabic.variable} min-h-screen antialiased`}
+      >
+        <NextIntlClientProvider messages={messages}>
+          {children}
+          <Toaster />
+        </NextIntlClientProvider>
       </body>
     </html>
   );

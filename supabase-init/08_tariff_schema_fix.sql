@@ -95,7 +95,7 @@ BEGIN
   q_tsquery := websearch_to_tsquery('french', search_query);
   q_plain := plainto_tsquery('french', search_query);
 
-  -- Build AND query + extract first meaningful word
+  -- Build AND query parts from individual words
   and_parts := ARRAY[]::TEXT[];
   q_first := NULL;
   FOR w IN SELECT unnest(string_to_array(trim(search_query), ' ')) LOOP
@@ -114,14 +114,8 @@ BEGIN
   ELSE q_and := q_plain; END IF;
   IF q_first IS NULL THEN q_first := q_plain; END IF;
 
-  -- Check if AND produces results
-  IF word_count > 1 THEN
-    SELECT EXISTS(SELECT 1 FROM public.tariff_codes tc
-      WHERE (section_filter IS NULL OR tc.section_code = section_filter)
-        AND (to_tsvector('french', tc.description) @@ q_and
-          OR to_tsvector('french', COALESCE(tc.designation, '')) @@ q_and)
-      LIMIT 1) INTO has_and_results;
-  ELSE has_and_results := TRUE; END IF;
+  -- Strict AND: all words must match, no fallback
+  has_and_results := TRUE;
 
   -- Handle translated query
   tq_first := NULL; tq_and := NULL; tq_tsquery := NULL; tq_plain := NULL;
@@ -141,13 +135,7 @@ BEGIN
     IF array_length(and_parts, 1) > 1 THEN tq_and := array_to_string(and_parts, ' & ')::tsquery;
     ELSIF array_length(and_parts, 1) = 1 THEN tq_and := and_parts[1]::tsquery;
     ELSE tq_and := tq_plain; END IF;
-    IF NOT has_and_results AND tq_and IS NOT NULL THEN
-      SELECT EXISTS(SELECT 1 FROM public.tariff_codes tc
-        WHERE (section_filter IS NULL OR tc.section_code = section_filter)
-          AND (to_tsvector('french', tc.description) @@ tq_and
-            OR to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_and)
-        LIMIT 1) INTO has_and_results;
-    END IF;
+
   END IF;
 
   -- Check if any FTS result exists (for fuzzy fallback decision)
@@ -156,16 +144,8 @@ BEGIN
       AND (tc.full_code ILIKE '%' || search_query || '%'
         OR to_tsvector('french', tc.description) @@ q_and
         OR to_tsvector('french', COALESCE(tc.designation, '')) @@ q_and
-        OR to_tsvector('french', tc.description) @@ q_tsquery
-        OR to_tsvector('french', COALESCE(tc.designation, '')) @@ q_tsquery
-        OR (NOT has_and_results AND to_tsvector('french', tc.description) @@ q_first)
-        OR (NOT has_and_results AND to_tsvector('french', COALESCE(tc.designation, '')) @@ q_first)
         OR (tq_and IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_and)
-        OR (tq_and IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_and)
-        OR (tq_tsquery IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_tsquery)
-        OR (tq_tsquery IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_tsquery)
-        OR (NOT has_and_results AND tq_first IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_first)
-        OR (NOT has_and_results AND tq_first IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_first))
+        OR (tq_and IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_and))
     LIMIT 1) INTO has_any_fts_results;
 
   RETURN QUERY
@@ -193,16 +173,12 @@ BEGIN
       -- Exact code match
       WHEN tc.full_code LIKE search_query || '%' THEN 1.0
       WHEN tc.full_code ILIKE '%' || search_query || '%' THEN 0.9
-      -- All words match (AND — highest rank)
+      -- AND match on description (q_and is best progressive subset)
       WHEN to_tsvector('french', tc.description) @@ q_and THEN 0.8 + ts_rank(to_tsvector('french', tc.description), q_and) * 0.2
       WHEN tq_and IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_and THEN 0.8 + ts_rank(to_tsvector('french', tc.description), tq_and) * 0.2
+      -- AND match on designation
       WHEN to_tsvector('french', COALESCE(tc.designation, '')) @@ q_and THEN 0.6 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), q_and) * 0.2
       WHEN tq_and IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_and THEN 0.6 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), tq_and) * 0.2
-      -- First-word fallback (AND=0: show first keyword results only, never expand)
-      WHEN NOT has_and_results AND to_tsvector('french', tc.description) @@ q_first THEN 0.3 + ts_rank(to_tsvector('french', tc.description), q_first) * 0.2
-      WHEN NOT has_and_results AND to_tsvector('french', COALESCE(tc.designation, '')) @@ q_first THEN 0.2 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), q_first) * 0.2
-      WHEN NOT has_and_results AND tq_first IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_first THEN 0.3 + ts_rank(to_tsvector('french', tc.description), tq_first) * 0.2
-      WHEN NOT has_and_results AND tq_first IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_first THEN 0.2 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), tq_first) * 0.2
       -- Fuzzy trigram (typo tolerance — only when FTS found nothing)
       WHEN NOT has_any_fts_results AND word_similarity(lower(search_query), lower(tc.description)) > 0.45 THEN 0.1 + word_similarity(lower(search_query), lower(tc.description)) * 0.15
       WHEN NOT has_any_fts_results AND word_similarity(lower(search_query), lower(COALESCE(tc.designation, ''))) > 0.45 THEN 0.08 + word_similarity(lower(search_query), lower(COALESCE(tc.designation, ''))) * 0.15
@@ -218,22 +194,13 @@ BEGIN
   WHERE (section_filter IS NULL OR tc.section_code = section_filter)
     AND (
       tc.full_code ILIKE '%' || search_query || '%'
-      -- AND match
+      -- AND match (q_and is best progressive subset that has results)
       OR to_tsvector('french', tc.description) @@ q_and
       OR to_tsvector('french', COALESCE(tc.designation, '')) @@ q_and
-      OR to_tsvector('french', tc.description) @@ q_tsquery
-      OR to_tsvector('french', COALESCE(tc.designation, '')) @@ q_tsquery
-      -- Translated
+      -- Translated AND match
       OR (tq_and IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_and)
       OR (tq_and IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_and)
-      OR (tq_tsquery IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_tsquery)
-      OR (tq_tsquery IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_tsquery)
-      -- First-word fallback (never OR — adding words must not expand results)
-      OR (NOT has_and_results AND to_tsvector('french', tc.description) @@ q_first)
-      OR (NOT has_and_results AND to_tsvector('french', COALESCE(tc.designation, '')) @@ q_first)
-      OR (NOT has_and_results AND tq_first IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_first)
-      OR (NOT has_and_results AND tq_first IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_first)
-      -- Fuzzy fallback (typos)
+      -- Fuzzy fallback (typos — only when FTS found nothing)
       OR (NOT has_any_fts_results AND length(search_query) >= 4 AND word_similarity(lower(search_query), lower(tc.description)) > 0.45)
       OR (NOT has_any_fts_results AND length(search_query) >= 4 AND word_similarity(lower(search_query), lower(COALESCE(tc.designation, ''))) > 0.45)
     )

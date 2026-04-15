@@ -15,7 +15,7 @@ const ToastViewport = React.forwardRef<
   <ToastPrimitives.Viewport
     ref={ref}
     className={cn(
-      "fixed top-0 z-[100] flex max-h-screen w-full flex-col-reverse p-4 sm:bottom-0 sm:right-0 sm:top-auto sm:flex-col md:max-w-[420px]",
+      "fixed bottom-0 end-0 z-50 flex max-h-screen w-full flex-col-reverse gap-2 p-4 sm:bottom-4 sm:end-4 sm:flex-col md:max-w-[420px]",
       className
     )}
     {...props}
@@ -24,20 +24,30 @@ const ToastViewport = React.forwardRef<
 ToastViewport.displayName = ToastPrimitives.Viewport.displayName;
 
 const toastVariants = cva(
-  "group pointer-events-auto relative flex w-full items-center justify-between space-x-4 overflow-hidden rounded-xl border p-4 transition-all data-[swipe=cancel]:translate-x-0 data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)] data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)] data-[swipe=move]:transition-none data-[state=open]:animate-in data-[state=closed]:animate-out data-[swipe=end]:animate-out data-[state=closed]:fade-out-80 data-[state=closed]:slide-out-to-right-full data-[state=open]:slide-in-from-top-full data-[state=open]:sm:slide-in-from-bottom-full",
+  cn(
+    "group pointer-events-auto relative flex w-full items-start gap-3 overflow-hidden p-4 pe-10",
+    "rounded-xl border bg-[hsl(var(--background))]",
+    "shadow-[0_10px_38px_-10px_rgba(15,23,42,0.40),0_10px_20px_-15px_rgba(15,23,42,0.20)]",
+    "data-[state=open]:[animation:toast-in_220ms_cubic-bezier(0.16,1,0.3,1)]",
+    "data-[state=closed]:[animation:toast-out_180ms_ease-in]",
+    "data-[swipe=cancel]:translate-x-0",
+    "data-[swipe=end]:translate-x-[var(--radix-toast-swipe-end-x)]",
+    "data-[swipe=move]:translate-x-[var(--radix-toast-swipe-move-x)]",
+    "data-[swipe=move]:transition-none"
+  ),
   {
     variants: {
       variant: {
-        default: "border bg-background text-foreground",
+        default: "border-[hsl(var(--border))] text-[hsl(var(--foreground))]",
         success:
-          "border-green-200 bg-green-50 text-green-900 dark:border-green-800 dark:bg-green-950 dark:text-green-100",
+          "border-[hsl(var(--success)/0.30)] bg-[hsl(var(--success-soft))] text-[hsl(var(--success))]",
         destructive:
-          "border-red-200 bg-red-50 text-red-900 dark:border-red-800 dark:bg-red-950 dark:text-red-100",
+          "border-[hsl(var(--destructive)/0.30)] bg-[hsl(var(--destructive-soft))] text-[hsl(var(--destructive))]",
+        info:
+          "border-[hsl(var(--primary)/0.30)] bg-[hsl(var(--primary-soft))] text-[hsl(var(--primary-2))]",
       },
     },
-    defaultVariants: {
-      variant: "default",
-    },
+    defaultVariants: { variant: "default" },
   }
 );
 
@@ -63,7 +73,9 @@ const ToastAction = React.forwardRef<
   <ToastPrimitives.Action
     ref={ref}
     className={cn(
-      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border bg-transparent px-3 text-sm font-medium ring-offset-background transition-colors hover:bg-secondary focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:pointer-events-none disabled:opacity-50",
+      "inline-flex h-8 shrink-0 items-center justify-center rounded-md border border-current bg-transparent px-3 text-xs font-medium",
+      "transition-colors hover:bg-current/10",
+      "focus:outline-none focus:ring-2 focus:ring-current/40",
       className
     )}
     {...props}
@@ -78,13 +90,15 @@ const ToastClose = React.forwardRef<
   <ToastPrimitives.Close
     ref={ref}
     className={cn(
-      "absolute right-2 top-2 rounded-md p-1 text-foreground/50 opacity-0 transition-opacity hover:text-foreground focus:opacity-100 focus:outline-none focus:ring-2 group-hover:opacity-100",
+      "absolute end-2 top-2 rounded-md p-1.5 text-current opacity-60 transition-opacity",
+      "hover:opacity-100 focus:opacity-100 focus:outline-none focus:ring-2 focus:ring-current/40",
       className
     )}
     toast-close=""
+    aria-label="Close"
     {...props}
   >
-    <X className="h-4 w-4" />
+    <X className="size-4" />
   </ToastPrimitives.Close>
 ));
 ToastClose.displayName = ToastPrimitives.Close.displayName;

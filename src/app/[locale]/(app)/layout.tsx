@@ -1,12 +1,18 @@
 import { AppHeader } from "@/components/app-header";
+import { Footer } from "@/components/footer";
+import { SkipToContent } from "@/components/skip-to-content";
 
+/**
+ * (app) — protected app shell.
+ * Each page renders its own <PageShell> for max-width control.
+ */
 export default function AppLayout({ children }: { children: React.ReactNode }) {
   return (
-    <div className="flex min-h-screen flex-col">
+    <div className="flex min-h-screen flex-col bg-[hsl(var(--background))]">
+      <SkipToContent />
       <AppHeader />
-      <main className="flex-1 p-6 lg:p-10">
-        <div className="mx-auto max-w-5xl">{children}</div>
-      </main>
+      {children}
+      <Footer />
     </div>
   );
 }

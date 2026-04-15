@@ -1,6 +1,8 @@
 {
   "common": {
     "appName": "CODI PRO MAX",
+    "skipToContent": "Skip to content",
+    "backToTop": "Back to top",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -39,7 +41,10 @@
     "profile": "Profile",
     "billing": "Billing",
     "settings": "Settings",
-    "systemOperational": "System Operational"
+    "systemOperational": "System Operational",
+    "home": "Home",
+    "backToHome": "Home",
+    "continue": "Continue"
   },
   "disclaimer": {
     "searchBanner": "E-Douane provides tariff data for informational purposes only. Always verify rates and regulations with official customs authorities before making import/export decisions.",
@@ -107,8 +112,8 @@
     "stat1Label": "Tariff Codes",
     "stat2Value": "99.9%",
     "stat2Label": "Accuracy",
-    "stat3Value": "0 DA",
-    "stat3Label": "Starting Price",
+    "stat3Value": "3",
+    "stat3Label": "Languages Supported",
     "stat4Value": "98.5%",
     "stat4Label": "Accuracy Rate",
     "bottomBanner": "Real-time data + HS code search + duty calculator + full compliance",
@@ -189,6 +194,8 @@
     "firstNameRequired": "First name is required",
     "lastNameRequired": "Last name is required",
     "signUpSuccess": "Account created successfully! Please check your email to verify.",
+    "confirmEmailTitle": "Check Your Email",
+    "confirmEmailSent": "We've sent a confirmation link to your email address. Please check your inbox and confirm your account before logging in.",
     "signInError": "Invalid email or password",
     "signUpError": "Failed to create account. Please try again.",
     "forgotPasswordTitle": "Reset Your Password",
@@ -293,7 +300,8 @@
     "searchWithTerms": "Search with these terms",
     "editQuery": "Edit",
     "clearExtraction": "Clear",
-    "uploadButton": "Upload"
+    "uploadButton": "Upload",
+    "uploadContextPlaceholder": "Describe what you're looking for (optional)..."
   },
   "admin": {
     "title": "Admin Dashboard",
@@ -354,7 +362,33 @@
     "reactivate": "Reactivate",
     "subscriptionCancelled": "Subscription deactivated successfully",
     "subscriptionReactivated": "Subscription reactivated successfully",
-    "subscriptionUpdateError": "Failed to update subscription"
+    "subscriptionUpdateError": "Failed to update subscription",
+    "grantSubscription": "Grant Subscription",
+    "grantSubscriptionDesc": "Manually assign a subscription to {name}",
+    "selectDuration": "Duration",
+    "durationCustomMonths": "Custom (months)",
+    "numberOfMonths": "Number of months",
+    "durationYearly": "1 Year",
+    "durationLifetime": "Lifetime",
+    "grant": "Grant",
+    "subscriptionGranted": "Subscription granted successfully",
+    "subscriptionGrantError": "Failed to grant subscription",
+    "selectPlan": "Plan",
+    "noPlansAvailable": "No plans available",
+    "colName": "Name",
+    "colEmail": "Email",
+    "colPhone": "Phone",
+    "colRole": "Role",
+    "colJoined": "Joined",
+    "colActions": "Actions",
+    "colUser": "User",
+    "colPlan": "Plan",
+    "colStatus": "Status",
+    "colPeriod": "Period",
+    "colPrice": "Price",
+    "colBilling": "Billing",
+    "colFeatures": "Features",
+    "colActive": "Active"
   },
   "languagePicker": {
     "title": "Choose Your Language",

@@ -5,11 +5,10 @@ import { useTranslations } from "next-intl";
 import { createClient } from "@/lib/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "@/components/ui/use-toast";
-import { CreditCard, FileText, Calendar, Mail, Search, UserX, Activity } from "lucide-react";
+import { Search, UserX, Activity } from "lucide-react";
 import { useAdmin, type Subscription } from "../context";
 
 export default function AdminSubscriptionsPage() {
@@ -44,96 +43,100 @@ export default function AdminSubscriptionsPage() {
     fetchData();
   }
 
+  function statusVariant(status: string) {
+    if (status === "active") return "default" as const;
+    if (status === "cancelled") return "destructive" as const;
+    return "secondary" as const;
+  }
+
   return (
     <>
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-6">
         <h1 className="text-2xl font-bold">{t("admin.subscriptionsManager")}</h1>
         <div className="relative w-full sm:w-72">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Search className="absolute start-3 top-1/2 -translate-y-1/2 h-4 w-4 text-[hsl(var(--muted-fg))]" />
           <Input
             placeholder={t("admin.searchSubscriptions")}
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="pl-9"
+            className="ps-9"
           />
         </div>
       </div>
 
-      <Card>
-        <CardContent className="pt-6">
-          {loading ? (
-            <div className="space-y-4">
-              {[1, 2, 3, 4, 5].map((i) => (
-                <div key={i} className="flex items-center gap-4 rounded-lg border p-4">
-                  <Skeleton className="h-12 w-12 rounded-full" />
-                  <div className="flex-1 space-y-2">
-                    <Skeleton className="h-4 w-32" />
-                    <Skeleton className="h-3 w-48" />
-                  </div>
-                  <Skeleton className="h-6 w-16 rounded-full" />
-                </div>
-              ))}
-            </div>
-          ) : filteredSubscriptions.length === 0 ? (
-            <p className="text-center py-8 text-muted-foreground">{t("admin.noSubscriptions")}</p>
-          ) : (
-            <div className="space-y-3">
-              {filteredSubscriptions.map((sub) => (
-                <div
-                  key={sub.id}
-                  className="flex flex-col sm:flex-row items-start sm:items-center gap-4 rounded-lg border p-4 hover:bg-muted/50 transition-colors"
-                >
-                  <div className={`flex h-12 w-12 items-center justify-center rounded-full shrink-0 ${
-                    sub.status === "active" ? "bg-green-500/10 text-green-500" :
-                    sub.status === "cancelled" ? "bg-red-500/10 text-red-500" :
-                    "bg-gray-500/10 text-gray-500"
-                  }`}>
-                    <CreditCard className="h-5 w-5" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2 mb-1">
-                      <p className="font-semibold truncate">{sub.users?.first_name} {sub.users?.last_name}</p>
-                      <Badge
-                        variant={sub.status === "active" ? "default" : sub.status === "cancelled" ? "destructive" : "secondary"}
-                        className="text-xs shrink-0"
-                      >
+      <div className="rounded-xl border border-[hsl(var(--border))] overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full text-sm">
+            <thead>
+              <tr className="border-b border-[hsl(var(--border))] bg-[hsl(var(--muted)/0.4)]">
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))]">{t("admin.colUser")}</th>
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))]">{t("admin.colEmail")}</th>
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))]">{t("admin.colPlan")}</th>
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))]">{t("admin.colStatus")}</th>
+                <th className="px-4 py-3 text-start font-medium text-[hsl(var(--muted-fg))] hidden md:table-cell">{t("admin.colPeriod")}</th>
+                <th className="px-4 py-3 text-end font-medium text-[hsl(var(--muted-fg))]">{t("admin.colActions")}</th>
+              </tr>
+            </thead>
+            <tbody>
+              {loading ? (
+                Array.from({ length: 5 }).map((_, i) => (
+                  <tr key={i} className="border-b border-[hsl(var(--border))]">
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-28" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-36" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-20" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-5 w-16 rounded-full" /></td>
+                    <td className="px-4 py-3 hidden md:table-cell"><Skeleton className="h-4 w-32" /></td>
+                    <td className="px-4 py-3"><Skeleton className="h-4 w-20 ms-auto" /></td>
+                  </tr>
+                ))
+              ) : filteredSubscriptions.length === 0 ? (
+                <tr>
+                  <td colSpan={6} className="px-4 py-12 text-center text-[hsl(var(--muted-fg))]">
+                    {t("admin.noSubscriptions")}
+                  </td>
+                </tr>
+              ) : (
+                filteredSubscriptions.map((sub) => (
+                  <tr key={sub.id} className="border-b border-[hsl(var(--border))] hover:bg-[hsl(var(--muted)/0.3)] transition-colors">
+                    <td className="px-4 py-3 font-medium">
+                      {sub.users?.first_name} {sub.users?.last_name}
+                    </td>
+                    <td className="px-4 py-3 text-[hsl(var(--muted-fg))]">
+                      {sub.users?.email}
+                    </td>
+                    <td className="px-4 py-3">
+                      {sub.plans?.name} — {sub.plans?.price} DA
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge variant={statusVariant(sub.status)} className="text-xs">
                         {sub.status}
                       </Badge>
-                    </div>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-sm text-muted-foreground">
-                      <span className="flex items-center gap-1">
-                        <Mail className="h-3.5 w-3.5" />
-                        {sub.users?.email}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <FileText className="h-3.5 w-3.5" />
-                        {sub.plans?.name} - ${sub.plans?.price}
-                      </span>
-                      <span className="flex items-center gap-1">
-                        <Calendar className="h-3.5 w-3.5" />
-                        {new Date(sub.started_at).toLocaleDateString()} → {new Date(sub.expires_at).toLocaleDateString()}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="shrink-0">
-                    {sub.status === "active" ? (
-                      <Button variant="destructive" size="sm" onClick={() => handleCancelSubscription(sub)}>
-                        <UserX className="h-4 w-4 mr-1" />
-                        {t("admin.deactivate")}
-                      </Button>
-                    ) : sub.status === "cancelled" ? (
-                      <Button variant="outline" size="sm" onClick={() => handleCancelSubscription(sub)}>
-                        <Activity className="h-4 w-4 mr-1" />
-                        {t("admin.reactivate")}
-                      </Button>
-                    ) : null}
-                  </div>
-                </div>
-              ))}
-            </div>
-          )}
-        </CardContent>
-      </Card>
+                    </td>
+                    <td className="px-4 py-3 text-[hsl(var(--muted-fg))] hidden md:table-cell">
+                      {new Date(sub.started_at).toLocaleDateString()} → {sub.expires_at ? new Date(sub.expires_at).toLocaleDateString() : "∞"}
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center justify-end">
+                        {sub.status === "active" ? (
+                          <Button variant="ghost" size="sm" onClick={() => handleCancelSubscription(sub)}>
+                            <UserX className="h-4 w-4 me-1 text-destructive" />
+                            {t("admin.deactivate")}
+                          </Button>
+                        ) : sub.status === "cancelled" ? (
+                          <Button variant="ghost" size="sm" onClick={() => handleCancelSubscription(sub)}>
+                            <Activity className="h-4 w-4 me-1 text-[hsl(var(--primary))]" />
+                            {t("admin.reactivate")}
+                          </Button>
+                        ) : null}
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
+      </div>
     </>
   );
 }
