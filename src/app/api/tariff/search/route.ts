@@ -9,6 +9,16 @@ function cleanDescription(text: string | null): string | null {
   return text.replace(/^[-\s]+/, "").trim();
 }
 
+/**
+ * Drop diacritics (é → e, è → e, ç → c, …). The tariff data is stored unaccented,
+ * so queries containing accents must be normalized before hitting the French FTS
+ * — otherwise "débitmètres" stems to "débitmetr" which doesn't match the stored
+ * "debitmetr" tokens.
+ */
+function stripAccents(s: string): string {
+  return s.normalize("NFD").replace(/\p{Diacritic}/gu, "");
+}
+
 /** Convert designation hierarchy into a breadcrumb path */
 function extractProductPath(designation: string | null): string | null {
   if (!designation) return null;
@@ -41,14 +51,20 @@ const FRENCH_STOPWORDS = new Set([
   "tous", "toute", "toutes", "tout", "ce", "cette", "ces", "cet",
 ]);
 
-/** Strip stopwords and return the meaningful query tokens (unique, lowercased). */
+/**
+ * Strip stopwords and return the meaningful query tokens (unique, lowercased).
+ * Splits on whitespace *and* apostrophes so French contractions like "d'aspiration"
+ * become ["d", "aspiration"] — "d" is stopword/too-short and gets dropped, leaving
+ * "aspiration" in its correctly stemmable form. Stripping the apostrophe inline
+ * (the old behavior) created junk tokens like "daspiration" → "daspir".
+ */
 function extractContentWords(q: string): string[] {
   return Array.from(
     new Set(
       q
         .trim()
-        .split(/\s+/)
-        .map((w) => w.toLowerCase().replace(/['’]/g, ""))
+        .toLowerCase()
+        .split(/[\s'’]+/)
         .filter((w) => w.length >= 2 && !FRENCH_STOPWORDS.has(w))
     )
   );
@@ -153,19 +169,23 @@ async function translateWithAI(query: string): Promise<string | null> {
  */
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl;
-  const query = searchParams.get("q")?.trim();
+  const rawQuery = searchParams.get("q")?.trim();
   const sectionCode = searchParams.get("section");
   const lang = searchParams.get("lang") || "fr";
   const page = parseInt(searchParams.get("page") || "1");
   const limit = Math.min(parseInt(searchParams.get("limit") || "20"), 100);
   const offset = (page - 1) * limit;
 
-  if (!query || query.length < 2) {
+  if (!rawQuery || rawQuery.length < 2) {
     return NextResponse.json(
       { error: "Query parameter 'q' is required (min 2 characters)" },
       { status: 400 }
     );
   }
+
+  // Accent-normalize for matching — data is stored unaccented, so "débitmètres"
+  // needs to be stripped to "debitmetres" before it reaches the French FTS.
+  const query = stripAccents(rawQuery);
 
   const supabase = await createClient();
 
