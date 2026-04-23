@@ -69,6 +69,12 @@ interface SearchResponse {
   data: TariffResult[];
   query: string;
   lang: string;
+  /** Set only when a fallback was used — the shorter / translated query that actually matched. */
+  used_query?: string;
+  /** Which fallback path ran. content_only = filler words stripped, word_drop = prefix
+   *  shortened, best_word = single content word picked by match count, ai_translation =
+   *  Gemini-translated fallback. */
+  fallback_reason?: "content_only" | "word_drop" | "best_word" | "ai_translation";
   pagination: {
     page: number;
     limit: number;
@@ -110,6 +116,7 @@ export default function SearchPage() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [hasSearched, setHasSearched] = useState(false);
+  const [usedQuery, setUsedQuery] = useState<string | null>(null);
   const [selectedResult, setSelectedResult] = useState<TariffResult | null>(null);
   const [detailData, setDetailData] = useState<TariffDetail | null>(null);
   const [detailLoading, setDetailLoading] = useState(false);
@@ -208,6 +215,7 @@ export default function SearchPage() {
       setError("");
       setHasSearched(true);
       setSubmittedQuery(searchQuery.trim());
+      setUsedQuery(null);
 
       try {
         const params = new URLSearchParams({
@@ -229,6 +237,7 @@ export default function SearchPage() {
 
         setResults(data.data);
         setPagination(data.pagination);
+        setUsedQuery(data.used_query ?? null);
         if (page === 1) pushRecent(searchQuery.trim());
         if (page > 1) {
           window.scrollTo({ top: 0, behavior: "smooth" });
@@ -795,12 +804,19 @@ export default function SearchPage() {
               </Card>
             ) : null}
 
+            {/* Fallback banner — shown when the API swapped the query (word-drop or AI translation) */}
+            {!loading && !error && usedQuery && usedQuery !== submittedQuery ? (
+              <InfoBanner variant="info" className="mb-4">
+                {t("search.fallbackBanner", { original: submittedQuery, used: usedQuery })}
+              </InfoBanner>
+            ) : null}
+
             {/* Results info bar */}
             {!loading && !error && pagination ? (
               <p className="mb-4 text-sm text-[hsl(var(--muted-fg))]">
                 {t("search.resultsFound", {
                   total: pagination.total,
-                  query: submittedQuery,
+                  query: usedQuery ?? submittedQuery,
                   time:
                     "0." +
                     Math.floor(Math.random() * 9 + 1) +

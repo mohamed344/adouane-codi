@@ -259,6 +259,7 @@
     "taxesAdValorem": "Ad-Valorem Taxes",
     "noResults": "No results found",
     "noResultsHint": "Try different keywords, check for typos, or search by tariff code number",
+    "fallbackBanner": "No matches for \"{original}\". Showing results for \"{used}\".",
     "errorGeneric": "An error occurred. Please try again.",
     "section": "Section",
     "chapter": "Chapter",

@@ -179,9 +179,10 @@ BEGIN
       -- AND match on designation
       WHEN to_tsvector('french', COALESCE(tc.designation, '')) @@ q_and THEN 0.6 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), q_and) * 0.2
       WHEN tq_and IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_and THEN 0.6 + ts_rank(to_tsvector('french', COALESCE(tc.designation, '')), tq_and) * 0.2
-      -- Fuzzy trigram (typo tolerance — only when FTS found nothing)
-      WHEN NOT has_any_fts_results AND word_similarity(lower(search_query), lower(tc.description)) > 0.45 THEN 0.1 + word_similarity(lower(search_query), lower(tc.description)) * 0.15
-      WHEN NOT has_any_fts_results AND word_similarity(lower(search_query), lower(COALESCE(tc.designation, ''))) > 0.45 THEN 0.08 + word_similarity(lower(search_query), lower(COALESCE(tc.designation, ''))) * 0.15
+      -- Fuzzy trigram (typo tolerance — single-word queries only, to avoid noisy
+      -- cross-word similarity matches like "préparation" ~ "réparation de la pompe")
+      WHEN NOT has_any_fts_results AND word_count = 1 AND word_similarity(lower(search_query), lower(tc.description)) > 0.45 THEN 0.1 + word_similarity(lower(search_query), lower(tc.description)) * 0.15
+      WHEN NOT has_any_fts_results AND word_count = 1 AND word_similarity(lower(search_query), lower(COALESCE(tc.designation, ''))) > 0.45 THEN 0.08 + word_similarity(lower(search_query), lower(COALESCE(tc.designation, ''))) * 0.15
       WHEN lower(COALESCE(tc.designation, '')) LIKE '%' || lower(search_query) || '%' THEN 0.15
       WHEN lower(tc.description) LIKE '%' || lower(search_query) || '%' THEN 0.1
       ELSE 0.05
@@ -200,9 +201,10 @@ BEGIN
       -- Translated AND match
       OR (tq_and IS NOT NULL AND to_tsvector('french', tc.description) @@ tq_and)
       OR (tq_and IS NOT NULL AND to_tsvector('french', COALESCE(tc.designation, '')) @@ tq_and)
-      -- Fuzzy fallback (typos — only when FTS found nothing)
-      OR (NOT has_any_fts_results AND length(search_query) >= 4 AND word_similarity(lower(search_query), lower(tc.description)) > 0.45)
-      OR (NOT has_any_fts_results AND length(search_query) >= 4 AND word_similarity(lower(search_query), lower(COALESCE(tc.designation, ''))) > 0.45)
+      -- Fuzzy fallback (typos — only when FTS found nothing AND the query is a single word;
+      -- trigram similarity is noisy across multi-word strings)
+      OR (NOT has_any_fts_results AND word_count = 1 AND length(search_query) >= 4 AND word_similarity(lower(search_query), lower(tc.description)) > 0.45)
+      OR (NOT has_any_fts_results AND word_count = 1 AND length(search_query) >= 4 AND word_similarity(lower(search_query), lower(COALESCE(tc.designation, ''))) > 0.45)
     )
   ORDER BY rank DESC, tc.full_code ASC
   LIMIT result_limit OFFSET result_offset;

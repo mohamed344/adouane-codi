@@ -259,6 +259,7 @@
     "taxesAdValorem": "Taxes Ad-Valorem",
     "noResults": "Aucun resultat trouve",
     "noResultsHint": "Essayez des mots-cles differents, verifiez les fautes ou recherchez par numero de code tarifaire",
+    "fallbackBanner": "Aucun résultat pour « {original} ». Affichage des résultats pour « {used} ».",
     "errorGeneric": "Une erreur est survenue. Veuillez reessayer.",
     "section": "Section",
     "chapter": "Chapitre",
